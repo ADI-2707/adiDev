@@ -1,9 +1,5 @@
 import { motion } from 'framer-motion';
 
-/**
- * Reusable section tag pill shown above every section heading.
- * Example: ◉ About
- */
 export const SectionTag = ({ label }) => (
   <motion.div
     initial={{ opacity: 0, y: 10 }}
@@ -17,9 +13,6 @@ export const SectionTag = ({ label }) => (
   </motion.div>
 );
 
-/**
- * Primary CTA button with shimmer hover sweep.
- */
 export const Button = ({ children, onClick, href, variant = 'primary', className = '' }) => {
   const base =
     'relative inline-flex items-center justify-center gap-2 px-6 py-3 rounded-full text-sm font-medium transition-all duration-300 overflow-hidden cursor-pointer';
