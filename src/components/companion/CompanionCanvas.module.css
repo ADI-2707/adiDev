@@ -1,42 +1,9 @@
 .canvasContainer {
   position: fixed;
+  inset: 0;
+  width: 100vw;
+  height: 100vh;
   z-index: 30;
   pointer-events: none;
-  transition: all 0.9s cubic-bezier(0.25, 1, 0.5, 1);
-  overflow: visible;
-}
-
-/* Hero Section Layout State */
-.heroState {
-  right: 0;
-  bottom: 0;
-  width: 100%;
-  height: 50vh;
-}
-
-/* Companion Corner Layout State */
-.companionState {
-  right: 1.5rem;
-  bottom: 1.5rem;
-  width: 160px;
-  height: 220px;
-}
-
-@media (min-width: 1024px) {
-  .heroState {
-    width: 50%;
-    height: 100vh;
-    top: 0;
-    left: auto;
-    right: 0;
-  }
-}
-
-.skillsState {
-  left: 5%;
-  top: 25%;
-  width: 280px;
-  height: 380px;
-  right: auto;
-  bottom: auto;
+  overflow: hidden;
 }

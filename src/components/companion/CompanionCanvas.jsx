@@ -7,17 +7,9 @@ import styles from './CompanionCanvas.module.css';
 
 const CompanionCanvas = ({ activeSection }) => {
   const isHero = activeSection === 'hero';
-  const isSkills = activeSection === 'skills';
-
-  let containerClass = styles.companionState;
-  if (isHero) {
-    containerClass = styles.heroState;
-  } else if (isSkills) {
-    containerClass = styles.skillsState;
-  }
 
   return (
-    <div className={`${styles.canvasContainer} ${containerClass}`}>
+    <div className={styles.canvasContainer}>
       <Canvas
         camera={{ position: [0, 0, 4.5], fov: 40 }}
         gl={{ antialias: true, alpha: true }}
@@ -29,7 +21,7 @@ const CompanionCanvas = ({ activeSection }) => {
 
         <Suspense fallback={null}>
           <Astronaut activeSection={activeSection} />
-          {isHero && <StarField />}
+          <StarField />
           <ContactShadows
             position={[0, -1.8, 0]}
             opacity={0.25}
