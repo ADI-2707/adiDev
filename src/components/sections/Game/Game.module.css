@@ -1,0 +1,159 @@
+.section {
+  padding: 5rem 2rem;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.header {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1rem;
+  margin-bottom: 3rem;
+}
+
+.heading {
+  font-size: clamp(2rem, 4vw, 2.75rem);
+  font-weight: 700;
+  text-align: center;
+  color: #fff;
+}
+
+.gradientSpan {
+  background: linear-gradient(to right, var(--color-coral), var(--color-fuchsia));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.subtext {
+  color: #a3a3a3;
+  text-align: center;
+  max-width: 28rem;
+  line-height: 1.6;
+}
+
+/* ── Game Workspace ── */
+.wrapper {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1.5rem;
+}
+
+.canvasContainer {
+  position: relative;
+  border-radius: 1rem;
+  overflow: hidden;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  box-shadow: 0 0 60px rgba(234, 72, 132, 0.15);
+}
+
+.canvas {
+  display: block;
+  width: 100%;
+  image-rendering: pixelated;
+  image-rendering: crisp-edges;
+}
+
+/* Overlays */
+.overlay {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  background-color: rgba(3, 4, 18, 0.8);
+  backdrop-filter: blur(4px);
+  gap: 1rem;
+}
+
+.deadOverlay {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  background-color: rgba(3, 4, 18, 0.85);
+  backdrop-filter: blur(4px);
+  gap: 1rem;
+}
+
+.emoji {
+  font-size: 2.5rem;
+}
+
+.hint {
+  color: #a3a3a3;
+  font-size: 0.875rem;
+}
+
+.btnStart {
+  padding: 0.75rem 2rem;
+  border-radius: 9999px;
+  border: 1px solid rgba(234, 72, 132, 0.5);
+  background: transparent;
+  color: var(--color-coral);
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.3s;
+}
+
+.btnStart:hover {
+  background-color: rgba(234, 72, 132, 0.1);
+}
+
+.deadTitle {
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: #fff;
+}
+
+.deadScore {
+  color: #a3a3a3;
+  font-size: 0.875rem;
+}
+
+.deadBtnGroup {
+  display: flex;
+  gap: 0.75rem;
+  margin-top: 0.5rem;
+}
+
+.btnTryAgain {
+  padding: 0.625rem 1.5rem;
+  border-radius: 9999px;
+  border: 1px solid rgba(234, 72, 132, 0.5);
+  background: transparent;
+  color: var(--color-coral);
+  font-size: 0.875rem;
+  cursor: pointer;
+  transition: all 0.3s;
+}
+
+.btnTryAgain:hover {
+  background-color: rgba(234, 72, 132, 0.1);
+}
+
+.btnHire {
+  padding: 0.625rem 1.5rem;
+  border-radius: 9999px;
+  border: 1px solid rgba(51, 194, 204, 0.4);
+  background: transparent;
+  color: var(--color-aqua);
+  font-size: 0.875rem;
+  text-decoration: none;
+  cursor: pointer;
+  transition: all 0.3s;
+}
+
+.btnHire:hover {
+  background-color: rgba(51, 194, 204, 0.1);
+}
+
+.footnote {
+  font-size: 0.75rem;
+  color: #525252;
+}

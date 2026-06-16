@@ -1,0 +1,191 @@
+.nav {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 40;
+  transition: all 0.5s ease;
+  height: 4rem;
+}
+
+.scrolled {
+  background-color: rgba(3, 4, 18, 0.8);
+  backdrop-filter: blur(24px);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+}
+
+.transparent {
+  background-color: transparent;
+}
+
+.container {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  height: 100%;
+}
+
+/* Logo */
+.logo {
+  font-size: 1.25rem;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  color: #fff;
+  text-decoration: none;
+  transition: color 0.3s;
+}
+
+.logo:hover {
+  color: var(--color-aqua);
+}
+
+.logoAqua {
+  color: var(--color-aqua);
+}
+
+/* Nav Links - Desktop */
+.navLinks {
+  display: none;
+}
+
+.navLink {
+  font-size: 0.875rem;
+  color: #a3a3a3;
+  text-decoration: none;
+  transition: color 0.2s;
+  position: relative;
+  padding-bottom: 0.25rem;
+}
+
+.navLink:hover {
+  color: #fff;
+}
+
+.navLinkLine {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 0;
+  height: 1px;
+  background-color: var(--color-aqua);
+  transition: width 0.3s ease;
+}
+
+.navLink:hover .navLinkLine {
+  width: 100%;
+}
+
+/* CTA Button - Desktop */
+.ctaBtn {
+  display: none;
+}
+
+/* Mobile Hamburger Button */
+.mobileMenuBtn {
+  display: flex;
+  flex-direction: column;
+  gap: 0.375rem;
+  padding: 0.5rem;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  z-index: 50;
+  outline: none;
+}
+
+.mobileMenuBtnLine {
+  display: block;
+  width: 1.5rem;
+  height: 2px;
+  background-color: #fff;
+  border-radius: 9999px;
+  transition: all 0.3s ease;
+}
+
+/* Mobile Dropdown Menu */
+.mobileMenu {
+  position: absolute;
+  top: 4rem;
+  left: 0;
+  right: 0;
+  background-color: rgba(6, 9, 31, 0.95);
+  backdrop-filter: blur(24px);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+  overflow: hidden;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+}
+
+.mobileMenuList {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  list-style: none;
+  padding: 1.5rem 0;
+  margin: 0;
+}
+
+.mobileNavLink {
+  display: block;
+  padding: 0.5rem 0;
+  color: #d4d4d4;
+  text-decoration: none;
+  font-size: 1rem;
+  transition: color 0.2s;
+}
+
+.mobileNavLink:hover {
+  color: #fff;
+}
+
+.mobileCta {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 1.25rem;
+  border-radius: 9999px;
+  border: 1px solid rgba(51, 194, 204, 0.4);
+  color: var(--color-aqua);
+  text-decoration: none;
+  font-size: 0.875rem;
+  transition: all 0.3s;
+  width: fit-content;
+  margin-top: 0.5rem;
+}
+
+.mobileCta:hover {
+  background-color: rgba(51, 194, 204, 0.1);
+}
+
+/* Responsive Rules */
+@media (min-width: 768px) {
+  .navLinks {
+    display: flex;
+    align-items: center;
+    gap: 2rem;
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+
+  .ctaBtn {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.5rem 1.25rem;
+    border-radius: 9999px;
+    border: 1px solid rgba(51, 194, 204, 0.4);
+    color: var(--color-aqua);
+    font-size: 0.875rem;
+    text-decoration: none;
+    transition: all 0.3s;
+  }
+
+  .ctaBtn:hover {
+    background-color: rgba(51, 194, 204, 0.1);
+  }
+
+  .mobileMenuBtn {
+    display: none;
+  }
+}
