@@ -53,13 +53,14 @@ export const Astronaut = ({ activeSection }) => {
 
   return (
     <Float
-      speed={1.5}
-      rotationIntensity={0.2}
-      floatIntensity={0.5}
-      floatingRange={[-0.05, 0.05]}
+      speed={1.4}
+      rotationIntensity={1.8} // High rotation wobble
+      floatIntensity={1.5}    // High vertical floating drift
+      floatingRange={[-0.15, 0.15]} // Wider floating distance
     >
       <group ref={group} position={[0, targetY, 0]} scale={targetScale} dispose={null}>
-        <primitive object={scene} />
+        {/* Added a default slanted rotation so it looks like it is floating naturally at an angle */}
+        <primitive object={scene} rotation={[0.15, 0.2, -0.25]} />
       </group>
     </Float>
   );
