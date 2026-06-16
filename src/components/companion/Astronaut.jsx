@@ -3,16 +3,6 @@ import { useGLTF, useAnimations, Float } from '@react-three/drei';
 import { useFrame } from '@react-three/fiber';
 import * as THREE from 'three';
 
-// Animation map per section
-const SECTION_ANIMATIONS = {
-  hero: null,         // uses idle float from <Float>
-  about: null,
-  skills: null,
-  experience: null,
-  projects: null,
-  contact: null,
-  game: null,
-};
 
 export const Astronaut = ({ activeSection, scale = 1.8, position = [0, -1.2, 0] }) => {
   const group = useRef();
@@ -33,10 +23,9 @@ export const Astronaut = ({ activeSection, scale = 1.8, position = [0, -1.2, 0] 
   }, [actions, names]);
 
   // Gentle head / body tilt toward mouse
-  useFrame(({ clock, mouse }) => {
-    if (!group.current) return;
-    const t = clock.getElapsedTime();
+  useFrame(({ mouse }) => {
     // Subtle idle sway
+    if (!group.current) return;
     group.current.rotation.y = THREE.MathUtils.lerp(
       group.current.rotation.y,
       mouse.x * 0.3,

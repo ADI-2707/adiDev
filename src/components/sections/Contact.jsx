@@ -1,6 +1,5 @@
-import { useState, useRef } from 'react';
+import { useState, useRef, Suspense } from 'react';
 import { Canvas } from '@react-three/fiber';
-import { Suspense } from 'react';
 import { Environment } from '@react-three/drei';
 import { motion } from 'framer-motion';
 import RevealSection from '../ui/RevealSection';
@@ -11,7 +10,7 @@ const INITIAL_FORM = { name: '', email: '', message: '' };
 
 const Contact = () => {
   const [form, setForm] = useState(INITIAL_FORM);
-  const [status, setStatus] = useState('idle'); // idle | sending | sent | error
+  const [status, setStatus] = useState('idle');
   const formRef = useRef(null);
 
   const handleChange = (e) => {
