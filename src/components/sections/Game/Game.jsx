@@ -1,7 +1,8 @@
 import { useEffect, useRef, useState } from 'react';
 import { motion } from 'framer-motion';
-import RevealSection from '../ui/RevealSection';
-import { SectionTag } from '../ui/Button';
+import RevealSection from '../../ui/RevealSection/RevealSection';
+import { SectionTag } from '../../ui/Button/Button';
+import styles from './Game.module.css';
 
 const GAME_W = 480;
 const GAME_H = 320;
@@ -176,31 +177,31 @@ const Game = () => {
   };
 
   return (
-    <section id="game" className="section-spacing c-space">
-      <div className="flex flex-col items-center gap-4 mb-12">
+    <section id="game" className={styles.section}>
+      <div className={styles.header}>
         <RevealSection>
           <SectionTag label="Mini-Game" />
         </RevealSection>
         <RevealSection delay={0.1}>
-          <h2 className="text-heading text-center">
+          <h2 className={styles.heading}>
             Asteroid{' '}
-            <span className="text-transparent bg-clip-text bg-gradient-to-r from-coral to-fuchsia">
+            <span className={styles.gradientSpan}>
               Dodge
             </span>
           </h2>
         </RevealSection>
         <RevealSection delay={0.2}>
-          <p className="subtext text-center max-w-md">
+          <p className={styles.subtext}>
             Move your astronaut with arrow keys or mouse. Dodge asteroids. Don't die.
           </p>
         </RevealSection>
       </div>
 
       <RevealSection delay={0.3}>
-        <div className="flex flex-col items-center gap-6">
+        <div className={styles.wrapper}>
           {/* Game canvas container */}
           <div
-            className="relative rounded-2xl overflow-hidden border border-white/10 shadow-[0_0_60px_rgba(234,72,132,0.15)]"
+            className={styles.canvasContainer}
             style={{ maxWidth: GAME_W, width: '100%' }}
           >
             <canvas
@@ -208,18 +209,17 @@ const Game = () => {
               width={GAME_W}
               height={GAME_H}
               onMouseMove={handleMouseMove}
-              className="block w-full"
-              style={{ imageRendering: 'pixelated' }}
+              className={styles.canvas}
             />
 
             {/* Overlay screens */}
             {uiState === 'idle' && (
-              <div className="absolute inset-0 flex flex-col items-center justify-center bg-primary/80 backdrop-blur-sm gap-4">
-                <div className="text-4xl">🚀</div>
-                <p className="text-neutral-400 text-sm">Use arrow keys or mouse to move</p>
+              <div className={styles.overlay}>
+                <div className={styles.emoji}>🚀</div>
+                <p className={styles.hint}>Use arrow keys or mouse to move</p>
                 <button
                   onClick={startGame}
-                  className="px-8 py-3 rounded-full border border-coral/50 text-coral hover:bg-coral/10 transition-all duration-300 font-medium"
+                  className={styles.btnStart}
                 >
                   Start Mission
                 </button>
@@ -230,21 +230,21 @@ const Game = () => {
               <motion.div
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
-                className="absolute inset-0 flex flex-col items-center justify-center bg-primary/85 backdrop-blur-sm gap-4"
+                className={styles.deadOverlay}
               >
-                <div className="text-4xl">💥</div>
-                <p className="text-xl font-bold">Mission Failed</p>
-                <p className="text-neutral-400 text-sm">Score: {stateRef.current.score}</p>
-                <div className="flex gap-3 mt-2">
+                <div className={styles.emoji}>💥</div>
+                <p className={styles.deadTitle}>Mission Failed</p>
+                <p className={styles.deadScore}>Score: {stateRef.current.score}</p>
+                <div className={styles.deadBtnGroup}>
                   <button
                     onClick={startGame}
-                    className="px-6 py-2.5 rounded-full border border-coral/50 text-coral hover:bg-coral/10 transition-all text-sm"
+                    className={styles.btnTryAgain}
                   >
                     Try Again
                   </button>
                   <a
                     href="#contact"
-                    className="px-6 py-2.5 rounded-full border border-aqua/40 text-aqua hover:bg-aqua/10 transition-all text-sm"
+                    className={styles.btnHire}
                   >
                     Hire Me Instead 😄
                   </a>
@@ -253,7 +253,7 @@ const Game = () => {
             )}
           </div>
 
-          <p className="text-xs text-neutral-600">
+          <p className={styles.footnote}>
             Built with Canvas API · No physics engines harmed
           </p>
         </div>

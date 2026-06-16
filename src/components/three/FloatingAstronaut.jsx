@@ -17,7 +17,7 @@ const FloatingAstronaut = () => {
       <pointLight position={[3, -2, 2]} intensity={0.4} color="#33c2cc" />
 
       <Suspense fallback={null}>
-        <Astronaut scale={2.2} position={[0, -1.4, 0]} />
+        <Astronaut scale={1} position={[0, -1.4, 0]} />
         <StarField />
         <Environment preset="night" />
       </Suspense>

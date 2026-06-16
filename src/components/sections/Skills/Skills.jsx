@@ -1,23 +1,24 @@
 import { motion } from 'framer-motion';
-import RevealSection from '../ui/RevealSection';
-import { SectionTag } from '../ui/Button';
-import { skills } from '../../data/skills';
+import RevealSection from '../../ui/RevealSection/RevealSection';
+import { SectionTag } from '../../ui/Button/Button';
+import { skills } from '../../../data/skills';
+import styles from './Skills.module.css';
 
 const SkillNode = ({ name, color, size = 'md' }) => {
   const initials = name.slice(0, 2).toUpperCase();
   const sizes = {
-    sm: 'w-10 h-10 text-xs',
-    md: 'w-12 h-12 text-xs',
-    lg: 'w-14 h-14 text-sm',
+    sm: styles.sm,
+    md: styles.md,
+    lg: styles.lg,
   };
 
   return (
     <motion.div
       whileHover={{ scale: 1.15 }}
-      className="flex flex-col items-center gap-1.5 group"
+      className={styles.skillNode}
     >
       <div
-        className={`${sizes[size]} rounded-full border flex items-center justify-center font-bold transition-all duration-300 group-hover:shadow-lg`}
+        className={`${sizes[size]} ${styles.skillCircle}`}
         style={{
           borderColor: `${color}40`,
           backgroundColor: `${color}12`,
@@ -33,11 +34,7 @@ const SkillNode = ({ name, color, size = 'md' }) => {
       >
         {initials}
       </div>
-      <span
-        className="text-[10px] text-neutral-500 group-hover:text-white transition-colors duration-200 max-w-[60px] text-center leading-tight"
-      >
-        {name}
-      </span>
+      <span className={styles.skillLabel}>{name}</span>
     </motion.div>
   );
 };
@@ -47,7 +44,7 @@ const OrbitRing = ({ items, radius, duration, color, reverse = false }) => {
   const count = items.length;
   return (
     <div
-      className="absolute inset-0 pointer-events-none"
+      className={styles.orbitRing}
       style={{
         animation: `orbit-ring ${duration}s linear infinite ${reverse ? 'reverse' : ''}`,
       }}
@@ -60,7 +57,7 @@ const OrbitRing = ({ items, radius, duration, color, reverse = false }) => {
         return (
           <div
             key={skill.name}
-            className="absolute pointer-events-auto"
+            className={styles.orbitItem}
             style={{
               left: `calc(50% + ${x}px - 28px)`,
               top: `calc(50% + ${y}px - 28px)`,
@@ -77,21 +74,19 @@ const OrbitRing = ({ items, radius, duration, color, reverse = false }) => {
 
 const Skills = () => {
   return (
-    <section id="skills" className="section-spacing c-space">
-      <div className="flex flex-col items-center gap-4 mb-16">
+    <section id="skills" className={styles.section}>
+      <div className={styles.container}>
         <RevealSection>
           <SectionTag label="Skills" />
         </RevealSection>
         <RevealSection delay={0.1}>
-          <h2 className="text-heading text-center">
+          <h2 className={styles.heading}>
             What I Build{' '}
-            <span className="text-transparent bg-clip-text bg-gradient-to-r from-aqua to-mint">
-              With
-            </span>
+            <span className={styles.gradientSpan}>With</span>
           </h2>
         </RevealSection>
         <RevealSection delay={0.2}>
-          <p className="subtext text-center max-w-md">
+          <p className={styles.subtext}>
             A toolkit assembled across years of building production-grade products.
           </p>
         </RevealSection>
@@ -99,27 +94,29 @@ const Skills = () => {
 
       {/* Orbital rig — desktop */}
       <RevealSection delay={0.3}>
-        <div className="hidden md:flex justify-center">
-          <div className="relative w-[480px] h-[480px]">
+        <div className={styles.desktopWrapper}>
+          <div className={styles.orbitContainer}>
             {/* Ring decorations */}
             {[80, 160, 230].map((r, i) => (
               <div
                 key={r}
-                className="absolute rounded-full border border-white/5"
+                className={styles.ringDecoration}
                 style={{
                   width: r * 2,
                   height: r * 2,
                   left: `calc(50% - ${r}px)`,
                   top: `calc(50% - ${r}px)`,
-                  borderColor: i === 0 ? '#33c2cc20' : i === 1 ? '#7a57db20' : '#57db9620',
+                  borderColor:
+                    i === 0
+                      ? '#33c2cc20'
+                      : i === 1
+                      ? '#7a57db20'
+                      : '#57db9620',
                 }}
               />
             ))}
-
             {/* Center node */}
-            <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-16 h-16 rounded-full bg-gradient-to-br from-royal to-lavender flex items-center justify-center text-xs font-bold shadow-[0_0_30px_rgba(92,51,204,0.5)] z-10">
-              ADI
-            </div>
+            <div className={styles.centerNode}>ADI</div>
 
             {/* Orbital rings */}
             <OrbitRing items={skills.inner} radius={80} duration={20} color="#33c2cc" />
@@ -130,21 +127,15 @@ const Skills = () => {
       </RevealSection>
 
       {/* Mobile flat grid */}
-      <div className="md:hidden grid grid-cols-3 sm:grid-cols-4 gap-6 justify-items-center mt-4">
+      <div className={styles.mobileGrid}>
         {[...skills.inner, ...skills.middle, ...skills.outer].map((skill) => (
           <SkillNode key={skill.name} name={skill.name} color={skill.color} size="lg" />
         ))}
       </div>
 
       <style>{`
-        @keyframes orbit-ring {
-          from { transform: rotate(0deg); }
-          to   { transform: rotate(360deg); }
-        }
-        @keyframes counter-rotate {
-          from { transform: rotate(0deg); }
-          to   { transform: rotate(-360deg); }
-        }
+        @keyframes orbit-ring { from { transform: rotate(0deg); } to   { transform: rotate(360deg); } }
+        @keyframes counter-rotate { from { transform: rotate(0deg); } to   { transform: rotate(-360deg); } }
       `}</style>
     </section>
   );

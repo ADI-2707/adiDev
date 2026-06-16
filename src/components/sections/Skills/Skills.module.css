@@ -1,0 +1,147 @@
+.section {
+  padding: 4rem 0;
+}
+
+.container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1rem;
+  margin-bottom: 4rem;
+}
+
+.heading {
+  font-size: 2.5rem;
+  text-align: center;
+  font-weight: 700;
+  color: #fff;
+}
+
+.gradientSpan {
+  background: linear-gradient(to right, var(--color-aqua), var(--color-mint));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.subtext {
+  font-size: 1rem;
+  text-align: center;
+  max-width: 28rem;
+  color: var(--color-neutral-400, #a1a1a1);
+}
+
+.desktopWrapper {
+  display: none;
+}
+
+@media (min-width: 768px) {
+  .desktopWrapper {
+    display: flex;
+    justify-content: center;
+  }
+}
+
+.orbitContainer {
+  position: relative;
+  width: 480px;
+  height: 480px;
+}
+
+.ringDecoration {
+  position: absolute;
+  border-radius: 9999px;
+  border: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.centerNode {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  width: 4rem;
+  height: 4rem;
+  border-radius: 9999px;
+  background: linear-gradient(to bottom right, var(--color-royal), var(--color-lavender));
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.75rem;
+  font-weight: bold;
+  color: #fff;
+  box-shadow: 0 0 30px rgba(92, 51, 204, 0.5);
+  z-index: 10;
+}
+
+.mobileGrid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 1.5rem;
+  justify-items: center;
+  margin-top: 1rem;
+}
+
+@media (min-width: 768px) {
+  .mobileGrid {
+    display: none;
+  }
+}
+
+.skillNode {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.375rem;
+}
+
+.sm {
+  width: 2.5rem;
+  height: 2.5rem;
+  font-size: 0.75rem;
+}
+
+.md {
+  width: 3rem;
+  height: 3rem;
+  font-size: 0.75rem;
+}
+
+.lg {
+  width: 3.5rem;
+  height: 3.5rem;
+  font-size: 0.875rem;
+}
+
+.skillCircle {
+  border-radius: 9999px;
+  border: 1px solid currentColor;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: bold;
+  transition: box-shadow 0.3s ease;
+}
+
+.skillLabel {
+  font-size: 10px;
+  color: var(--color-neutral-500, #6b7280);
+  max-width: 60px;
+  text-align: center;
+  line-height: 1.2;
+  transition: color 0.2s ease;
+}
+
+.skillNode:hover .skillLabel {
+  color: #fff;
+}
+
+.orbitRing {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+
+.orbitItem {
+  position: absolute;
+  pointer-events: auto;
+}

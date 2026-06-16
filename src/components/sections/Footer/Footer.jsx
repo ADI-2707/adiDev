@@ -1,3 +1,5 @@
+import styles from './Footer.module.css';
+
 const Footer = () => {
   const socials = [
     { label: 'GitHub', href: 'https://github.com', symbol: '⌥' },
@@ -6,20 +8,20 @@ const Footer = () => {
   ];
 
   return (
-    <footer className="border-t border-white/5 bg-midnight/50">
-      <div className="c-space py-12 flex flex-col md:flex-row items-center justify-between gap-6">
+    <footer className={styles.footer}>
+      <div className={styles.container}>
         {/* Brand */}
-        <div className="flex flex-col items-center md:items-start gap-1">
-          <a href="#hero" className="text-lg font-bold">
-            adi<span className="text-aqua">Dev</span>
+        <div className={styles.brand}>
+          <a href="#hero" className={styles.logo}>
+            adi<span className={styles.logoAqua}>Dev</span>
           </a>
-          <p className="text-neutral-600 text-xs">
-            Built with React, Three.js & ☕
+          <p className={styles.logoText}>
+            Built with React, Three.js &amp; ☕
           </p>
         </div>
 
         {/* Socials */}
-        <div className="flex items-center gap-4">
+        <div className={styles.socials}>
           {socials.map((s) => (
             <a
               key={s.label}
@@ -27,7 +29,7 @@ const Footer = () => {
               target="_blank"
               rel="noreferrer"
               aria-label={s.label}
-              className="w-9 h-9 rounded-full border border-white/10 flex items-center justify-center text-neutral-500 hover:text-white hover:border-aqua/40 transition-all duration-300 text-xs"
+              className={styles.socialLink}
             >
               {s.symbol}
             </a>
@@ -35,14 +37,14 @@ const Footer = () => {
         </div>
 
         {/* Right side */}
-        <div className="flex flex-col items-center md:items-end gap-1">
+        <div className={styles.rightSide}>
           <a
             href="#hero"
-            className="text-xs text-neutral-500 hover:text-aqua transition-colors flex items-center gap-1"
+            className={styles.backToTop}
           >
             Back to top ↑
           </a>
-          <p className="text-neutral-700 text-xs">
+          <p className={styles.copyright}>
             © {new Date().getFullYear()} adiDev. All rights reserved.
           </p>
         </div>

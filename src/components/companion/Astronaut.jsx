@@ -3,11 +3,15 @@ import { useGLTF, useAnimations, Float } from '@react-three/drei';
 import { useFrame } from '@react-three/fiber';
 import * as THREE from 'three';
 
-
-export const Astronaut = ({ activeSection, scale = 1.8, position = [0, -1.2, 0] }) => {
+export const Astronaut = ({ activeSection }) => {
   const group = useRef();
   const { scene, animations } = useGLTF('/model/Astronaut.glb');
   const { actions, names } = useAnimations(animations, group);
+
+  // Determine target scale and position based on section
+  const isHero = activeSection === 'hero';
+  const targetScale = isHero ? 1.15 : 0.75;
+  const targetY = isHero ? -1.4 : -1.0;
 
   // Play the first (idle) animation by default
   useEffect(() => {
@@ -22,18 +26,27 @@ export const Astronaut = ({ activeSection, scale = 1.8, position = [0, -1.2, 0] 
     };
   }, [actions, names]);
 
-  // Gentle head / body tilt toward mouse
+  // Gentle head / body tilt toward mouse and section transition LERPs
   useFrame(({ mouse }) => {
-    // Subtle idle sway
     if (!group.current) return;
+
+    // Smoothly transition scale
+    group.current.scale.x = THREE.MathUtils.lerp(group.current.scale.x, targetScale, 0.05);
+    group.current.scale.y = THREE.MathUtils.lerp(group.current.scale.y, targetScale, 0.05);
+    group.current.scale.z = THREE.MathUtils.lerp(group.current.scale.z, targetScale, 0.05);
+
+    // Smoothly transition position Y
+    group.current.position.y = THREE.MathUtils.lerp(group.current.position.y, targetY, 0.05);
+
+    // Subtle rotation tilt toward mouse
     group.current.rotation.y = THREE.MathUtils.lerp(
       group.current.rotation.y,
-      mouse.x * 0.3,
+      mouse.x * 0.35,
       0.03
     );
     group.current.rotation.x = THREE.MathUtils.lerp(
       group.current.rotation.x,
-      -mouse.y * 0.1,
+      -mouse.y * 0.15,
       0.03
     );
   });
@@ -45,7 +58,7 @@ export const Astronaut = ({ activeSection, scale = 1.8, position = [0, -1.2, 0] 
       floatIntensity={0.5}
       floatingRange={[-0.05, 0.05]}
     >
-      <group ref={group} position={position} scale={scale} dispose={null}>
+      <group ref={group} position={[0, targetY, 0]} scale={targetScale} dispose={null}>
         <primitive object={scene} />
       </group>
     </Float>

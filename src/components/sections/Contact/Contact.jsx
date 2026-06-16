@@ -2,9 +2,10 @@ import { useState, useRef, Suspense } from 'react';
 import { Canvas } from '@react-three/fiber';
 import { Environment } from '@react-three/drei';
 import { motion } from 'framer-motion';
-import RevealSection from '../ui/RevealSection';
-import { SectionTag, Button } from '../ui/Button';
-import EarthGlobe from '../three/EarthGlobe';
+import RevealSection from '../../ui/RevealSection/RevealSection';
+import { SectionTag } from '../../ui/Button/Button';
+import EarthGlobe from '../../three/EarthGlobe';
+import styles from './Contact.module.css';
 
 const INITIAL_FORM = { name: '', email: '', message: '' };
 
@@ -28,38 +29,37 @@ const Contact = () => {
   };
 
   return (
-    <section id="contact" className="section-spacing c-space">
-      <div className="flex flex-col items-center gap-4 mb-16">
+    <section id="contact" className={styles.section}>
+      <div className={styles.header}>
         <RevealSection>
           <SectionTag label="Contact" />
         </RevealSection>
         <RevealSection delay={0.1}>
-          <h2 className="text-heading text-center">
+          <h2 className={styles.heading}>
             Let's Build{' '}
-            <span className="text-transparent bg-clip-text bg-gradient-to-r from-fuchsia to-coral">
+            <span className={styles.gradientSpan}>
               Something.
             </span>
           </h2>
         </RevealSection>
         <RevealSection delay={0.2}>
-          <p className="subtext text-center max-w-md">
+          <p className={styles.subtext}>
             Have a project in mind? A collab idea? Or just want to say hi — I'm always listening.
           </p>
         </RevealSection>
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center max-w-5xl mx-auto">
-
+      <div className={styles.grid}>
         {/* Left — Contact form */}
         <RevealSection delay={0.1}>
           <form
             ref={formRef}
             onSubmit={handleSubmit}
-            className="flex flex-col gap-5 p-8 rounded-2xl border border-white/8 bg-gradient-to-b from-storm/40 to-indigo/20 backdrop-blur-sm"
+            className={styles.form}
           >
             {/* Name */}
-            <div>
-              <label className="field-label text-neutral-300">Name</label>
+            <div className={styles.fieldGroup}>
+              <label className={styles.fieldLabel}>Name</label>
               <input
                 type="text"
                 name="name"
@@ -67,13 +67,13 @@ const Contact = () => {
                 onChange={handleChange}
                 placeholder="Adi Doe"
                 required
-                className="field-input field-input-focus text-white placeholder:text-neutral-500"
+                className={styles.fieldInput}
               />
             </div>
 
             {/* Email */}
-            <div>
-              <label className="field-label text-neutral-300">Email</label>
+            <div className={styles.fieldGroup}>
+              <label className={styles.fieldLabel}>Email</label>
               <input
                 type="email"
                 name="email"
@@ -81,13 +81,13 @@ const Contact = () => {
                 onChange={handleChange}
                 placeholder="adi@example.com"
                 required
-                className="field-input field-input-focus text-white placeholder:text-neutral-500"
+                className={styles.fieldInput}
               />
             </div>
 
             {/* Message */}
-            <div>
-              <label className="field-label text-neutral-300">Message</label>
+            <div className={styles.fieldGroup}>
+              <label className={styles.fieldLabel}>Message</label>
               <textarea
                 name="message"
                 value={form.message}
@@ -95,7 +95,7 @@ const Contact = () => {
                 placeholder="Hey Adi, let's build something awesome..."
                 required
                 rows={5}
-                className="field-input field-input-focus text-white placeholder:text-neutral-500 resize-none"
+                className={`${styles.fieldInput} ${styles.textarea}`}
               />
             </div>
 
@@ -103,10 +103,10 @@ const Contact = () => {
             <button
               type="submit"
               disabled={status === 'sending'}
-              className="btn w-full flex items-center justify-center gap-2 border border-aqua/30 text-aqua hover:bg-aqua/10 transition-all duration-300 disabled:opacity-50"
+              className={styles.submitBtn}
             >
               {status === 'sending' && (
-                <span className="w-4 h-4 border-2 border-aqua/30 border-t-aqua rounded-full animate-spin" />
+                <span className={styles.spinner} />
               )}
               {status === 'idle' && 'Send Transmission ✦'}
               {status === 'sending' && 'Transmitting...'}
@@ -118,7 +118,7 @@ const Contact = () => {
               <motion.p
                 initial={{ opacity: 0, y: 8 }}
                 animate={{ opacity: 1, y: 0 }}
-                className="text-mint text-sm text-center"
+                className={styles.successMsg}
               >
                 Thanks! I'll get back to you within 24 hours. 🚀
               </motion.p>
@@ -128,7 +128,7 @@ const Contact = () => {
 
         {/* Right — 3D Globe */}
         <RevealSection direction="left" delay={0.2}>
-          <div className="h-[380px] w-full relative">
+          <div className={styles.globeWrapper}>
             <Canvas camera={{ position: [0, 0, 4], fov: 45 }} gl={{ antialias: true, alpha: true }}>
               <ambientLight intensity={0.4} />
               <pointLight position={[3, 3, 3]} intensity={1.2} color="#33c2cc" />
@@ -140,11 +140,11 @@ const Contact = () => {
             </Canvas>
 
             {/* Labels */}
-            <div className="absolute bottom-4 left-0 right-0 flex justify-center">
-              <div className="flex items-center gap-4 text-xs text-neutral-500">
-                <span className="flex items-center gap-1">
-                  <span className="w-1.5 h-1.5 rounded-full bg-aqua animate-pulse" />
-                  Online & Available
+            <div className={styles.globeLabels}>
+              <div className={styles.globeLabelInner}>
+                <span className={styles.statusIndicator}>
+                  <span className={styles.onlineDot} />
+                  Online &amp; Available
                 </span>
                 <span>India 🇮🇳</span>
               </div>

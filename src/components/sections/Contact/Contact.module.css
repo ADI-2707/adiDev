@@ -1,0 +1,184 @@
+.section {
+  padding: 5rem 2rem;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+/* ── Header ── */
+.header {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1rem;
+  margin-bottom: 4rem;
+}
+
+.heading {
+  font-size: clamp(2rem, 4vw, 2.75rem);
+  font-weight: 700;
+  text-align: center;
+  color: #fff;
+}
+
+.gradientSpan {
+  background: linear-gradient(to right, var(--color-fuchsia), var(--color-coral));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.subtext {
+  color: #a3a3a3;
+  text-align: center;
+  max-width: 28rem;
+  line-height: 1.6;
+}
+
+/* ── Two-column layout ── */
+.grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 3rem;
+  align-items: center;
+  max-width: 64rem;
+  margin: 0 auto;
+}
+
+/* ── Contact Form ── */
+.form {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+  padding: 2rem;
+  border-radius: 1.5rem;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  background: linear-gradient(to bottom, rgba(26, 37, 64, 0.4), rgba(30, 27, 75, 0.2));
+  backdrop-filter: blur(8px);
+}
+
+.fieldGroup {
+  display: flex;
+  flex-direction: column;
+  gap: 0.375rem;
+}
+
+.fieldLabel {
+  font-size: 0.875rem;
+  color: #d4d4d4;
+  font-weight: 500;
+}
+
+.fieldInput {
+  width: 100%;
+  padding: 0.625rem 0.75rem;
+  border-radius: 0.5rem;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  background-color: rgba(255, 255, 255, 0.04);
+  color: #fff;
+  font-size: 0.9rem;
+  outline: none;
+  transition: border-color 0.2s;
+  box-sizing: border-box;
+}
+
+.fieldInput::placeholder {
+  color: #737373;
+}
+
+.fieldInput:focus {
+  border-color: var(--color-aqua);
+}
+
+.textarea {
+  resize: none;
+}
+
+.submitBtn {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: 0.75rem 1.5rem;
+  border-radius: 0.75rem;
+  border: 1px solid rgba(51, 194, 204, 0.3);
+  background: transparent;
+  color: var(--color-aqua);
+  font-size: 0.9rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background 0.3s, opacity 0.3s;
+}
+
+.submitBtn:hover {
+  background-color: rgba(51, 194, 204, 0.1);
+}
+
+.submitBtn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.spinner {
+  width: 1rem;
+  height: 1rem;
+  border: 2px solid rgba(51, 194, 204, 0.3);
+  border-top-color: var(--color-aqua);
+  border-radius: 50%;
+  animation: spin 0.7s linear infinite;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+.successMsg {
+  color: var(--color-mint);
+  font-size: 0.875rem;
+  text-align: center;
+}
+
+/* ── Globe side ── */
+.globeWrapper {
+  height: 380px;
+  width: 100%;
+  position: relative;
+}
+
+.globeLabels {
+  position: absolute;
+  bottom: 1rem;
+  left: 0;
+  right: 0;
+  display: flex;
+  justify-content: center;
+}
+
+.globeLabelInner {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  font-size: 0.75rem;
+  color: #737373;
+}
+
+.onlineDot {
+  display: inline-block;
+  width: 0.375rem;
+  height: 0.375rem;
+  border-radius: 50%;
+  background-color: var(--color-aqua);
+  animation: pulse 2s infinite;
+  margin-right: 0.25rem;
+}
+
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.4; }
+}
+
+.statusIndicator {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+}

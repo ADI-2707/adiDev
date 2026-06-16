@@ -1,15 +1,15 @@
 import { useLenis } from './hooks/useLenis';
 import { useScrollSection } from './hooks/useScrollSection';
-import Navbar from './components/Navbar';
+import Navbar from './components/Navbar/Navbar';
 import CompanionCanvas from './components/companion/CompanionCanvas';
-import Hero from './components/sections/Hero';
-import About from './components/sections/About';
-import Skills from './components/sections/Skills';
-import Experience from './components/sections/Experience';
-import Projects from './components/sections/Projects';
-import Contact from './components/sections/Contact';
-import Game from './components/sections/Game';
-import Footer from './components/sections/Footer';
+import Hero from './components/sections/Hero/Hero';
+import About from './components/sections/About/About';
+import Skills from './components/sections/Skills/Skills';
+import Experience from './components/sections/Experience/Experience';
+import Projects from './components/sections/Projects/Projects';
+import Contact from './components/sections/Contact/Contact';
+import Game from './components/sections/Game/Game';
+import Footer from './components/sections/Footer/Footer';
 
 const SECTION_IDS = ['hero', 'about', 'skills', 'experience', 'projects', 'contact', 'game'];
 
@@ -18,7 +18,7 @@ const App = () => {
   const activeSection = useScrollSection(SECTION_IDS);
 
   return (
-    <div className="relative min-h-screen bg-primary text-white overflow-x-hidden">
+    <div>
       {/* Navigation */}
       <Navbar />
 
@@ -35,10 +35,7 @@ const App = () => {
 
       <Footer />
 
-      {/* Persistent companion overlay — hidden on hero, visible everywhere else */}
-      {activeSection !== 'hero' && (
-        <CompanionCanvas activeSection={activeSection} />
-      )}
+      <CompanionCanvas activeSection={activeSection} />
     </div>
   );
 };

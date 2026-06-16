@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
+import styles from './Navbar.module.css';
 
 const NAV_LINKS = [
   { label: 'About', href: '#about' },
@@ -25,63 +26,50 @@ const Navbar = () => {
       initial={{ y: -80, opacity: 0 }}
       animate={{ y: 0, opacity: 1 }}
       transition={{ duration: 0.7, ease: 'easeOut' }}
-      className={`fixed top-0 left-0 right-0 z-40 transition-all duration-500 ${
-        scrolled
-          ? 'bg-primary/80 backdrop-blur-xl border-b border-white/5 shadow-lg shadow-black/20'
-          : 'bg-transparent'
-      }`}
+      className={`${styles.nav} ${scrolled ? styles.scrolled : styles.transparent}`}
     >
-      <div className="c-space flex items-center justify-between h-16">
+      <div className={`${styles.container} c-space`}>
         {/* Logo */}
-        <a
-          href="#hero"
-          className="text-xl font-bold tracking-tight hover:text-aqua transition-colors duration-300"
-        >
-          adi<span className="text-aqua">Dev</span>
+        <a href="#hero" className={styles.logo}>
+          adi<span className={styles.logoAqua}>Dev</span>
         </a>
 
         {/* Desktop nav */}
-        <ul className="hidden md:flex items-center gap-8">
+        <ul className={styles.navLinks}>
           {NAV_LINKS.map((link) => (
             <li key={link.label}>
-              <a
-                href={link.href}
-                className="text-sm text-neutral-400 hover:text-white transition-colors duration-200 relative group"
-              >
+              <a href={link.href} className={styles.navLink}>
                 {link.label}
-                <span className="absolute -bottom-0.5 left-0 w-0 h-px bg-aqua transition-all duration-300 group-hover:w-full" />
+                <span className={styles.navLinkLine} />
               </a>
             </li>
           ))}
         </ul>
 
         {/* Desktop CTA */}
-        <a
-          href="#contact"
-          className="hidden md:inline-flex items-center gap-2 px-5 py-2 rounded-full border border-aqua/40 text-aqua text-sm hover:bg-aqua/10 transition-all duration-300"
-        >
-          Hire Me
-          <span className="text-xs">✦</span>
+        <a href="#contact" className={styles.ctaBtn}>
+          Hire Me ✦
         </a>
 
         {/* Mobile hamburger */}
         <button
           id="mobile-menu-btn"
-          className="md:hidden flex flex-col gap-1.5 p-2 cursor-pointer"
+          className={styles.mobileMenuBtn}
           onClick={() => setMenuOpen((v) => !v)}
           aria-label="Toggle menu"
         >
           <motion.span
             animate={menuOpen ? { rotate: 45, y: 8 } : { rotate: 0, y: 0 }}
-            className="block w-6 h-0.5 bg-white rounded-full origin-center transition-all"
+            className={styles.mobileMenuBtnLine}
           />
           <motion.span
             animate={menuOpen ? { opacity: 0 } : { opacity: 1 }}
-            className="block w-6 h-0.5 bg-white rounded-full"
+            className={styles.mobileMenuBtnLine}
+            style={{ margin: '4px 0' }}
           />
           <motion.span
             animate={menuOpen ? { rotate: -45, y: -8 } : { rotate: 0, y: 0 }}
-            className="block w-6 h-0.5 bg-white rounded-full origin-center"
+            className={styles.mobileMenuBtnLine}
           />
         </button>
       </div>
@@ -94,15 +82,15 @@ const Navbar = () => {
             animate={{ height: 'auto', opacity: 1 }}
             exit={{ height: 0, opacity: 0 }}
             transition={{ duration: 0.3 }}
-            className="md:hidden overflow-hidden bg-midnight/95 backdrop-blur-xl border-b border-white/5"
+            className={styles.mobileMenu}
           >
-            <ul className="c-space py-4 flex flex-col gap-3">
+            <ul className={`${styles.mobileMenuList} c-space`}>
               {NAV_LINKS.map((link) => (
                 <li key={link.label}>
                   <a
                     href={link.href}
                     onClick={() => setMenuOpen(false)}
-                    className="block py-2 text-neutral-300 hover:text-white transition-colors"
+                    className={styles.mobileNavLink}
                   >
                     {link.label}
                   </a>
@@ -112,7 +100,7 @@ const Navbar = () => {
                 <a
                   href="#contact"
                   onClick={() => setMenuOpen(false)}
-                  className="inline-flex items-center gap-2 px-5 py-2 rounded-full border border-aqua/40 text-aqua text-sm hover:bg-aqua/10 transition-all"
+                  className={styles.mobileCta}
                 >
                   Hire Me ✦
                 </a>
