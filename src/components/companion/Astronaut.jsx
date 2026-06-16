@@ -8,10 +8,30 @@ export const Astronaut = ({ activeSection }) => {
   const { scene, animations } = useGLTF('/model/Astronaut.glb');
   const { actions, names } = useAnimations(animations, group);
 
-  // Determine target scale and position based on section
+  // Section-specific transitions
   const isHero = activeSection === 'hero';
-  const targetScale = isHero ? 1.15 : 0.75;
-  const targetY = isHero ? -1.4 : -1.0;
+  const isSkills = activeSection === 'skills';
+
+  // Base state values (corner companion state)
+  let targetScale = 0.75;
+  let targetY = -1.0;
+  let targetRotX = 0.15;
+  let targetRotY = 0.2;
+  let targetRotZ = -0.25;
+
+  if (isHero) {
+    targetScale = 1.15;
+    targetY = -1.4;
+    targetRotX = 0.15;
+    targetRotY = 0.2;
+    targetRotZ = -0.25;
+  } else if (isSkills) {
+    targetScale = 1.1;             // Bring closer
+    targetY = -0.4;                // Center vertically next to orbit ring
+    targetRotX = 0.3;              // Lean forward in space
+    targetRotY = 1.4;              // Face right towards the solar system planets
+    targetRotZ = -0.45;            // Angle slant pointing at the planets
+  }
 
   // Play the first (idle) animation by default
   useEffect(() => {
@@ -38,17 +58,14 @@ export const Astronaut = ({ activeSection }) => {
     // Smoothly transition position Y
     group.current.position.y = THREE.MathUtils.lerp(group.current.position.y, targetY, 0.05);
 
-    // Subtle rotation tilt toward mouse
-    group.current.rotation.y = THREE.MathUtils.lerp(
-      group.current.rotation.y,
-      mouse.x * 0.35,
-      0.03
-    );
-    group.current.rotation.x = THREE.MathUtils.lerp(
-      group.current.rotation.x,
-      -mouse.y * 0.15,
-      0.03
-    );
+    // Apply mouse influence on top of the section-specific target rotations
+    const currentRotX = targetRotX - mouse.y * 0.15;
+    const currentRotY = targetRotY + mouse.x * 0.35;
+    const currentRotZ = targetRotZ;
+
+    group.current.rotation.x = THREE.MathUtils.lerp(group.current.rotation.x, currentRotX, 0.05);
+    group.current.rotation.y = THREE.MathUtils.lerp(group.current.rotation.y, currentRotY, 0.05);
+    group.current.rotation.z = THREE.MathUtils.lerp(group.current.rotation.z, currentRotZ, 0.05);
   });
 
   return (
@@ -59,8 +76,8 @@ export const Astronaut = ({ activeSection }) => {
       floatingRange={[-0.15, 0.15]} // Wider floating distance
     >
       <group ref={group} position={[0, targetY, 0]} scale={targetScale} dispose={null}>
-        {/* Added a default slanted rotation so it looks like it is floating naturally at an angle */}
-        <primitive object={scene} rotation={[0.15, 0.2, -0.25]} />
+        {/* Render model */}
+        <primitive object={scene} />
       </group>
     </Float>
   );

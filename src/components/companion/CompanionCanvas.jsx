@@ -7,13 +7,17 @@ import styles from './CompanionCanvas.module.css';
 
 const CompanionCanvas = ({ activeSection }) => {
   const isHero = activeSection === 'hero';
+  const isSkills = activeSection === 'skills';
+
+  let containerClass = styles.companionState;
+  if (isHero) {
+    containerClass = styles.heroState;
+  } else if (isSkills) {
+    containerClass = styles.skillsState;
+  }
 
   return (
-    <div
-      className={`${styles.canvasContainer} ${
-        isHero ? styles.heroState : styles.companionState
-      }`}
-    >
+    <div className={`${styles.canvasContainer} ${containerClass}`}>
       <Canvas
         camera={{ position: [0, 0, 4.5], fov: 40 }}
         gl={{ antialias: true, alpha: true }}

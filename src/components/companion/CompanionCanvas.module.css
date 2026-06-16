@@ -31,3 +31,12 @@
     right: 0;
   }
 }
+
+.skillsState {
+  left: 5%;
+  top: 25%;
+  width: 280px;
+  height: 380px;
+  right: auto;
+  bottom: auto;
+}
