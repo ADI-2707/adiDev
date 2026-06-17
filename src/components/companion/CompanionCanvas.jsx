@@ -1,12 +1,14 @@
 import { Canvas } from '@react-three/fiber';
-import { Suspense } from 'react';
+import { Suspense, useRef } from 'react';
 import { Environment, ContactShadows } from '@react-three/drei';
 import { Astronaut } from './Astronaut';
 import StarField from '../three/StarField';
+import ShootingStars from '../three/ShootingStars/ShootingStars';
 import styles from './CompanionCanvas.module.css';
 
 const CompanionCanvas = ({ activeSection }) => {
   const isHero = activeSection === 'hero';
+  const shootingStarRef = useRef(null);
 
   return (
     <div className={styles.canvasContainer}>
@@ -20,7 +22,8 @@ const CompanionCanvas = ({ activeSection }) => {
         <pointLight position={[-2, -2, 2]} intensity={0.5} color="#7a57db" />
 
         <Suspense fallback={null}>
-          <Astronaut activeSection={activeSection} />
+          <Astronaut activeSection={activeSection} shootingStarRef={shootingStarRef} />
+          <ShootingStars shootingStarRef={shootingStarRef} />
           <StarField />
           <ContactShadows
             position={[0, -1.8, 0]}
