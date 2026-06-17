@@ -11,7 +11,7 @@
   align-items: center;
 }
 
-/* ── Left column ── */
+
 .leftCol {
   display: flex;
   flex-direction: column;
@@ -54,14 +54,14 @@
   font-size: 0.75rem;
 }
 
-/* ── Right column ── */
+
 .rightCol {
   display: flex;
   flex-direction: column;
   gap: 1.5rem;
 }
 
-/* Profile card */
+
 .profileCard {
   position: relative;
   border-radius: 1.5rem;
@@ -136,7 +136,7 @@
   50% { opacity: 0.4; }
 }
 
-/* Stats grid */
+
 .statsGrid {
   display: grid;
   grid-template-columns: 1fr 1fr;

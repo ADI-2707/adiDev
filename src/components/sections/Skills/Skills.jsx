@@ -39,7 +39,6 @@ const SkillNode = ({ name, color, size = 'md' }) => {
   );
 };
 
-// Orbital ring of skills
 const OrbitRing = ({ items, radius, duration, color, reverse = false }) => {
   const count = items.length;
   return (
@@ -92,11 +91,9 @@ const Skills = () => {
         </RevealSection>
       </div>
 
-      {/* Orbital rig — desktop */}
       <RevealSection delay={0.3}>
         <div className={styles.desktopWrapper}>
           <div className={styles.orbitContainer}>
-            {/* Ring decorations */}
             {[80, 160, 230].map((r, i) => (
               <div
                 key={r}
@@ -110,15 +107,14 @@ const Skills = () => {
                     i === 0
                       ? '#33c2cc20'
                       : i === 1
-                      ? '#7a57db20'
-                      : '#57db9620',
+                        ? '#7a57db20'
+                        : '#57db9620',
                 }}
               />
             ))}
-            {/* Center node */}
+
             <div className={styles.centerNode}>ADI</div>
 
-            {/* Orbital rings */}
             <OrbitRing items={skills.inner} radius={80} duration={20} color="#33c2cc" />
             <OrbitRing items={skills.middle} radius={160} duration={35} color="#7a57db" reverse />
             <OrbitRing items={skills.outer} radius={230} duration={50} color="#57db96" />
@@ -126,7 +122,6 @@ const Skills = () => {
         </div>
       </RevealSection>
 
-      {/* Mobile flat grid */}
       <div className={styles.mobileGrid}>
         {[...skills.inner, ...skills.middle, ...skills.outer].map((skill) => (
           <SkillNode key={skill.name} name={skill.name} color={skill.color} size="lg" />

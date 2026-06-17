@@ -15,17 +15,16 @@ const TimelineItem = ({ exp, index }) => {
       transition={{ duration: 0.65, delay: index * 0.1, ease: 'easeOut' }}
       className={`${styles.timelineItem} ${isLeft ? styles.timelineItemLeft : styles.timelineItemRight}`}
     >
-      {/* Content card */}
+
       <div className={styles.cardWrapper}>
         <div className={styles.card}>
-          {/* Accent bar */}
+
           <div
             className={styles.accentBar}
             style={{ backgroundColor: exp.accent }}
           />
 
           <div className={styles.cardInner}>
-            {/* Period badge */}
             <span
               className={styles.periodBadge}
               style={{
@@ -49,7 +48,6 @@ const TimelineItem = ({ exp, index }) => {
               ))}
             </ul>
 
-            {/* Tech tags */}
             <div className={styles.tagContainer}>
               {exp.tags.map((tag) => (
                 <span key={tag} className={styles.tag}>
@@ -61,10 +59,9 @@ const TimelineItem = ({ exp, index }) => {
         </div>
       </div>
 
-      {/* Spacer for alternating layout */}
+
       <div className={styles.spacer} />
 
-      {/* Timeline dot (center column on desktop) */}
       <div className={styles.dotContainer}>
         <div
           className={styles.dot}
@@ -101,9 +98,7 @@ const Experience = () => {
         </RevealSection>
       </div>
 
-      {/* Timeline */}
       <div className={styles.timeline}>
-        {/* Center line */}
         <div className={styles.centerLine} />
 
         {experiences.map((exp, index) => (

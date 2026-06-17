@@ -31,7 +31,7 @@ const About = () => {
     <section id="about" className={styles.section}>
       <div className={styles.grid}>
 
-        {/* Left — Text */}
+
         <div className={styles.leftCol}>
           <RevealSection>
             <SectionTag label="About" />
@@ -72,9 +72,9 @@ const About = () => {
           </RevealSection>
         </div>
 
-        {/* Right — Card + Stats */}
+
         <div className={styles.rightCol}>
-          {/* Profile card */}
+
           <RevealSection direction="left" delay={0.1}>
             <div className={styles.profileCard}>
               <div className={styles.cardGlow} />
@@ -92,7 +92,6 @@ const About = () => {
             </div>
           </RevealSection>
 
-          {/* Stats grid */}
           <RevealSection direction="left" delay={0.2}>
             <div className={styles.statsGrid}>
               {stats.map((stat) => (

@@ -1,30 +1,29 @@
-/* src/components/ui/Button/Button.module.css */
-
-/* Base button style */
 .base {
   position: relative;
   display: inline-flex;
   align-items: center;
   justify-content: center;
   gap: 0.5rem;
-  padding: 0.75rem 1.5rem; /* px-6 py-3 */
-  border-radius: 9999px; /* rounded-full */
-  font-size: 0.875rem; /* text-sm */
+  padding: 0.75rem 1.5rem;
+  border-radius: 9999px;
+  font-size: 0.875rem;
   font-weight: 500;
   transition: all 0.3s;
   overflow: hidden;
   cursor: pointer;
 }
 
-/* Variants */
+
 .primary {
   background-color: var(--color-aqua);
   color: var(--color-primary);
 }
+
 .primary:hover {
   background-color: rgba(51, 194, 204, 0.9);
   box-shadow: 0 0 20px rgba(51, 194, 204, 0.3);
 }
+
 .primary:hover .shimmer {
   box-shadow: 0 0 30px rgba(51, 194, 204, 0.5);
 }
@@ -33,6 +32,7 @@
   border: 1px solid rgba(var(--color-aqua-rgb), 0.5);
   color: var(--color-aqua);
 }
+
 .outline:hover {
   background-color: rgba(var(--color-aqua-rgb), 0.1);
   border-color: var(--color-aqua);
@@ -42,21 +42,20 @@
   border: 1px solid rgba(255, 255, 255, 0.2);
   color: #fff;
 }
+
 .ghost:hover {
   background-color: rgba(255, 255, 255, 0.05);
   border-color: rgba(255, 255, 255, 0.4);
 }
 
-/* Shimmer effect */
+
 .shimmer {
   position: absolute;
   inset: 0;
   transform: translateX(-100%);
   transition: transform 0.7s;
-  background: linear-gradient(
-    to right,
-    transparent,
-    rgba(255, 255, 255, 0.1),
-    transparent
-  );
+  background: linear-gradient(to right,
+      transparent,
+      rgba(255, 255, 255, 0.1),
+      transparent);
 }

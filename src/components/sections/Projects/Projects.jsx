@@ -6,9 +6,9 @@ import { projects } from '../../../data/projects';
 import styles from './Projects.module.css';
 
 const ProjectCard = ({ project, index }) => {
-  // Map size keys to CSS module styles
+
   const sizeClass = styles[project.size.replace('-', '')] || '';
-  // Map gridClass keys to CSS module styles
+
   const gridColorClass = styles[project.gridClass.replace(/-([a-z])/g, (g) => g[1].toUpperCase())] || '';
 
   return (
@@ -20,7 +20,7 @@ const ProjectCard = ({ project, index }) => {
       className={sizeClass}
     >
       <TiltCard className={`${styles.card} ${gridColorClass} group`}>
-        {/* Background image with overlay */}
+
         <div className={styles.imgContainer}>
           {project.image && (
             <img
@@ -30,11 +30,9 @@ const ProjectCard = ({ project, index }) => {
               onError={(e) => { e.target.style.display = 'none'; }}
             />
           )}
-          {/* Gradient overlay */}
           <div className={styles.overlay} />
         </div>
 
-        {/* Content */}
         <div className={styles.cardContent}>
           <div className={styles.cardHeader}>
             {project.featured && (
@@ -58,7 +56,6 @@ const ProjectCard = ({ project, index }) => {
           </div>
 
           <div className={styles.cardFooter}>
-            {/* Tags */}
             <div className={styles.tags}>
               {project.tags.map((tag) => (
                 <span key={tag} className={styles.tag}>
@@ -67,7 +64,6 @@ const ProjectCard = ({ project, index }) => {
               ))}
             </div>
 
-            {/* Links */}
             <div className={styles.links}>
               <a
                 href={project.liveUrl}
@@ -115,7 +111,6 @@ const Projects = () => {
         </RevealSection>
       </div>
 
-      {/* Bento Grid */}
       <div className={styles.grid}>
         {projects.map((project, index) => (
           <ProjectCard key={project.id} project={project} index={index} />

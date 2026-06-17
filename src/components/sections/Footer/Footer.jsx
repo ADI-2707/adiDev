@@ -10,7 +10,7 @@ const Footer = () => {
   return (
     <footer className={styles.footer}>
       <div className={styles.container}>
-        {/* Brand */}
+        
         <div className={styles.brand}>
           <a href="#hero" className={styles.logo}>
             adi<span className={styles.logoAqua}>Dev</span>
@@ -20,7 +20,7 @@ const Footer = () => {
           </p>
         </div>
 
-        {/* Socials */}
+        
         <div className={styles.socials}>
           {socials.map((s) => (
             <a
@@ -36,7 +36,7 @@ const Footer = () => {
           ))}
         </div>
 
-        {/* Right side */}
+        
         <div className={styles.rightSide}>
           <a
             href="#hero"

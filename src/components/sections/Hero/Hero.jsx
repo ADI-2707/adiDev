@@ -10,9 +10,9 @@ const Hero = () => {
 
 
       <div className={`${styles.contentWrapper} c-space`}>
-        {/* Left — Text content */}
+
         <div className={styles.leftColumn}>
-          {/* Availability badge */}
+
           <motion.div
             initial={{ opacity: 0, x: -20 }}
             animate={{ opacity: 1, x: 0 }}
@@ -23,7 +23,7 @@ const Hero = () => {
             Available for Work
           </motion.div>
 
-          {/* Main heading */}
+
           <motion.div
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
@@ -35,7 +35,6 @@ const Hero = () => {
             </h1>
           </motion.div>
 
-          {/* Typewriter subline */}
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
@@ -53,7 +52,6 @@ const Hero = () => {
             />
           </motion.div>
 
-          {/* Short bio */}
           <motion.p
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
@@ -65,7 +63,6 @@ const Hero = () => {
             build products that feel alive.
           </motion.p>
 
-          {/* CTAs */}
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
@@ -80,7 +77,6 @@ const Hero = () => {
             </Button>
           </motion.div>
 
-          {/* Social links */}
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
@@ -88,7 +84,7 @@ const Hero = () => {
             className={styles.socialsContainer}
           >
             {[
-              { label: 'GitHub', href: 'https://github.com', icon: '⌥' },
+              { label: 'GitHub', href: 'https://github.com' },
               { label: 'LinkedIn', href: 'https://linkedin.com', icon: '𝗶𝗻' },
               { label: 'Email', href: 'mailto:adi@example.com', icon: '✉' },
             ].map((social) => (
@@ -108,19 +104,18 @@ const Hero = () => {
           </motion.div>
         </div>
 
-        {/* Right — 3D Astronaut canvas */}
         <motion.div
           initial={{ opacity: 0, scale: 0.9 }}
           animate={{ opacity: 1, scale: 1 }}
           transition={{ delay: 0.4, duration: 0.8 }}
           className={styles.astronautWrapper}
         >
-          {/* Glow base under astronaut */}
+
           <div className={styles.astronautGlow} />
         </motion.div>
       </div>
 
-      {/* Scroll indicator */}
+
       <motion.div
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}

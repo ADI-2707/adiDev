@@ -33,7 +33,6 @@
   line-height: 1.6;
 }
 
-/* Bento Grid */
 .grid {
   display: grid;
   grid-template-columns: repeat(6, 1fr);
@@ -43,24 +42,26 @@
   margin: 0 auto;
 }
 
-/* Size mappings from data */
 .grid1 {
   grid-column: span 4;
 }
+
 .grid2 {
   grid-column: span 2;
 }
+
 .grid3 {
   grid-column: span 3;
 }
+
 .grid4 {
   grid-column: span 3;
 }
+
 .grid5 {
   grid-column: span 6;
 }
 
-/* Card classes */
 .card {
   position: relative;
   height: 100%;
@@ -71,7 +72,6 @@
   box-sizing: border-box;
 }
 
-/* Colors from data */
 .gridSpecialColor {
   background: linear-gradient(to bottom right, rgba(122, 87, 219, 0.25), rgba(30, 27, 75, 0.4));
   border: 1px solid rgba(122, 87, 219, 0.2);
@@ -87,7 +87,6 @@
   border: 1px solid rgba(255, 255, 255, 0.05);
 }
 
-/* Image Background styling */
 .imgContainer {
   position: absolute;
   inset: 0;
@@ -116,7 +115,6 @@
   background: linear-gradient(to top, rgba(0, 0, 0, 0.8) 0%, rgba(0, 0, 0, 0) 100%);
 }
 
-/* Card Content layout */
 .cardContent {
   position: relative;
   z-index: 10;

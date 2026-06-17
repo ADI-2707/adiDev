@@ -50,14 +50,12 @@ const Contact = () => {
       </div>
 
       <div className={styles.grid}>
-        {/* Left — Contact form */}
         <RevealSection delay={0.1}>
           <form
             ref={formRef}
             onSubmit={handleSubmit}
             className={styles.form}
           >
-            {/* Name */}
             <div className={styles.fieldGroup}>
               <label className={styles.fieldLabel}>Name</label>
               <input
@@ -71,7 +69,6 @@ const Contact = () => {
               />
             </div>
 
-            {/* Email */}
             <div className={styles.fieldGroup}>
               <label className={styles.fieldLabel}>Email</label>
               <input
@@ -85,7 +82,6 @@ const Contact = () => {
               />
             </div>
 
-            {/* Message */}
             <div className={styles.fieldGroup}>
               <label className={styles.fieldLabel}>Message</label>
               <textarea
@@ -99,7 +95,6 @@ const Contact = () => {
               />
             </div>
 
-            {/* Submit */}
             <button
               type="submit"
               disabled={status === 'sending'}
@@ -126,7 +121,6 @@ const Contact = () => {
           </form>
         </RevealSection>
 
-        {/* Right — 3D Globe */}
         <RevealSection direction="left" delay={0.2}>
           <div className={styles.globeWrapper}>
             <Canvas camera={{ position: [0, 0, 4], fov: 45 }} gl={{ antialias: true, alpha: true }}>
@@ -139,7 +133,6 @@ const Contact = () => {
               </Suspense>
             </Canvas>
 
-            {/* Labels */}
             <div className={styles.globeLabels}>
               <div className={styles.globeLabelInner}>
                 <span className={styles.statusIndicator}>

@@ -19,14 +19,10 @@ const App = () => {
 
   return (
     <div>
-      {/* Deep Space Background Layers */}
       <div className="galaxy-background" />
       <div className={`space-overlay ${activeSection === 'hero' ? '' : 'darker'}`} />
-
-      {/* Navigation */}
       <Navbar />
 
-      {/* Page sections */}
       <main>
         <Hero />
         <About />

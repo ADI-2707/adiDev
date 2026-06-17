@@ -60,14 +60,14 @@ const Game = () => {
     const ctx = canvas.getContext('2d');
     const s = stateRef.current;
 
-    // Clear
+
     ctx.clearRect(0, 0, GAME_W, GAME_H);
 
-    // Background
+
     ctx.fillStyle = '#030412';
     ctx.fillRect(0, 0, GAME_W, GAME_H);
 
-    // Star particles (static via seeded positions)
+
     ctx.fillStyle = 'rgba(255,255,255,0.4)';
     for (let i = 0; i < 60; i++) {
       const sx = ((i * 137 + s.frame * 0.3) % GAME_W);
@@ -75,15 +75,15 @@ const Game = () => {
       ctx.fillRect(sx, sy, 1, 1);
     }
 
-    // Move player
+
     const SPEED = 5;
     if (s.keys['ArrowLeft'] || s.keys['a']) s.playerX = Math.max(PLAYER_W / 2, s.playerX - SPEED);
     if (s.keys['ArrowRight'] || s.keys['d']) s.playerX = Math.min(GAME_W - PLAYER_W / 2, s.playerX + SPEED);
 
-    // Draw player (astronaut silhouette)
+
     const px = s.playerX - PLAYER_W / 2;
     const py = PLAYER_Y;
-    // Helmet
+
     ctx.beginPath();
     ctx.arc(px + PLAYER_W / 2, py + 12, 12, 0, Math.PI * 2);
     ctx.fillStyle = '#33c2cc';
@@ -92,11 +92,11 @@ const Game = () => {
     ctx.arc(px + PLAYER_W / 2, py + 12, 8, 0, Math.PI * 2);
     ctx.fillStyle = '#030412';
     ctx.fill();
-    // Body
+
     ctx.fillStyle = '#33c2cc';
     ctx.fillRect(px + 8, py + 22, PLAYER_W - 16, 14);
 
-    // Spawn asteroids
+
     s.frame++;
     s.score = Math.floor(s.frame / 30);
     if (s.frame % s.spawnRate === 0) {
@@ -104,7 +104,6 @@ const Game = () => {
       if (s.spawnRate > 30) s.spawnRate -= 1;
     }
 
-    // Draw & move asteroids
     s.asteroids = s.asteroids.filter((a) => a.y < GAME_H + 40);
     for (const a of s.asteroids) {
       a.y += a.speed;
@@ -129,7 +128,7 @@ const Game = () => {
       ctx.stroke();
       ctx.restore();
 
-      // Collision check
+
       const dx = a.x - s.playerX;
       const dy = a.y - (PLAYER_Y + 18);
       if (Math.sqrt(dx * dx + dy * dy) < a.r + 14) {
@@ -139,11 +138,11 @@ const Game = () => {
       }
     }
 
-    // HUD
+
     ctx.fillStyle = 'white';
     ctx.font = '12px monospace';
     ctx.fillText(`SCORE: ${s.score}`, 12, 20);
-    // Lives
+
     for (let i = 0; i < s.lives; i++) {
       ctx.fillStyle = '#ea4884';
       ctx.fillText('♥', GAME_W - 20 - i * 18, 20);
@@ -165,7 +164,7 @@ const Game = () => {
     };
   }, []);
 
-  // Mouse / touch move
+
   const handleMouseMove = (e) => {
     if (!stateRef.current.running) return;
     const rect = canvasRef.current.getBoundingClientRect();
@@ -199,7 +198,6 @@ const Game = () => {
 
       <RevealSection delay={0.3}>
         <div className={styles.wrapper}>
-          {/* Game canvas container */}
           <div
             className={styles.canvasContainer}
             style={{ maxWidth: GAME_W, width: '100%' }}
@@ -212,7 +210,6 @@ const Game = () => {
               className={styles.canvas}
             />
 
-            {/* Overlay screens */}
             {uiState === 'idle' && (
               <div className={styles.overlay}>
                 <div className={styles.emoji}>🚀</div>

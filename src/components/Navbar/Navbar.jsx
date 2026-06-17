@@ -29,12 +29,12 @@ const Navbar = () => {
       className={`${styles.nav} ${scrolled ? styles.scrolled : styles.transparent}`}
     >
       <div className={`${styles.container} c-space`}>
-        {/* Logo */}
+
         <a href="#hero" className={styles.logo}>
           adi<span className={styles.logoAqua}>Dev</span>
         </a>
 
-        {/* Desktop nav */}
+
         <ul className={styles.navLinks}>
           {NAV_LINKS.map((link) => (
             <li key={link.label}>
@@ -46,12 +46,11 @@ const Navbar = () => {
           ))}
         </ul>
 
-        {/* Desktop CTA */}
+
         <a href="#contact" className={styles.ctaBtn}>
           Hire Me ✦
         </a>
 
-        {/* Mobile hamburger */}
         <button
           id="mobile-menu-btn"
           className={styles.mobileMenuBtn}
@@ -74,7 +73,7 @@ const Navbar = () => {
         </button>
       </div>
 
-      {/* Mobile menu */}
+
       <AnimatePresence>
         {menuOpen && (
           <motion.div

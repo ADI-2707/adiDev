@@ -4,7 +4,6 @@
   margin: 0 auto;
 }
 
-/* ── Header ── */
 .header {
   display: flex;
   flex-direction: column;
@@ -34,7 +33,7 @@
   line-height: 1.6;
 }
 
-/* ── Two-column layout ── */
+
 .grid {
   display: grid;
   grid-template-columns: 1fr 1fr;
@@ -44,7 +43,6 @@
   margin: 0 auto;
 }
 
-/* ── Contact Form ── */
 .form {
   display: flex;
   flex-direction: column;
@@ -129,7 +127,9 @@
 }
 
 @keyframes spin {
-  to { transform: rotate(360deg); }
+  to {
+    transform: rotate(360deg);
+  }
 }
 
 .successMsg {
@@ -138,7 +138,7 @@
   text-align: center;
 }
 
-/* ── Globe side ── */
+
 .globeWrapper {
   height: 380px;
   width: 100%;
@@ -173,8 +173,15 @@
 }
 
 @keyframes pulse {
-  0%, 100% { opacity: 1; }
-  50% { opacity: 0.4; }
+
+  0%,
+  100% {
+    opacity: 1;
+  }
+
+  50% {
+    opacity: 0.4;
+  }
 }
 
 .statusIndicator {

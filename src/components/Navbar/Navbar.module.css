@@ -26,7 +26,7 @@
   height: 100%;
 }
 
-/* Logo */
+
 .logo {
   font-size: 1.25rem;
   font-weight: 700;
@@ -44,7 +44,6 @@
   color: var(--color-aqua);
 }
 
-/* Nav Links - Desktop */
 .navLinks {
   display: none;
 }
@@ -76,12 +75,10 @@
   width: 100%;
 }
 
-/* CTA Button - Desktop */
 .ctaBtn {
   display: none;
 }
 
-/* Mobile Hamburger Button */
 .mobileMenuBtn {
   display: flex;
   flex-direction: column;
@@ -103,7 +100,6 @@
   transition: all 0.3s ease;
 }
 
-/* Mobile Dropdown Menu */
 .mobileMenu {
   position: absolute;
   top: 4rem;
@@ -157,7 +153,6 @@
   background-color: rgba(51, 194, 204, 0.1);
 }
 
-/* Responsive Rules */
 @media (min-width: 768px) {
   .navLinks {
     display: flex;

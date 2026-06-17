@@ -15,7 +15,7 @@ const EarthGlobe = () => {
   return (
     <Float speed={1} rotationIntensity={0.1} floatIntensity={0.3}>
       <group>
-        {/* Core globe */}
+        
         <Sphere ref={meshRef} args={[1.2, 64, 64]}>
           <MeshDistortMaterial
             color="#161a31"
@@ -26,7 +26,7 @@ const EarthGlobe = () => {
           />
         </Sphere>
 
-        {/* Atmosphere glow ring */}
+        
         <Sphere args={[1.38, 64, 64]}>
           <meshBasicMaterial
             color="#33c2cc"
@@ -36,7 +36,7 @@ const EarthGlobe = () => {
           />
         </Sphere>
 
-        {/* Outer glow */}
+        
         <Sphere args={[1.55, 32, 32]}>
           <meshBasicMaterial
             color="#5c33cc"
