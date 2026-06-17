@@ -38,7 +38,8 @@
 @media (min-width: 768px) {
   .desktopWrapper {
     display: flex;
-    justify-content: center;
+    justify-content: flex-start;
+    padding-left: 12%;
   }
 }
 

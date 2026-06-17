@@ -1,10 +1,10 @@
-import { useRef, useEffect, useState } from 'react';
+import { useRef, useEffect, useState, forwardRef } from 'react';
 import { useGLTF, useAnimations, Float } from '@react-three/drei';
 import { useFrame, useThree } from '@react-three/fiber';
 import * as THREE from 'three';
 import { gsap } from 'gsap';
 
-export const Astronaut = ({ activeSection, shootingStarRef }) => {
+export const Astronaut = forwardRef(({ activeSection, shootingStarRef }, ref) => {
   const group = useRef();
   const { scene, animations } = useGLTF('/model/Astronaut.glb');
   const { actions, names } = useAnimations(animations, group);
@@ -136,11 +136,11 @@ export const Astronaut = ({ activeSection, shootingStarRef }) => {
     targetRotZ = -0.25;
   } else if (isSkills) {
     targetScale = isMobile ? 0.6 : 0.75;
-    // Pushed left to X: -2.2 and lowered to Y: -0.4 to keep head in camera frustum
-    targetPosition = isMobile ? [0, 1.2, 0] : [-2.2, -0.4, 0];
+    // Pushed right to X: 2.2 and lowered to Y: -0.4
+    targetPosition = isMobile ? [0, 1.2, 0] : [2.2, -0.4, 0];
     targetRotX = 0.1;              // Lean slightly forward
-    targetRotY = 1.3;              // Face right towards the solar system planets
-    targetRotZ = -0.2;             // Slanted slightly towards them
+    targetRotY = -1.3;             // Face left towards the skills orbital rings
+    targetRotZ = 0.2;              // Slanted slightly towards them
   } else if (isContact) {
     targetScale = isMobile ? 0.45 : 0.55;
     targetPosition = [0, 0, 0.5];
@@ -276,11 +276,11 @@ export const Astronaut = ({ activeSection, shootingStarRef }) => {
       floatIntensity={isContact ? 0 : 1.5}    // High vertical floating drift
       floatingRange={[-0.15, 0.15]} // Wider floating distance
     >
-      <group ref={group} scale={targetScale} dispose={null}>
+      <group ref={(node) => { group.current = node; if (ref) { if (typeof ref === 'function') ref(node); else ref.current = node; } }} scale={targetScale} dispose={null}>
         <primitive object={scene} />
       </group>
     </Float>
   );
-};
+});
 
 useGLTF.preload('/model/Astronaut.glb');
