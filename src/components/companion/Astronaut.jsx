@@ -3,7 +3,7 @@ import { useGLTF, useAnimations, Float } from '@react-three/drei';
 import { useFrame } from '@react-three/fiber';
 import * as THREE from 'three';
 
-export const Astronaut = ({ activeSection }) => {
+export const Astronaut = ({ activeSection, shootingStarRef }) => {
   const group = useRef();
   const { scene, animations } = useGLTF('/model/Astronaut.glb');
   const { actions, names } = useAnimations(animations, group);
@@ -85,33 +85,53 @@ export const Astronaut = ({ activeSection }) => {
     group.current.position.y = THREE.MathUtils.lerp(group.current.position.y, targetPosition[1], 0.05);
     group.current.position.z = THREE.MathUtils.lerp(group.current.position.z, targetPosition[2], 0.05);
 
-    // Map normalized mouse coordinates (-1 to 1) to 3D viewport coordinates
-    const mouse = mouseRef.current;
-    const targetX = (mouse.x * viewport.width) / 2;
-    const targetY = (mouse.y * viewport.height) / 2;
+    // Determine the target coordinates to look at (shooting star takes priority over mouse)
+    const activeStar = shootingStarRef?.current;
+    let targetX, targetY, targetZ;
+    let isTrackingStar = false;
 
-    // Calculate direction vector from astronaut to the target mouse point
-    // We assume the interaction plane is about 3.5 units in front of the model (z-axis)
+    if (activeStar) {
+      targetX = activeStar.x;
+      targetY = activeStar.y;
+      targetZ = activeStar.z;
+      isTrackingStar = true;
+    } else {
+      const mouse = mouseRef.current;
+      targetX = (mouse.x * viewport.width) / 2;
+      targetY = (mouse.y * viewport.height) / 2;
+      targetZ = 3.5; // Estimated mouse interaction depth in front of the model
+    }
+
+    // Calculate direction vector from astronaut's current position to the target
     const dx = targetX - group.current.position.x;
     const dy = targetY - group.current.position.y;
-    const dz = 3.5;
+    
+    // We virtualize dz when tracking the star to keep the angle math smooth and prevent extreme snapping
+    const dz = isTrackingStar 
+      ? Math.max(1.8, targetZ - group.current.position.z) 
+      : 3.5;
 
     // Calculate rotation angle to look at target
     const lookAngleY = Math.atan2(dx, dz);
     const lookAngleX = -Math.atan2(dy, Math.sqrt(dx * dx + dz * dz));
 
     // Constrain the tracking angles so the body rotation looks natural
-    const constrainedTurnY = Math.max(-0.7, Math.min(0.7, lookAngleY));
-    const constrainedTurnX = Math.max(-0.35, Math.min(0.35, lookAngleX));
+    // We allow a slightly wider look range and faster response when tracking the meteor
+    const maxTurnY = isTrackingStar ? 1.1 : 0.7;
+    const maxTurnX = isTrackingStar ? 0.55 : 0.35;
+    const lerpSpeed = isTrackingStar ? 0.08 : 0.05;
+
+    const constrainedTurnY = Math.max(-maxTurnY, Math.min(maxTurnY, lookAngleY));
+    const constrainedTurnX = Math.max(-maxTurnX, Math.min(maxTurnX, lookAngleX));
 
     // Combine base section rotation with dynamic look angles
     const currentRotX = targetRotX + constrainedTurnX;
     const currentRotY = targetRotY + constrainedTurnY;
     const currentRotZ = targetRotZ + constrainedTurnY * 0.12; // subtle body tilt on look direction
 
-    group.current.rotation.x = THREE.MathUtils.lerp(group.current.rotation.x, currentRotX, 0.05);
-    group.current.rotation.y = THREE.MathUtils.lerp(group.current.rotation.y, currentRotY, 0.05);
-    group.current.rotation.z = THREE.MathUtils.lerp(group.current.rotation.z, currentRotZ, 0.05);
+    group.current.rotation.x = THREE.MathUtils.lerp(group.current.rotation.x, currentRotX, lerpSpeed);
+    group.current.rotation.y = THREE.MathUtils.lerp(group.current.rotation.y, currentRotY, lerpSpeed);
+    group.current.rotation.z = THREE.MathUtils.lerp(group.current.rotation.z, currentRotZ, lerpSpeed);
   });
 
   return (
