@@ -36,6 +36,7 @@ export const Astronaut = ({ activeSection, shootingStarRef }) => {
   // Section-specific transitions
   const isHero = activeSection === 'hero';
   const isSkills = activeSection === 'skills';
+  const isContact = activeSection === 'contact';
 
   // Base state values (corner companion state - pushed far right to avoid content overlap)
   let targetScale = 0.45;
@@ -57,7 +58,25 @@ export const Astronaut = ({ activeSection, shootingStarRef }) => {
     targetRotX = 0.1;              // Lean slightly forward
     targetRotY = 1.3;              // Face right towards the solar system planets
     targetRotZ = -0.2;             // Slanted slightly towards them
+  } else if (isContact) {
+    // Framed inside the 3D Globe circle
+    targetScale = isMobile ? 0.45 : 0.55;
+    targetPosition = [0, 0, 0.5]; // calculated dynamically in useFrame
+    targetRotX = 0.15;
+    targetRotY = 0.0;             // Face directly forward (towards user)
+    targetRotZ = 0.0;
   }
+
+  // Dynamically apply/remove stencil crop mask on section change
+  useEffect(() => {
+    scene.traverse((child) => {
+      if (child.isMesh) {
+        child.material.stencilWrite = isContact;
+        child.material.stencilRef = 1;
+        child.material.stencilFunc = THREE.EqualStencilFunc;
+      }
+    });
+  }, [scene, isContact]);
 
   // Play the first (idle) animation by default
   useEffect(() => {
@@ -82,9 +101,23 @@ export const Astronaut = ({ activeSection, shootingStarRef }) => {
     group.current.scale.z = THREE.MathUtils.lerp(group.current.scale.z, targetScale, 0.05);
 
     // Smoothly transition full 3D position (X, Y, Z)
-    group.current.position.x = THREE.MathUtils.lerp(group.current.position.x, targetPosition[0], 0.05);
-    group.current.position.y = THREE.MathUtils.lerp(group.current.position.y, targetPosition[1], 0.05);
-    group.current.position.z = THREE.MathUtils.lerp(group.current.position.z, targetPosition[2], 0.05);
+    let currentTargetPosition = [...targetPosition];
+
+    if (isContact) {
+      const globeEl = document.querySelector('[class*="globeWrapper"]');
+      if (globeEl) {
+        const rect = globeEl.getBoundingClientRect();
+        const x = ((rect.left + rect.width / 2) / window.innerWidth) * viewport.width - viewport.width / 2;
+        // Shift up slightly so the upper chest and head are centered inside the circle
+        const yOffset = isMobile ? 0.1 : 0.15;
+        const y = -((rect.top + rect.height / 2) / window.innerHeight) * viewport.height + viewport.height / 2 + yOffset;
+        currentTargetPosition = [x, y, 0.5];
+      }
+    }
+
+    group.current.position.x = THREE.MathUtils.lerp(group.current.position.x, currentTargetPosition[0], 0.05);
+    group.current.position.y = THREE.MathUtils.lerp(group.current.position.y, currentTargetPosition[1], 0.05);
+    group.current.position.z = THREE.MathUtils.lerp(group.current.position.z, currentTargetPosition[2], 0.05);
 
     // Determine the desired target coordinate to look at (shooting star takes priority over mouse)
     const activeStar = shootingStarRef?.current;
