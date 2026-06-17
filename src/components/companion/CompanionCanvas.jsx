@@ -7,7 +7,7 @@ import ShootingStars from '../three/ShootingStars/ShootingStars';
 import styles from './CompanionCanvas.module.css';
 
 const CompanionCanvas = ({ activeSection }) => {
-  const isHero = activeSection === 'hero';
+  const isCompanionCorner = activeSection !== 'hero' && activeSection !== 'skills';
   const shootingStarRef = useRef(null);
 
   return (
@@ -23,7 +23,7 @@ const CompanionCanvas = ({ activeSection }) => {
 
         <Suspense fallback={null}>
           <Astronaut activeSection={activeSection} shootingStarRef={shootingStarRef} />
-          <ShootingStars shootingStarRef={shootingStarRef} />
+          <ShootingStars shootingStarRef={shootingStarRef} active={isCompanionCorner} />
           <StarField />
           <ContactShadows
             position={[0, -1.8, 0]}
