@@ -20,6 +20,18 @@ export const Astronaut = ({ activeSection }) => {
     return () => window.removeEventListener('resize', handleResize);
   }, []);
 
+  // Track mouse coordinates globally on the window to bypass Canvas pointer-events: none
+  const mouseRef = useRef({ x: 0, y: 0 });
+
+  useEffect(() => {
+    const handleMouseMove = (e) => {
+      mouseRef.current.x = (e.clientX / window.innerWidth) * 2 - 1;
+      mouseRef.current.y = -(e.clientY / window.innerHeight) * 2 + 1;
+    };
+    window.addEventListener('mousemove', handleMouseMove);
+    return () => window.removeEventListener('mousemove', handleMouseMove);
+  }, []);
+
   // Section-specific transitions
   const isHero = activeSection === 'hero';
   const isSkills = activeSection === 'skills';
@@ -60,7 +72,7 @@ export const Astronaut = ({ activeSection }) => {
   }, [actions, names]);
 
   // Smooth full 3D layout LERPs and mouse target following
-  useFrame(({ mouse }) => {
+  useFrame(({ viewport }) => {
     if (!group.current) return;
 
     // Smoothly transition scale
@@ -73,10 +85,29 @@ export const Astronaut = ({ activeSection }) => {
     group.current.position.y = THREE.MathUtils.lerp(group.current.position.y, targetPosition[1], 0.05);
     group.current.position.z = THREE.MathUtils.lerp(group.current.position.z, targetPosition[2], 0.05);
 
-    // Apply mouse influence on top of the section-specific target rotations
-    const currentRotX = targetRotX - mouse.y * 0.15;
-    const currentRotY = targetRotY + mouse.x * 0.35;
-    const currentRotZ = targetRotZ;
+    // Map normalized mouse coordinates (-1 to 1) to 3D viewport coordinates
+    const mouse = mouseRef.current;
+    const targetX = (mouse.x * viewport.width) / 2;
+    const targetY = (mouse.y * viewport.height) / 2;
+
+    // Calculate direction vector from astronaut to the target mouse point
+    // We assume the interaction plane is about 3.5 units in front of the model (z-axis)
+    const dx = targetX - group.current.position.x;
+    const dy = targetY - group.current.position.y;
+    const dz = 3.5;
+
+    // Calculate rotation angle to look at target
+    const lookAngleY = Math.atan2(dx, dz);
+    const lookAngleX = -Math.atan2(dy, Math.sqrt(dx * dx + dz * dz));
+
+    // Constrain the tracking angles so the body rotation looks natural
+    const constrainedTurnY = Math.max(-0.7, Math.min(0.7, lookAngleY));
+    const constrainedTurnX = Math.max(-0.35, Math.min(0.35, lookAngleX));
+
+    // Combine base section rotation with dynamic look angles
+    const currentRotX = targetRotX + constrainedTurnX;
+    const currentRotY = targetRotY + constrainedTurnY;
+    const currentRotZ = targetRotZ + constrainedTurnY * 0.12; // subtle body tilt on look direction
 
     group.current.rotation.x = THREE.MathUtils.lerp(group.current.rotation.x, currentRotX, 0.05);
     group.current.rotation.y = THREE.MathUtils.lerp(group.current.rotation.y, currentRotY, 0.05);

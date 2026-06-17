@@ -13,7 +13,7 @@ const CompanionCanvas = ({ activeSection }) => {
       <Canvas
         camera={{ position: [0, 0, 4.5], fov: 40 }}
         gl={{ antialias: true, alpha: true }}
-        style={{ background: 'transparent', width: '100%', height: '100%' }}
+        style={{ background: 'transparent', width: '100%', height: '100%', pointerEvents: 'none' }}
       >
         <ambientLight intensity={0.6} />
         <directionalLight position={[2, 4, 2]} intensity={1.5} color="#a0c4ff" />
