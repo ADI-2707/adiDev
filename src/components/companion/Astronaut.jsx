@@ -3,7 +3,7 @@ import { useGLTF, useAnimations, Float } from '@react-three/drei';
 import { useFrame } from '@react-three/fiber';
 import * as THREE from 'three';
 
-export const Astronaut = ({ activeSection }) => {
+export const Astronaut = ({ activeSection, shootingStarRef }) => {
   const group = useRef();
   const { scene, animations } = useGLTF('/model/Astronaut.glb');
   const { actions, names } = useAnimations(animations, group);
@@ -22,6 +22,7 @@ export const Astronaut = ({ activeSection }) => {
 
   // Track mouse coordinates globally on the window to bypass Canvas pointer-events: none
   const mouseRef = useRef({ x: 0, y: 0 });
+  const currentTargetRef = useRef(new THREE.Vector3(0, 0, 3.5));
 
   useEffect(() => {
     const handleMouseMove = (e) => {
@@ -35,6 +36,7 @@ export const Astronaut = ({ activeSection }) => {
   // Section-specific transitions
   const isHero = activeSection === 'hero';
   const isSkills = activeSection === 'skills';
+  const isContact = activeSection === 'contact';
 
   // Base state values (corner companion state - pushed far right to avoid content overlap)
   let targetScale = 0.45;
@@ -56,7 +58,25 @@ export const Astronaut = ({ activeSection }) => {
     targetRotX = 0.1;              // Lean slightly forward
     targetRotY = 1.3;              // Face right towards the solar system planets
     targetRotZ = -0.2;             // Slanted slightly towards them
+  } else if (isContact) {
+    // Framed inside the 3D Globe circle
+    targetScale = isMobile ? 0.45 : 0.55;
+    targetPosition = [0, 0, 0.5]; // calculated dynamically in useFrame
+    targetRotX = 0.15;
+    targetRotY = 0.0;             // Face directly forward (towards user)
+    targetRotZ = 0.0;
   }
+
+  // Dynamically apply/remove stencil crop mask on section change
+  useEffect(() => {
+    scene.traverse((child) => {
+      if (child.isMesh) {
+        child.material.stencilWrite = isContact;
+        child.material.stencilRef = 1;
+        child.material.stencilFunc = THREE.EqualStencilFunc;
+      }
+    });
+  }, [scene, isContact]);
 
   // Play the first (idle) animation by default
   useEffect(() => {
@@ -72,53 +92,108 @@ export const Astronaut = ({ activeSection }) => {
   }, [actions, names]);
 
   // Smooth full 3D layout LERPs and mouse target following
-  useFrame(({ viewport }) => {
+  useFrame((state) => {
     if (!group.current) return;
 
-    // Smoothly transition scale
-    group.current.scale.x = THREE.MathUtils.lerp(group.current.scale.x, targetScale, 0.05);
-    group.current.scale.y = THREE.MathUtils.lerp(group.current.scale.y, targetScale, 0.05);
-    group.current.scale.z = THREE.MathUtils.lerp(group.current.scale.z, targetScale, 0.05);
+    const { viewport, camera } = state;
 
-    // Smoothly transition full 3D position (X, Y, Z)
-    group.current.position.x = THREE.MathUtils.lerp(group.current.position.x, targetPosition[0], 0.05);
-    group.current.position.y = THREE.MathUtils.lerp(group.current.position.y, targetPosition[1], 0.05);
-    group.current.position.z = THREE.MathUtils.lerp(group.current.position.z, targetPosition[2], 0.05);
+    // Smoothly transition scale and position
+    let currentTargetScale = targetScale;
+    let currentTargetPosition = [...targetPosition];
 
-    // Map normalized mouse coordinates (-1 to 1) to 3D viewport coordinates
-    const mouse = mouseRef.current;
-    const targetX = (mouse.x * viewport.width) / 2;
-    const targetY = (mouse.y * viewport.height) / 2;
+    if (isContact) {
+      const globeEl = document.querySelector('[class*="globeWrapper"]');
+      if (globeEl) {
+        const rect = globeEl.getBoundingClientRect();
+        // Compute correct viewport size at depth z=0.5
+        const currentViewport = viewport.getCurrentViewport(camera, new THREE.Vector3(0, 0, 0.5));
+        
+        // Center of the globe in R3F viewport coordinates
+        const x = ((rect.left + rect.width / 2) / window.innerWidth) * currentViewport.width - currentViewport.width / 2;
+        const y_globe_center = -((rect.top + rect.height / 2) / window.innerHeight) * currentViewport.height + currentViewport.height / 2;
+        
+        // Core globe radius in viewport units
+        const globeCanvasHeightUnits = 2 * Math.tan((45 * Math.PI) / 360) * 4; // ~3.3137
+        const globeRadiusPx = (1.2 / globeCanvasHeightUnits) * rect.height;
+        const globeRadiusUnits = (globeRadiusPx / window.innerHeight) * currentViewport.height;
 
-    // Calculate direction vector from astronaut to the target mouse point
-    // We assume the interaction plane is about 3.5 units in front of the model (z-axis)
-    const dx = targetX - group.current.position.x;
-    const dy = targetY - group.current.position.y;
-    const dz = 3.5;
+        // Size the astronaut relative to the globe's radius so it fits perfectly
+        currentTargetScale = globeRadiusUnits * (isMobile ? 0.9 : 0.82);
+        
+        // Center chest/shoulders inside the globe. Since GLTF origin is at the feet,
+        // we shift down by a fraction of the scale. A factor of 1.7 works perfectly.
+        const yOffset = -1.7 * currentTargetScale;
+        const y = y_globe_center + yOffset;
+        
+        currentTargetPosition = [x, y, 0.5];
+      }
+    }
+
+    group.current.scale.x = THREE.MathUtils.lerp(group.current.scale.x, currentTargetScale, 0.05);
+    group.current.scale.y = THREE.MathUtils.lerp(group.current.scale.y, currentTargetScale, 0.05);
+    group.current.scale.z = THREE.MathUtils.lerp(group.current.scale.z, currentTargetScale, 0.05);
+
+    group.current.position.x = THREE.MathUtils.lerp(group.current.position.x, currentTargetPosition[0], 0.05);
+    group.current.position.y = THREE.MathUtils.lerp(group.current.position.y, currentTargetPosition[1], 0.05);
+    group.current.position.z = THREE.MathUtils.lerp(group.current.position.z, currentTargetPosition[2], 0.05);
+
+    // Determine the desired target coordinate to look at (shooting star takes priority over mouse)
+    const activeStar = shootingStarRef?.current;
+    const desiredTarget = new THREE.Vector3();
+    let isTrackingStar = false;
+
+    if (activeStar) {
+      desiredTarget.set(activeStar.x, activeStar.y, activeStar.z);
+      isTrackingStar = true;
+    } else {
+      const mouse = mouseRef.current;
+      const mouseX3D = (mouse.x * viewport.width) / 2;
+      const mouseY3D = (mouse.y * viewport.height) / 2;
+      desiredTarget.set(mouseX3D, mouseY3D, 3.5);
+    }
+
+    // Smoothly transition the look-at target itself to prevent snapping on changeover
+    // Slower LERP when returning to mouse (0.04) for cushioning, faster LERP when locking onto star (0.08)
+    const targetLerpSpeed = isTrackingStar ? 0.08 : 0.04;
+    currentTargetRef.current.lerp(desiredTarget, targetLerpSpeed);
+
+    // Calculate direction vector from astronaut's current position to the smoothed target
+    const dx = currentTargetRef.current.x - group.current.position.x;
+    const dy = currentTargetRef.current.y - group.current.position.y;
+    
+    // We virtualize dz relative to currentTargetRef to keep angle calculations smooth
+    const dz = isTrackingStar 
+      ? Math.max(1.8, currentTargetRef.current.z - group.current.position.z) 
+      : 3.5;
 
     // Calculate rotation angle to look at target
     const lookAngleY = Math.atan2(dx, dz);
     const lookAngleX = -Math.atan2(dy, Math.sqrt(dx * dx + dz * dz));
 
     // Constrain the tracking angles so the body rotation looks natural
-    const constrainedTurnY = Math.max(-0.7, Math.min(0.7, lookAngleY));
-    const constrainedTurnX = Math.max(-0.35, Math.min(0.35, lookAngleX));
+    // We allow a slightly wider look range and faster response when tracking the meteor
+    const maxTurnY = isTrackingStar ? 1.1 : 0.7;
+    const maxTurnX = isTrackingStar ? 0.55 : 0.35;
+    const lerpSpeed = isTrackingStar ? 0.08 : 0.05;
+
+    const constrainedTurnY = Math.max(-maxTurnY, Math.min(maxTurnY, lookAngleY));
+    const constrainedTurnX = Math.max(-maxTurnX, Math.min(maxTurnX, lookAngleX));
 
     // Combine base section rotation with dynamic look angles
     const currentRotX = targetRotX + constrainedTurnX;
     const currentRotY = targetRotY + constrainedTurnY;
     const currentRotZ = targetRotZ + constrainedTurnY * 0.12; // subtle body tilt on look direction
 
-    group.current.rotation.x = THREE.MathUtils.lerp(group.current.rotation.x, currentRotX, 0.05);
-    group.current.rotation.y = THREE.MathUtils.lerp(group.current.rotation.y, currentRotY, 0.05);
-    group.current.rotation.z = THREE.MathUtils.lerp(group.current.rotation.z, currentRotZ, 0.05);
+    group.current.rotation.x = THREE.MathUtils.lerp(group.current.rotation.x, currentRotX, lerpSpeed);
+    group.current.rotation.y = THREE.MathUtils.lerp(group.current.rotation.y, currentRotY, lerpSpeed);
+    group.current.rotation.z = THREE.MathUtils.lerp(group.current.rotation.z, currentRotZ, lerpSpeed);
   });
 
   return (
     <Float
-      speed={1.4}
-      rotationIntensity={1.8} // High rotation wobble
-      floatIntensity={1.5}    // High vertical floating drift
+      speed={isContact ? 0 : 1.4}
+      rotationIntensity={isContact ? 0 : 1.8} // High rotation wobble
+      floatIntensity={isContact ? 0 : 1.5}    // High vertical floating drift
       floatingRange={[-0.15, 0.15]} // Wider floating distance
     >
       <group ref={group} scale={targetScale} dispose={null}>
