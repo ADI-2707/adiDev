@@ -54,9 +54,9 @@ export const Astronaut = ({ activeSection, shootingStarRef }) => {
       ease: 'power2.inOut',
       onComplete: () => {
         // Normalize rotation to prevent winding issues
-        group.current.rotation.x = THREE.MathUtils.wrap(group.current.rotation.x, -Math.PI, Math.PI);
-        group.current.rotation.y = THREE.MathUtils.wrap(group.current.rotation.y, -Math.PI, Math.PI);
-        group.current.rotation.z = THREE.MathUtils.wrap(group.current.rotation.z, -Math.PI, Math.PI);
+        group.current.rotation.x = Math.atan2(Math.sin(group.current.rotation.x), Math.cos(group.current.rotation.x));
+        group.current.rotation.y = Math.atan2(Math.sin(group.current.rotation.y), Math.cos(group.current.rotation.y));
+        group.current.rotation.z = Math.atan2(Math.sin(group.current.rotation.z), Math.cos(group.current.rotation.z));
         isClickAnimatingRef.current = false;
       },
     });
