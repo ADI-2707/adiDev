@@ -22,6 +22,7 @@ export const Astronaut = ({ activeSection, shootingStarRef }) => {
 
   // Track mouse coordinates globally on the window to bypass Canvas pointer-events: none
   const mouseRef = useRef({ x: 0, y: 0 });
+  const currentTargetRef = useRef(new THREE.Vector3(0, 0, 3.5));
 
   useEffect(() => {
     const handleMouseMove = (e) => {
@@ -85,30 +86,33 @@ export const Astronaut = ({ activeSection, shootingStarRef }) => {
     group.current.position.y = THREE.MathUtils.lerp(group.current.position.y, targetPosition[1], 0.05);
     group.current.position.z = THREE.MathUtils.lerp(group.current.position.z, targetPosition[2], 0.05);
 
-    // Determine the target coordinates to look at (shooting star takes priority over mouse)
+    // Determine the desired target coordinate to look at (shooting star takes priority over mouse)
     const activeStar = shootingStarRef?.current;
-    let targetX, targetY, targetZ;
+    const desiredTarget = new THREE.Vector3();
     let isTrackingStar = false;
 
     if (activeStar) {
-      targetX = activeStar.x;
-      targetY = activeStar.y;
-      targetZ = activeStar.z;
+      desiredTarget.set(activeStar.x, activeStar.y, activeStar.z);
       isTrackingStar = true;
     } else {
       const mouse = mouseRef.current;
-      targetX = (mouse.x * viewport.width) / 2;
-      targetY = (mouse.y * viewport.height) / 2;
-      targetZ = 3.5; // Estimated mouse interaction depth in front of the model
+      const mouseX3D = (mouse.x * viewport.width) / 2;
+      const mouseY3D = (mouse.y * viewport.height) / 2;
+      desiredTarget.set(mouseX3D, mouseY3D, 3.5);
     }
 
-    // Calculate direction vector from astronaut's current position to the target
-    const dx = targetX - group.current.position.x;
-    const dy = targetY - group.current.position.y;
+    // Smoothly transition the look-at target itself to prevent snapping on changeover
+    // Slower LERP when returning to mouse (0.04) for cushioning, faster LERP when locking onto star (0.08)
+    const targetLerpSpeed = isTrackingStar ? 0.08 : 0.04;
+    currentTargetRef.current.lerp(desiredTarget, targetLerpSpeed);
+
+    // Calculate direction vector from astronaut's current position to the smoothed target
+    const dx = currentTargetRef.current.x - group.current.position.x;
+    const dy = currentTargetRef.current.y - group.current.position.y;
     
-    // We virtualize dz when tracking the star to keep the angle math smooth and prevent extreme snapping
+    // We virtualize dz relative to currentTargetRef to keep angle calculations smooth
     const dz = isTrackingStar 
-      ? Math.max(1.8, targetZ - group.current.position.z) 
+      ? Math.max(1.8, currentTargetRef.current.z - group.current.position.z) 
       : 3.5;
 
     // Calculate rotation angle to look at target
