@@ -1,11 +1,14 @@
-import { useRef, useEffect, useState, forwardRef } from 'react';
+import { useRef, useEffect, useState } from 'react';
 import { useGLTF, useAnimations, Float } from '@react-three/drei';
 import { useFrame, useThree } from '@react-three/fiber';
 import * as THREE from 'three';
 import { gsap } from 'gsap';
 
-export const Astronaut = forwardRef(({ activeSection, shootingStarRef }, ref) => {
+export const Astronaut = ({ activeSection, shootingStarRef }) => {
   const group = useRef();
+  const coreRef = useRef();
+  const sheathRef = useRef();
+  const materialRef = useRef();
   const { scene, animations } = useGLTF('/model/Astronaut.glb');
   const { actions, names } = useAnimations(animations, group);
 
@@ -136,8 +139,8 @@ export const Astronaut = forwardRef(({ activeSection, shootingStarRef }, ref) =>
     targetRotZ = -0.25;
   } else if (isSkills) {
     targetScale = isMobile ? 0.6 : 0.75;
-    // Pushed right to X: 2.2 and lowered to Y: -0.4
-    targetPosition = isMobile ? [0, 1.2, 0] : [2.2, -0.4, 0];
+    // Pushed right to X: 1.75 and lowered to Y: -0.4
+    targetPosition = isMobile ? [0, 1.2, 0] : [1.75, -0.4, 0];
     targetRotX = 0.1;              // Lean slightly forward
     targetRotY = -1.3;             // Face left towards the skills orbital rings
     targetRotZ = 0.2;              // Slanted slightly towards them
@@ -267,20 +270,85 @@ export const Astronaut = forwardRef(({ activeSection, shootingStarRef }, ref) =>
     group.current.rotation.x = THREE.MathUtils.lerp(group.current.rotation.x, currentRotX, lerpSpeed);
     group.current.rotation.y = THREE.MathUtils.lerp(group.current.rotation.y, currentRotY, lerpSpeed);
     group.current.rotation.z = THREE.MathUtils.lerp(group.current.rotation.z, currentRotZ, lerpSpeed);
+
+    // Update dynamic 3D space tether in sync with the astronaut's position/rotation
+    if (coreRef.current && sheathRef.current && group.current) {
+      // Get backpack world position
+      const start = new THREE.Vector3();
+      group.current.getWorldPosition(start);
+
+      // Local offset of the backpack on the unscaled model
+      const localOffset = new THREE.Vector3(0.0, 1.62, -0.22);
+
+      // Scale and rotate the offset using group's scale and quaternion
+      localOffset.multiply(group.current.scale);
+      localOffset.applyQuaternion(group.current.quaternion);
+      start.add(localOffset);
+
+      // End point: off-screen right
+      const end = new THREE.Vector3(viewport.width / 2 + 1.2, -1.2, -0.5);
+
+      // Mid point with natural sag
+      const mid = new THREE.Vector3(
+        (start.x + end.x) / 2 + 0.2,
+        Math.min(start.y, end.y) - 1.2,
+        (start.z + end.z) / 2 - 0.2
+      );
+
+      const curve = new THREE.CatmullRomCurve3([start, mid, end]);
+      const geomCore = new THREE.TubeGeometry(curve, 32, 0.016, 8, false);
+      const geomSheath = new THREE.TubeGeometry(curve, 32, 0.045, 8, false);
+
+      if (coreRef.current.geometry) coreRef.current.geometry.dispose();
+      if (sheathRef.current.geometry) sheathRef.current.geometry.dispose();
+
+      coreRef.current.geometry = geomCore;
+      sheathRef.current.geometry = geomSheath;
+
+      if (materialRef.current) {
+        materialRef.current.emissiveIntensity = 0.3 + Math.sin(state.clock.getElapsedTime() * 3.0) * 0.15;
+      }
+    }
   });
 
   return (
-    <Float
-      speed={isContact ? 0 : 1.4}
-      rotationIntensity={isContact ? 0 : 1.8} // High rotation wobble
-      floatIntensity={isContact ? 0 : 1.5}    // High vertical floating drift
-      floatingRange={[-0.15, 0.15]} // Wider floating distance
-    >
-      <group ref={(node) => { group.current = node; if (ref) { if (typeof ref === 'function') ref(node); else ref.current = node; } }} scale={targetScale} dispose={null}>
-        <primitive object={scene} />
+    <group>
+      <Float
+        speed={isContact ? 0 : 1.4}
+        rotationIntensity={isContact ? 0 : 1.8}
+        floatIntensity={isContact ? 0 : 1.5}
+        floatingRange={[-0.15, 0.15]}
+      >
+        <group ref={group} scale={targetScale} dispose={null}>
+          <primitive object={scene} />
+        </group>
+      </Float>
+
+      {/* Dynamic 3D space tether */}
+      <group>
+        {/* Outer translucent protective sheath */}
+        <mesh ref={sheathRef}>
+          <meshStandardMaterial
+            color="#1e2238"
+            roughness={0.15}
+            metalness={0.85}
+            transparent={true}
+            opacity={0.65}
+          />
+        </mesh>
+
+        {/* Inner glowing cyber core */}
+        <mesh ref={coreRef}>
+          <meshStandardMaterial
+            ref={materialRef}
+            color="#00ffff"
+            emissive="#33c2cc"
+            emissiveIntensity={0.4}
+          />
+        </mesh>
       </group>
-    </Float>
+    </group>
   );
-});
+};
 
 useGLTF.preload('/model/Astronaut.glb');

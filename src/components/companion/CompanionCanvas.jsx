@@ -3,7 +3,6 @@ import { Suspense, useRef } from 'react';
 import { Environment, ContactShadows } from '@react-three/drei';
 import * as THREE from 'three';
 import { Astronaut } from './Astronaut';
-import { Tether } from './Tether';
 import StarField from '../three/StarField';
 import ShootingStars from '../three/ShootingStars/ShootingStars';
 import styles from './CompanionCanvas.module.css';
@@ -54,7 +53,6 @@ const StencilMask = () => {
 const CompanionCanvas = ({ activeSection }) => {
   const isCompanionCorner = activeSection !== 'hero' && activeSection !== 'skills';
   const shootingStarRef = useRef(null);
-  const astronautRef = useRef(null);
 
   return (
     <div className={styles.canvasContainer}>
@@ -68,8 +66,7 @@ const CompanionCanvas = ({ activeSection }) => {
         <pointLight position={[-2, -2, 2]} intensity={0.5} color="#7a57db" />
 
         <Suspense fallback={null}>
-          <Astronaut ref={astronautRef} activeSection={activeSection} shootingStarRef={shootingStarRef} />
-          <Tether astronautRef={astronautRef} />
+          <Astronaut activeSection={activeSection} shootingStarRef={shootingStarRef} />
           <ShootingStars shootingStarRef={shootingStarRef} active={isCompanionCorner} />
 
           {/* Dynamically mount the stencil mask only in the contact section */}
