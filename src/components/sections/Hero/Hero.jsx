@@ -7,11 +7,7 @@ import { Button } from '../../ui/Button/Button';
 const Hero = () => {
   return (
     <section id="hero" className={styles.heroSection}>
-      {/* Radial gradient background glow */}
-      <div className={styles.absoluteOverlay}>
-        <div className={styles.radialRoyal} />
-        <div className={styles.radialAqua} />
-      </div>
+
 
       <div className={`${styles.contentWrapper} c-space`}>
         {/* Left — Text content */}
