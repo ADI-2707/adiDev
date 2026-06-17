@@ -10,23 +10,32 @@ import styles from './CompanionCanvas.module.css';
 // Invisible flat disc that writes to the WebGL stencil buffer at the exact screen coordinates of the globe
 const StencilMask = () => {
   const meshRef = useRef();
-  const { viewport } = useThree();
 
-  useFrame(() => {
+  useFrame((state) => {
     if (!meshRef.current) return;
     const globeEl = document.querySelector('[class*="globeWrapper"]');
     if (globeEl) {
       const rect = globeEl.getBoundingClientRect();
-      const x = ((rect.left + rect.width / 2) / window.innerWidth) * viewport.width - viewport.width / 2;
-      const y = -((rect.top + rect.height / 2) / window.innerHeight) * viewport.height + viewport.height / 2;
-      // Positioned slightly in front of the astronaut (which is at z=0.5 in contact section)
-      meshRef.current.position.set(x, y, 0.65);
+      const currentViewport = state.viewport.getCurrentViewport(state.camera, new THREE.Vector3(0, 0, 0.5));
+      const x = ((rect.left + rect.width / 2) / window.innerWidth) * currentViewport.width - currentViewport.width / 2;
+      const y = -((rect.top + rect.height / 2) / window.innerHeight) * currentViewport.height + currentViewport.height / 2;
+      
+      // Calculate globe radius in viewport units:
+      // EarthGlobe uses a Sphere of radius 1.2 in a Canvas with camera position [0, 0, 4] and fov: 45
+      const globeCanvasHeightUnits = 2 * Math.tan((45 * Math.PI) / 360) * 4; // ~3.3137
+      // Core sphere is 1.2 units; we use 1.22 for a slightly padded crop boundary
+      const globeRadiusPx = (1.22 / globeCanvasHeightUnits) * rect.height;
+      const globeRadiusUnits = (globeRadiusPx / window.innerHeight) * currentViewport.height;
+
+      // Positioned at the exact same depth as the astronaut (z=0.5)
+      meshRef.current.position.set(x, y, 0.5);
+      meshRef.current.scale.set(globeRadiusUnits, globeRadiusUnits, 1);
     }
   });
 
   return (
-    <mesh ref={meshRef} renderOrder={1}>
-      <ringGeometry args={[0, 1.25, 64]} />
+    <mesh ref={meshRef} renderOrder={-1}>
+      <ringGeometry args={[0, 1.0, 64]} />
       <meshBasicMaterial
         colorWrite={false}
         depthWrite={false}
@@ -59,7 +68,7 @@ const CompanionCanvas = ({ activeSection }) => {
         <Suspense fallback={null}>
           <Astronaut activeSection={activeSection} shootingStarRef={shootingStarRef} />
           <ShootingStars shootingStarRef={shootingStarRef} active={isCompanionCorner} />
-          
+
           {/* Dynamically mount the stencil mask only in the contact section */}
           {activeSection === 'contact' && <StencilMask />}
 

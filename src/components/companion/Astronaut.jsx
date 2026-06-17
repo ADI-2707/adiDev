@@ -92,28 +92,46 @@ export const Astronaut = ({ activeSection, shootingStarRef }) => {
   }, [actions, names]);
 
   // Smooth full 3D layout LERPs and mouse target following
-  useFrame(({ viewport }) => {
+  useFrame((state) => {
     if (!group.current) return;
 
-    // Smoothly transition scale
-    group.current.scale.x = THREE.MathUtils.lerp(group.current.scale.x, targetScale, 0.05);
-    group.current.scale.y = THREE.MathUtils.lerp(group.current.scale.y, targetScale, 0.05);
-    group.current.scale.z = THREE.MathUtils.lerp(group.current.scale.z, targetScale, 0.05);
+    const { viewport, camera } = state;
 
-    // Smoothly transition full 3D position (X, Y, Z)
+    // Smoothly transition scale and position
+    let currentTargetScale = targetScale;
     let currentTargetPosition = [...targetPosition];
 
     if (isContact) {
       const globeEl = document.querySelector('[class*="globeWrapper"]');
       if (globeEl) {
         const rect = globeEl.getBoundingClientRect();
-        const x = ((rect.left + rect.width / 2) / window.innerWidth) * viewport.width - viewport.width / 2;
-        // Shift up slightly so the upper chest and head are centered inside the circle
-        const yOffset = isMobile ? 0.1 : 0.15;
-        const y = -((rect.top + rect.height / 2) / window.innerHeight) * viewport.height + viewport.height / 2 + yOffset;
+        // Compute correct viewport size at depth z=0.5
+        const currentViewport = viewport.getCurrentViewport(camera, new THREE.Vector3(0, 0, 0.5));
+        
+        // Center of the globe in R3F viewport coordinates
+        const x = ((rect.left + rect.width / 2) / window.innerWidth) * currentViewport.width - currentViewport.width / 2;
+        const y_globe_center = -((rect.top + rect.height / 2) / window.innerHeight) * currentViewport.height + currentViewport.height / 2;
+        
+        // Core globe radius in viewport units
+        const globeCanvasHeightUnits = 2 * Math.tan((45 * Math.PI) / 360) * 4; // ~3.3137
+        const globeRadiusPx = (1.2 / globeCanvasHeightUnits) * rect.height;
+        const globeRadiusUnits = (globeRadiusPx / window.innerHeight) * currentViewport.height;
+
+        // Size the astronaut relative to the globe's radius so it fits perfectly
+        currentTargetScale = globeRadiusUnits * (isMobile ? 0.9 : 0.82);
+        
+        // Center chest/shoulders inside the globe. Since GLTF origin is at the feet,
+        // we shift down by a fraction of the scale. A factor of 1.7 works perfectly.
+        const yOffset = -1.7 * currentTargetScale;
+        const y = y_globe_center + yOffset;
+        
         currentTargetPosition = [x, y, 0.5];
       }
     }
+
+    group.current.scale.x = THREE.MathUtils.lerp(group.current.scale.x, currentTargetScale, 0.05);
+    group.current.scale.y = THREE.MathUtils.lerp(group.current.scale.y, currentTargetScale, 0.05);
+    group.current.scale.z = THREE.MathUtils.lerp(group.current.scale.z, currentTargetScale, 0.05);
 
     group.current.position.x = THREE.MathUtils.lerp(group.current.position.x, currentTargetPosition[0], 0.05);
     group.current.position.y = THREE.MathUtils.lerp(group.current.position.y, currentTargetPosition[1], 0.05);
@@ -173,9 +191,9 @@ export const Astronaut = ({ activeSection, shootingStarRef }) => {
 
   return (
     <Float
-      speed={1.4}
-      rotationIntensity={1.8} // High rotation wobble
-      floatIntensity={1.5}    // High vertical floating drift
+      speed={isContact ? 0 : 1.4}
+      rotationIntensity={isContact ? 0 : 1.8} // High rotation wobble
+      floatIntensity={isContact ? 0 : 1.5}    // High vertical floating drift
       floatingRange={[-0.15, 0.15]} // Wider floating distance
     >
       <group ref={group} scale={targetScale} dispose={null}>
