@@ -1,22 +1,24 @@
-:root {
 
+
+:root {
+  
   --bg-primary: #090B10;
   --bg-secondary: #11151C;
   --bg-tertiary: #181E27;
-
+  
   --accent-blue: #3A86FF;
   --accent-cyan: #6EE7FF;
-
+  
   --status-success: #34D399;
   --status-warning: #F59E0B;
   --status-critical: #EF4444;
-
+  
   --text-primary: #F5F7FA;
   --text-secondary: #B7C0CD;
   --text-muted: #7C889A;
   --text-disabled: #556170;
 
-
+  
   --font-heading: 'Space Grotesk', -apple-system, sans-serif;
   --font-body: 'Inter', -apple-system, sans-serif;
   --font-mono: 'JetBrains Mono', monospace;
@@ -39,24 +41,14 @@ body {
 }
 
 
-h1,
-h2,
-h3,
-h4,
-h5,
-h6 {
+h1, h2, h3, h4, h5, h6 {
   font-family: var(--font-heading);
   font-weight: 600;
   letter-spacing: -0.02em;
 }
 
 
-a,
-button,
-select,
-input,
-[role="button"],
-.clickable {
+a, button, select, input, [role="button"], .clickable {
   cursor: crosshair !important;
 }
 
@@ -65,8 +57,8 @@ input,
   position: fixed;
   inset: 0;
   background-color: var(--bg-primary);
-
-  background-image:
+  
+  background-image: 
     linear-gradient(rgba(255, 255, 255, 0.025) 1px, transparent 1px),
     linear-gradient(90deg, rgba(255, 255, 255, 0.025) 1px, transparent 1px);
   background-size: 40px 40px;
@@ -89,7 +81,6 @@ input,
   pointer-events: none;
   z-index: 9999;
 }
-
 .scanline-sweep::after {
   content: "";
   position: absolute;
@@ -102,13 +93,8 @@ input,
 }
 
 @keyframes sweep {
-  0% {
-    transform: translateY(-100px);
-  }
-
-  100% {
-    transform: translateY(110vh);
-  }
+  0% { transform: translateY(-100px); }
+  100% { transform: translateY(110vh); }
 }
 
 
@@ -136,16 +122,13 @@ main {
   width: 8px;
   height: 8px;
 }
-
 ::-webkit-scrollbar-track {
   background: var(--bg-primary);
 }
-
 ::-webkit-scrollbar-thumb {
   background: var(--bg-secondary);
   border: 1px solid rgba(255, 255, 255, 0.05);
 }
-
 ::-webkit-scrollbar-thumb:hover {
   background: var(--bg-tertiary);
 }

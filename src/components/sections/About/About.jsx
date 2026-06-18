@@ -1,6 +1,6 @@
 
 import { useState, useEffect } from 'react';
-import { AnimatePresence } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
 import styles from './About.module.css';
 import { playSuccess, playTone } from '../../../utils/audio';
 

@@ -1,6 +1,6 @@
 
 import { useState, useEffect } from 'react';
-import { AnimatePresence } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
 import styles from './Hero.module.css';
 import Typewriter from '../../ui/Typewriter';
 import { playSuccess, playDoorSlide, playTone } from '../../../utils/audio';

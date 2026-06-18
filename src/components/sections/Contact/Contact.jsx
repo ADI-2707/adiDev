@@ -1,6 +1,6 @@
 
 import { useState, useEffect } from 'react';
-import { AnimatePresence } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
 import styles from './Contact.module.css';
 import Typewriter from '../../ui/Typewriter';
 import { playPrinter, playSuccess, playTone } from '../../../utils/audio';

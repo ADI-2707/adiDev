@@ -1,6 +1,6 @@
 
 import { useState } from 'react';
-import { AnimatePresence } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
 import styles from './Projects.module.css';
 import { playTone } from '../../../utils/audio';
 

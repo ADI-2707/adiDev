@@ -1,6 +1,6 @@
 
 import { useState, useEffect } from 'react';
-import { AnimatePresence } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
 import Navbar from './components/Navbar/Navbar';
 import CompanionCanvas from './components/companion/CompanionCanvas';
 import Hero from './components/sections/Hero/Hero';
