@@ -1,0 +1,290 @@
+.section {
+  position: relative;
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  padding-top: 7rem;
+  padding-bottom: 3rem;
+  background-color: var(--bg-primary);
+  width: 100%;
+  overflow: hidden;
+}
+
+/* World Telemetry Graphic Overlay */
+.worldBackplane {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 1;
+  opacity: 0.15;
+}
+
+.worldGridLines {
+  position: absolute;
+  inset: 0;
+  background-image: 
+    linear-gradient(rgba(58, 134, 255, 0.05) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(58, 134, 255, 0.05) 1px, transparent 1px);
+  background-size: 80px 80px;
+}
+
+.satelliteTracker {
+  position: absolute;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background-color: var(--accent-cyan);
+  box-shadow: 0 0 12px var(--accent-cyan);
+  animation: radarPing 4s ease-out infinite;
+}
+
+@keyframes radarPing {
+  0% { transform: scale(1); opacity: 1; }
+  100% { transform: scale(5); opacity: 0; }
+}
+
+.container {
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+  width: 100%;
+  position: relative;
+  z-index: 10;
+}
+
+.gridContainer {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  width: 100%;
+}
+
+.consoleHeader {
+  border-bottom: 1px dashed rgba(255, 255, 255, 0.08);
+  padding-bottom: 0.75rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  color: var(--text-muted);
+}
+
+.consoleBrand {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.liveIndicator {
+  color: var(--status-success);
+  font-weight: bold;
+  animation: pulseLive 1s infinite alternate;
+}
+
+@keyframes pulseLive {
+  0% { opacity: 0.4; }
+  100% { opacity: 1; }
+}
+
+.pulseCount {
+  color: var(--accent-cyan);
+}
+
+.panelsLayout {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.rowTop, .rowBottom {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+@media (min-width: 1024px) {
+  .rowTop, .rowBottom {
+    flex-direction: row;
+  }
+}
+
+.panelBody {
+  padding: 1.25rem;
+}
+
+/* Contribution matrix styling */
+.contribWrapper {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.contribGrid {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  overflow-x: auto;
+}
+
+.contribRow {
+  display: flex;
+  gap: 3px;
+}
+
+.contribCell {
+  width: 10px;
+  height: 10px;
+  border-radius: 1px;
+  flex-shrink: 0;
+}
+
+.cellNone { background-color: rgba(255, 255, 255, 0.04); }
+.cellLow  { background-color: rgba(58, 134, 255, 0.25); }
+.cellMed  { background-color: rgba(58, 134, 255, 0.6); }
+.cellHigh { background-color: var(--accent-blue); box-shadow: 0 0 6px var(--accent-blue); }
+
+.contribLeg {
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+  font-family: var(--font-mono);
+  font-size: 10px;
+  color: var(--text-muted);
+  justify-content: flex-end;
+}
+
+/* Stack tags gauges */
+.stackTagsGrid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.stackTag {
+  background: rgba(255, 255, 255, 0.02);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  border-radius: 4px;
+  padding: 0.5rem 0.75rem;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  color: var(--text-secondary);
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+
+.stackTagDot {
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background-color: var(--accent-cyan);
+  box-shadow: 0 0 6px var(--accent-cyan);
+}
+
+/* Public repos list */
+.reposList {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.repoItem {
+  border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+  padding-bottom: 0.75rem;
+}
+
+.repoItem:last-child {
+  border-bottom: none;
+  padding-bottom: 0;
+}
+
+.repoHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 0.25rem;
+}
+
+.repoTitle {
+  font-family: var(--font-heading);
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--accent-cyan);
+}
+
+.repoStats {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  color: var(--text-muted);
+  display: flex;
+  gap: 0.75rem;
+}
+
+.repoDesc {
+  font-size: 12px;
+  color: var(--text-secondary);
+  line-height: 1.4;
+}
+
+/* Current Learning Tracks */
+.tracksList {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.trackItem {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  border-left: 2px solid var(--accent-blue);
+  padding-left: 0.75rem;
+}
+
+.trackTopic {
+  font-family: var(--font-heading);
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.trackDesc {
+  font-size: 12px;
+  color: var(--text-muted);
+  line-height: 1.4;
+}
+
+.successText {
+  color: var(--status-success);
+}
+
+.cyanText {
+  color: var(--accent-cyan);
+}
+
+/* Footer bottom cta */
+.bottomNav {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 1rem;
+}
+
+.nextCta {
+  background: transparent;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  color: var(--accent-cyan);
+  font-family: var(--font-mono);
+  font-size: 12px;
+  font-weight: bold;
+  letter-spacing: 0.05em;
+  padding: 0.8rem 1.5rem;
+  border-radius: 2px;
+  transition: all 0.2s;
+}
+
+.nextCta:hover {
+  background: rgba(110, 231, 255, 0.05);
+  border-color: var(--accent-cyan);
+  box-shadow: 0 0 15px rgba(110, 231, 255, 0.25);
+}

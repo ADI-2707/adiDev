@@ -1,149 +1,178 @@
-import { useState, useRef, Suspense } from 'react';
-import { Canvas } from '@react-three/fiber';
-import { Environment } from '@react-three/drei';
-import { motion } from 'framer-motion';
-import RevealSection from '../../ui/RevealSection/RevealSection';
-import { SectionTag } from '../../ui/Button/Button';
-import EarthGlobe from '../../three/EarthGlobe';
+/* eslint-disable no-unused-vars */
+import { useState, useEffect } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
 import styles from './Contact.module.css';
+import Typewriter from '../../ui/Typewriter';
+import { playPrinter, playSuccess, playTone } from '../../../utils/audio';
 
-const INITIAL_FORM = { name: '', email: '', message: '' };
+const REPORT_ROWS = [
+  'Technical Ability ............ Excellent',
+  'Problem Solving ............... Excellent',
+  'Architecture Thinking ......... Excellent',
+  'Production Experience ......... Verified',
+  ' ',
+  'Overall Recommendation ... Highly Recommended'
+];
 
-const Contact = () => {
-  const [form, setForm] = useState(INITIAL_FORM);
-  const [status, setStatus] = useState('idle');
-  const formRef = useRef(null);
+const Contact = ({ activeStage, setStage }) => {
+  const [printState, setPrintState] = useState(0); // 0: Idle, 1: Printing/Sliding, 2: Typing, 3: Stamp, 4: Finished
 
-  const handleChange = (e) => {
-    setForm((prev) => ({ ...prev, [e.target.name]: e.target.value }));
+  useEffect(() => {
+    if (activeStage !== 8) return;
+    
+    // Start whirr
+    playPrinter();
+    
+    // Slide paper (deferred to avoid synchronous state updates in effect body)
+    const slideTimer = setTimeout(() => {
+      setPrintState(1);
+    }, 50);
+    
+    const printTimer = setTimeout(() => {
+      // Step 2: Begin typing text after slide completes
+      setPrintState(2);
+    }, 2200);
+
+    return () => {
+      clearTimeout(slideTimer);
+      clearTimeout(printTimer);
+    };
+  }, [activeStage]);
+
+
+  if (activeStage !== 8) return null;
+
+  const handleTypingComplete = () => {
+    // Step 3: Trigger APPROVED stamp
+    setPrintState(3);
+    playSuccess();
+    
+    setTimeout(() => {
+      // Step 4: Reveal CTAs and final messages
+      setPrintState(4);
+    }, 1200);
   };
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    setStatus('sending');
-    setTimeout(() => {
-      setStatus('sent');
-      setForm(INITIAL_FORM);
-      setTimeout(() => setStatus('idle'), 4000);
-    }, 1500);
+  const handleRestart = () => {
+    playTone(400, 0.1, 0.05);
+    setStage(0);
   };
 
   return (
     <section id="contact" className={styles.section}>
-      <div className={styles.header}>
-        <RevealSection>
-          <SectionTag label="Contact" />
-        </RevealSection>
-        <RevealSection delay={0.1}>
-          <h2 className={styles.heading}>
-            Let's Build{' '}
-            <span className={styles.gradientSpan}>
-              Something.
-            </span>
-          </h2>
-        </RevealSection>
-        <RevealSection delay={0.2}>
-          <p className={styles.subtext}>
-            Have a project in mind? A collab idea? Or just want to say hi — I'm always listening.
-          </p>
-        </RevealSection>
+      {/* CAD blueprint coordinate background */}
+      <div className={styles.cadBlueprintPaper}>
+        <div className={styles.cadCoordinate}>VERDICT_STAGE_8</div>
+        <div className={styles.cadGridMark} style={{ top: '30%' }} />
+        <div className={styles.cadGridMark} style={{ left: '80%' }} />
       </div>
 
-      <div className={styles.grid}>
-        <RevealSection delay={0.1}>
-          <form
-            ref={formRef}
-            onSubmit={handleSubmit}
-            className={styles.form}
-          >
-            <div className={styles.fieldGroup}>
-              <label className={styles.fieldLabel}>Name</label>
-              <input
-                type="text"
-                name="name"
-                value={form.name}
-                onChange={handleChange}
-                placeholder="Adi Doe"
-                required
-                className={styles.fieldInput}
-              />
-            </div>
-
-            <div className={styles.fieldGroup}>
-              <label className={styles.fieldLabel}>Email</label>
-              <input
-                type="email"
-                name="email"
-                value={form.email}
-                onChange={handleChange}
-                placeholder="adi@example.com"
-                required
-                className={styles.fieldInput}
-              />
-            </div>
-
-            <div className={styles.fieldGroup}>
-              <label className={styles.fieldLabel}>Message</label>
-              <textarea
-                name="message"
-                value={form.message}
-                onChange={handleChange}
-                placeholder="Hey Adi, let's build something awesome..."
-                required
-                rows={5}
-                className={`${styles.fieldInput} ${styles.textarea}`}
-              />
-            </div>
-
-            <button
-              type="submit"
-              disabled={status === 'sending'}
-              className={styles.submitBtn}
-            >
-              {status === 'sending' && (
-                <span className={styles.spinner} />
-              )}
-              {status === 'idle' && 'Send Transmission ✦'}
-              {status === 'sending' && 'Transmitting...'}
-              {status === 'sent' && '✓ Message Received!'}
-              {status === 'error' && 'Failed — try again'}
-            </button>
-
-            {status === 'sent' && (
-              <motion.p
-                initial={{ opacity: 0, y: 8 }}
-                animate={{ opacity: 1, y: 0 }}
-                className={styles.successMsg}
-              >
-                Thanks! I'll get back to you within 24 hours. 🚀
-              </motion.p>
-            )}
-          </form>
-        </RevealSection>
-
-        <RevealSection direction="left" delay={0.2}>
-          <div className={styles.globeWrapper}>
-            <Canvas camera={{ position: [0, 0, 4], fov: 45 }} gl={{ antialias: true, alpha: true }}>
-              <ambientLight intensity={0.4} />
-              <pointLight position={[3, 3, 3]} intensity={1.2} color="#33c2cc" />
-              <pointLight position={[-3, -2, 2]} intensity={0.6} color="#7a57db" />
-              <Suspense fallback={null}>
-                <EarthGlobe />
-                <Environment preset="night" />
-              </Suspense>
-            </Canvas>
-
-            <div className={styles.globeLabels}>
-              <div className={styles.globeLabelInner}>
-                <span className={styles.statusIndicator}>
-                  <span className={styles.onlineDot} />
-                  Online &amp; Available
-                </span>
-                <span>India 🇮🇳</span>
-              </div>
-            </div>
+      <div className={`${styles.container} c-space`}>
+        <div className={styles.printerSlotWrapper}>
+          {/* Printer top slot body */}
+          <div className={styles.printerSlotHeader}>
+            <span className={styles.printerStatusText}>PRINTER_ONLINE // SYSTEM_VERDICT_OUTPUT</span>
           </div>
-        </RevealSection>
+
+          <AnimatePresence>
+            {printState >= 1 && (
+              <motion.div
+                initial={{ y: -350, opacity: 0 }}
+                animate={{ y: 0, opacity: 1 }}
+                transition={{ duration: 2.0, ease: 'easeOut' }}
+                className={styles.paperReportSheet}
+              >
+                <div className={styles.reportHeader}>
+                  <span className={styles.reportHeaderCode}>SYSTEM_VERDICT_ID: AS-9941</span>
+                  <span>CONFIDENTIAL</span>
+                </div>
+
+                <div className={styles.reportTitleRow}>
+                  <h2 className={styles.reportMainTitle}>ENGINEER EVALUATION REPORT</h2>
+                  <div className={styles.dividerLine} />
+                </div>
+
+                <div className={`${styles.reportContent} tech-mono`}>
+                  {printState >= 2 && (
+                    <div className={styles.reportTextLines}>
+                      {REPORT_ROWS.map((row, index) => {
+                        // Sequential delay for lines typing
+                        const delayMs = index * 800;
+                        const isLast = index === REPORT_ROWS.length - 1;
+                        return (
+                          <div key={index} className={styles.reportLineItem}>
+                            <Typewriter 
+                              text={row} 
+                              speed={25} 
+                              delay={delayMs} 
+                              showCursor={isLast && printState === 2}
+                              onComplete={isLast ? handleTypingComplete : null}
+                            />
+                          </div>
+                        );
+                      })}
+                    </div>
+                  )}
+
+                  {/* Stamp Graphic */}
+                  <AnimatePresence>
+                    {printState >= 3 && (
+                      <motion.div
+                        initial={{ scale: 3, opacity: 0, rotate: -30 }}
+                        animate={{ scale: 1, opacity: 1, rotate: -12 }}
+                        transition={{ type: 'spring', damping: 12, stiffness: 100 }}
+                        className={styles.approvedStamp}
+                      >
+                        APPROVED
+                      </motion.div>
+                    )}
+                  </AnimatePresence>
+                </div>
+              </motion.div>
+            )}
+          </AnimatePresence>
+        </div>
+
+        {/* Final CTA Buttons and Outro */}
+        <AnimatePresence>
+          {printState === 4 && (
+            <motion.div
+              initial={{ opacity: 0, y: 15 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.5 }}
+              className={styles.outroAndCtas}
+            >
+              <p className={styles.outroMessage}>
+                Every system you've explored was designed to solve real-world engineering problems.<br />
+                <strong>The next one could be yours.</strong>
+              </p>
+
+              <div className={styles.actionsGrid}>
+                <a href="/cv.pdf" download className={styles.actionBtn}>
+                  [DOWNLOAD_RESUME]
+                </a>
+                <a href="https://github.com" target="_blank" rel="noreferrer" className={styles.actionBtn}>
+                  [GITHUB_PROFILE]
+                </a>
+                <a href="https://linkedin.com" target="_blank" rel="noreferrer" className={styles.actionBtn}>
+                  [LINKEDIN_PROFILE]
+                </a>
+                <a href="mailto:adi@example.com" className={styles.actionBtn}>
+                  [TRANSMIT_EMAIL]
+                </a>
+                <a href="https://calendly.com" target="_blank" rel="noreferrer" className={`${styles.actionBtn} ${styles.scheduleCta}`}>
+                  [SCHEDULE_MEETING]
+                </a>
+              </div>
+
+              <div className={styles.restartRow}>
+                <button onClick={handleRestart} className={styles.restartBtn}>
+                  &lt;&lt; RESTART RECRUITMENT PROTOCOL
+                </button>
+              </div>
+            </motion.div>
+          )}
+        </AnimatePresence>
       </div>
     </section>
   );

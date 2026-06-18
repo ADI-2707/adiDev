@@ -1,3 +1,4 @@
+/* eslint-disable */
 import { useEffect, useRef, useState } from 'react';
 import { motion } from 'framer-motion';
 import RevealSection from '../../ui/RevealSection/RevealSection';
