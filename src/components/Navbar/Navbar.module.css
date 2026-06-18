@@ -24,6 +24,7 @@
   display: flex;
   align-items: center;
   gap: 0.5rem;
+  flex-shrink: 0;
 }
 
 .terminalPrompt {
@@ -104,6 +105,43 @@
   border-color: var(--accent-blue);
 }
 
+.hamburger {
+  display: none;
+  flex-direction: column;
+  justify-content: center;
+  gap: 5px;
+  width: 32px;
+  height: 32px;
+  background: transparent;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 2px;
+  padding: 6px;
+  flex-shrink: 0;
+}
+
+.bar {
+  display: block;
+  width: 100%;
+  height: 1.5px;
+  background-color: var(--text-secondary);
+  border-radius: 1px;
+  transition: transform 0.25s ease, opacity 0.25s ease;
+  transform-origin: center;
+}
+
+.barOpen1 {
+  transform: translateY(6.5px) rotate(45deg);
+}
+
+.barOpen2 {
+  opacity: 0;
+  transform: scaleX(0);
+}
+
+.barOpen3 {
+  transform: translateY(-6.5px) rotate(-45deg);
+}
+
 .navBar {
   background: rgba(0, 0, 0, 0.2);
 }
@@ -113,7 +151,6 @@
   overflow-x: auto;
   padding: 0 1rem;
 }
-
 
 .navContainer::-webkit-scrollbar {
   display: none;
@@ -157,15 +194,84 @@
   box-shadow: 0 0 8px var(--accent-blue);
 }
 
-@media (max-width: 768px) {
+.drawer {
+  display: none;
+  flex-direction: column;
+  background: rgba(9, 11, 16, 0.98);
+  border-top: 1px solid rgba(255, 255, 255, 0.06);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+.drawerItem {
+  background: transparent;
+  border: none;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+  color: var(--text-muted);
+  font-family: var(--font-mono);
+  font-size: 12px;
+  letter-spacing: 0.05em;
+  padding: 0.9rem 1.5rem;
+  text-align: left;
+  transition: all 0.2s;
+}
+
+.drawerItem:last-child {
+  border-bottom: none;
+}
+
+.drawerItem:hover:not(:disabled) {
+  color: var(--text-primary);
+  background: rgba(255, 255, 255, 0.02);
+}
+
+.drawerItemActive {
+  color: var(--accent-blue) !important;
+  border-left: 2px solid var(--accent-blue);
+  background: rgba(58, 134, 255, 0.03);
+}
+
+.drawerItemLocked {
+  opacity: 0.3;
+  color: var(--text-disabled) !important;
+}
+
+@media (max-width: 767px) {
+  .hamburger {
+    display: flex;
+  }
+
+  .navBar {
+    display: none;
+  }
+
+  .drawer {
+    display: flex;
+  }
+
   .brandSubtitle {
     display: none;
   }
-  .telemetryItem:nth-child(1) {
-    display: none; 
+
+  .telemetry {
+    gap: 0.75rem;
   }
-  .navItem {
-    padding: 0.6rem 0.8rem;
-    font-size: 11px;
+
+  .telemetryItem:nth-child(1) {
+    display: none;
+  }
+
+  .topBar {
+    padding: 0.5rem 1rem;
+  }
+}
+
+@media (max-width: 479px) {
+  .telemetryItem:nth-child(2) {
+    display: none;
+  }
+
+  .muteButton {
+    font-size: 8px;
+    padding: 2px 4px;
   }
 }
