@@ -111,6 +111,12 @@ a, button, select, input, [role="button"], .clickable {
   padding-bottom: 6rem;
 }
 
+main {
+  position: relative;
+  z-index: 10;
+}
+
+
 /* Scrollbar styles */
 ::-webkit-scrollbar {
   width: 8px;

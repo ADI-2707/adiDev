@@ -1,5 +1,5 @@
 /* eslint-disable no-unused-vars */
-import { Canvas, useFrame } from '@react-three/fiber';
+import { Canvas, useFrame, useThree } from '@react-three/fiber';
 import { Suspense, useRef, useState, useEffect } from 'react';
 import * as THREE from 'three';
 import styles from './CompanionCanvas.module.css';
@@ -34,6 +34,7 @@ const Satellite = ({ radius, speed, color, inclination = 0 }) => {
 const GlobeMesh = ({ activeStage }) => {
   const groupRef = useRef();
   const sphereRef = useRef();
+  const { viewport } = useThree();
   
   useFrame((state, delta) => {
     if (sphereRef.current) {
@@ -58,8 +59,8 @@ const GlobeMesh = ({ activeStage }) => {
         targetScale = 0.1;
       } else if (activeStage === 1 || activeStage === 8) {
         // Dossier and Report: right panel
-        targetPos = isMobile ? [0, -0.6, 0] : [1.4, 0, 0];
-        targetScale = isMobile ? 0.75 : 1.1;
+        targetPos = isMobile ? [0, -0.6, 0] : [viewport.width * 0.22, 0, 0];
+        targetScale = isMobile ? 0.55 : viewport.width * 0.13;
         targetOpacity = 0.85;
       } else if (activeStage === 2) {
         // Evaluation: Central background, smaller
@@ -122,8 +123,10 @@ const GlobeMesh = ({ activeStage }) => {
 };
 
 const CompanionCanvas = ({ activeStage }) => {
+  const zIndex = (activeStage === 1 || activeStage === 8) ? 15 : 2;
+
   return (
-    <div className={styles.canvasContainer}>
+    <div className={styles.canvasContainer} style={{ zIndex }}>
       <Canvas
         camera={{ position: [0, 0, 4.5], fov: 40 }}
         gl={{ antialias: true, alpha: true }}
