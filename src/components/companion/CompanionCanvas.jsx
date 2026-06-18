@@ -15,7 +15,6 @@ const Satellite = ({ radius, speed, color, inclination = 0 }) => {
     const x = Math.cos(t) * radius;
     const z = Math.sin(t) * radius;
     
-    
     const pos = new THREE.Vector3(x, 0, z);
     pos.applyAxisAngle(new THREE.Vector3(1, 0, 0), inclination);
     
@@ -43,37 +42,32 @@ const GlobeMesh = ({ activeStage }) => {
     }
 
     if (groupRef.current) {
-      // Interpolate position and scale based on active stage
-      // Stage 1 (Dossier) and Stage 8 (Report): Right-side hero placement
-      // Stage 2 (Evaluation) and Stage 7 (Operations): Background central alignment
-      // Other stages: Faded out or tucked away
       let targetPos = [1.3, 0, 0];
       let targetScale = 1.0;
 
-      const isMobile = window.innerWidth < 768;
+      const isDesktop = window.innerWidth >= 1024;
 
       if (activeStage === 0) {
-        // Boot: hidden
         targetScale = 0.1;
       } else if (activeStage === 1 || activeStage === 8) {
-        // Dossier and Report: right panel
-        targetPos = isMobile ? [0, -0.6, 0] : [viewport.width * 0.22, 0, 0];
-        targetScale = isMobile ? 0.55 : viewport.width * 0.13;
+        if (isDesktop) {
+          targetPos = [viewport.width * 0.22, 0, 0];
+          targetScale = viewport.width * 0.13;
+        } else {
+          targetPos = [0, 0, 0];
+          targetScale = 1.4;
+        }
       } else if (activeStage === 2) {
-        // Evaluation: Central background, smaller
         targetPos = [0, 0, -2];
         targetScale = 1.5;
       } else if (activeStage === 7) {
-        // Operations: Central background
         targetPos = [0, 0, -2.5];
         targetScale = 1.8;
       } else {
-        // Hidden/highly faded for skills, projects, experience, philosophy
         targetPos = [0, 0, -5];
         targetScale = 0.8;
       }
 
-      // Smooth lerp
       groupRef.current.position.x = THREE.MathUtils.lerp(groupRef.current.position.x, targetPos[0], 0.05);
       groupRef.current.position.y = THREE.MathUtils.lerp(groupRef.current.position.y, targetPos[1], 0.05);
       groupRef.current.position.z = THREE.MathUtils.lerp(groupRef.current.position.z, targetPos[2], 0.05);
@@ -84,40 +78,43 @@ const GlobeMesh = ({ activeStage }) => {
     }
   });
 
+  const isDesktop = window.innerWidth >= 1024;
+  const wireframeOpacity = isDesktop ? 0.12 : 0.22;
+  const ring1Opacity     = isDesktop ? 0.25 : 0.40;
+  const ring2Opacity     = isDesktop ? 0.15 : 0.28;
+
   return (
     <group ref={groupRef}>
-      {}
       <mesh ref={sphereRef}>
         <sphereGeometry args={[1.0, 30, 30]} />
-        <meshBasicMaterial 
-          color="#3A86FF" 
-          wireframe={true} 
-          transparent={true} 
-          opacity={0.12} 
+        <meshBasicMaterial
+          color="#3A86FF"
+          wireframe={true}
+          transparent={true}
+          opacity={wireframeOpacity}
         />
       </mesh>
       
-      {}
       <mesh rotation={[Math.PI / 4, 0, 0]}>
         <torusGeometry args={[1.2, 0.003, 8, 64]} />
-        <meshBasicMaterial color="#6EE7FF" transparent={true} opacity={0.25} />
+        <meshBasicMaterial color="#6EE7FF" transparent={true} opacity={ring1Opacity} />
       </mesh>
 
       <mesh rotation={[-Math.PI / 4, Math.PI / 3, 0]}>
         <torusGeometry args={[1.3, 0.002, 8, 64]} />
-        <meshBasicMaterial color="#3A86FF" transparent={true} opacity={0.15} />
+        <meshBasicMaterial color="#3A86FF" transparent={true} opacity={ring2Opacity} />
       </mesh>
       
-      {}
-      <Satellite radius={1.2} speed={0.4} color="#6EE7FF" inclination={Math.PI / 4} />
+      <Satellite radius={1.2} speed={0.4}  color="#6EE7FF" inclination={Math.PI / 4}  />
       <Satellite radius={1.3} speed={-0.3} color="#3A86FF" inclination={-Math.PI / 4} />
-      <Satellite radius={1.1} speed={0.5} color="#34D399" inclination={0} />
+      <Satellite radius={1.1} speed={0.5}  color="#34D399" inclination={0}            />
     </group>
   );
 };
 
 const CompanionCanvas = ({ activeStage }) => {
-  const zIndex = (activeStage === 1 || activeStage === 8) ? 15 : 2;
+  const isDesktop = window.innerWidth >= 1024;
+  const zIndex = (isDesktop && (activeStage === 1 || activeStage === 8)) ? 15 : 2;
 
   return (
     <div className={styles.canvasContainer} style={{ zIndex }}>

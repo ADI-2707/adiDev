@@ -3,14 +3,12 @@
   inset: 0;
   width: 100vw;
   height: 100vh;
-  z-index: 5;
   pointer-events: none;
   overflow: hidden;
 }
 
-@media (max-width: 1023px) {
+@media (max-width: 479px) {
   .canvasContainer {
     display: none;
   }
 }
-
