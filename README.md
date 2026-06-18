@@ -1,40 +1,67 @@
-# adiDev Portfolio
+# adiDev // PROJECT AEGIS: Personnel Assessment Console
 
-A modern, high-performance web portfolio featuring advanced 3D graphics, smooth scroll behaviors, and interactive companion mechanisms.
+PROJECT AEGIS is a simulated restricted-access Personnel Assessment Console and Engineer Evaluation Interface, designed to showcase the work, projects, and skills of Aditya Singh in a premium, gamified format. Visitors act as system operators, navigating through clearances, system logs, and security evaluations.
 
-## Technology Stack
+---
 
-* **Core**: React 19, JavaScript (ES6+), CSS3 Modules, HTML5.
-* **Build System**: Vite.
-* **Runtime Environment**: Node.js.
+## 🖥️ System Architecture & Mechanics
 
-## Third-Party Libraries
+### 1. Instrumentation HUD & State Control
+*   **Sequential Stage Controller:** Built on a single-page React state engine (managing Stages 0 to 8) synchronized with window hash routes (`#boot`, `#dossier`, `#evaluation`, `#systems`, `#cases`, `#facilities`, `#philosophy`, `#operations`, `#report`).
+*   **Mechanical Panel Transitions:** Programmed horizontal sliding steel security doors that part and close during stage switches, styled with custom shadows and border beams.
+*   **Telemetry Navbar HUD:** Includes ticking system clocks, clearance level monitors, audio status indicators, and locked/unlocked indicators corresponding to the operator's evaluation progress.
 
-* **Three.js**: Main WebGL rendering engine.
-* **React Three Fiber (R3F)**: React wrapper for Three.js scene-graph management.
-* **React Three Drei**: Helper abstractions for loading models, animations, environments, shadows, and floating physics.
-* **GSAP (GreenSock Animation Platform)**: Handles precise, physics-like programmatic animations and scale transitions.
-* **Framer Motion**: Manages smooth scroll-triggered 2D animations and entry reveals.
-* **Lenis**: Provides uniform, high-performance smooth scroll behavior across all web browsers.
+### 2. Procedural 3D Wireframe Telemetry
+*   **React Three Fiber Globe:** Renders a custom 3D wireframe telemetry globe with orbiting satellite trackers that transition dynamically in rotation, position, scale, and opacity as stages change.
+*   **Adaptive Stacking Layering:** The canvas container dynamically swaps z-indexes (`15` in Dossier and Report stages to render in front of solid backgrounds; `2` in other stages to float behind interactive content panels), ensuring readability and preventing clipping.
 
-## Advanced Concepts and Implementations
+### 3. Synthesized UI Audio System
+*   **Web Audio API Synthesizer:** Fully procedural offline UI sounds (mechanical typewriter keyboard clicks, heavy hydraulic door sweeps, status warning/success beeps, and continuous thermal printer whirrs) generated in real-time with zero audio asset downloads.
+*   **Global Mute Hook:** Accessible in the header HUD to toggle audio feedback, defaulting to muted.
 
-### Dynamic WebGL Stencil Masking
-To achieve the passport-sized hologram effect inside the Contact section, a custom WebGL stencil mask is used. An invisible ring geometry renders at the exact screen coordinates of the 3D globe and writes a reference value to the WebGL stencil buffer. The astronaut model meshes dynamically enable stencil checking, restricting rendering only to pixels within the globe's boundaries.
+### 4. Interactive Console Sections
+*   **Stage 0: Boot sequence:** A command-line logging terminal that types out server initialization logs and runs load percentages leading to a white coordinate handoff flash.
+*   **Stage 1: Dossier File:** Restricted candidate record files detailing security clearance levels, status indicators, and specialization areas.
+*   **Stage 2: Active Scanners:** Multi-scanner panels executing visual grid animations, expandable candidate story modules, and vertical event timeline log charts.
+*   **Stage 3: Systems Registry:** Interactive documentation panels for core languages and frameworks. Selecting a module triggers real-time SVG schematic animations of micro-architectures.
+*   **Stage 4: Bureau Desk:** Manila project folders spread across a steel grid desk. Opening folders displays project autopsy logs, constraint parameters, obstacle summaries, decision logs (Decision/Reason/Trade-off), and success metric logs.
+*   **Stage 5: Deployment Facilities:** Industrial facility status logs with rotating hardware cogwheels.
+*   **Stage 6: Engineering Philosophy:** Trade-off analysis records answering "Why X?" for core technologies.
+*   **Stage 7: Live Operations:** GitHub contribution matrix grids, live activity radars, and active tool registries.
+*   **Stage 8: Verdict Output:** A virtual thermal slot printer that rolls out a final evaluation report and stamps "APPROVED" with spring-cushioned scaling.
 
-### DOM-to-WebGL Coordinate Projection
-Calculates bounding client rectangles of HTML elements (such as the globe wrapper) in pixels and projects their center coordinates into Three.js 3D world units at specific camera depths using camera-depth viewport parameters. This bridges the layout gap between standard DOM elements and overlay canvases, ensuring exact positioning.
+---
 
-### Single-Loop Synchronized Rendering
-To prevent render-order synchronization lag (which causes dynamic meshes to float away or drift from parent components during fast movements), the 3D space tether is computed inside the main rendering loop. The attachment point calculates the local unscaled backpack offset, multiplies it by the active group scale, applies the rotation quaternion, and regenerates the Catmull-Rom curve and TubeGeometry in the same frame.
+## 🛠️ Technology Stack
 
-### Double-Layered Shader-Like Materials
-The space tether uses a concentric double-layered mesh structure:
-* **Outer Sheath**: A thick, semi-translucent metallic sheath with high reflectivity and low roughness to catch directional specular highlights.
-* **Inner Core**: A thin energy line with high emissive intensity that pulses over time, creating a premium sci-fi tether appearance.
+*   **Core**: React 19, JavaScript (ES6+), CSS3 Modules, HTML5.
+*   **Build Environment**: Vite, npm.
+*   **Graphics & Animation**:
+    *   Three.js (WebGL rendering)
+    *   React Three Fiber (Declarative R3F wrapper)
+    *   Framer Motion (React 2D transitions & door mechanisms)
+*   **Styling**: JetBrains Mono, Space Grotesk, and Inter typography; custom crosshair pointers; carbon, graphite, electric blue, and cyan highlight tokens.
 
-### Global Raycasting and Pointer Constraints
-Since the overlay canvas is set to pass clicks through to the underlying HTML structure (using pointer-events: none), native Three.js pointer interactions are blocked. This project bypasses this constraint by implementing global window listeners for mouse movement and click events, running manual raycasting intersections against the astronaut meshes to trigger hover cursors and click-to-flip animations.
+---
 
-### Physics-Cushioned Target Interpolation
-Astronaut head-tracking uses linear vector interpolation (LERP) to track targets. When switching between cursor coordinates and active shooting stars, the target coordinates themselves are interpolated with custom speed curves, preventing sudden visual snaps and simulating natural muscle acceleration.
+## 🚀 Local Operations & Building
+
+### 1. Install Dependencies
+```bash
+npm install
+```
+
+### 2. Start Local Server
+```bash
+npm run dev
+```
+
+### 3. Compile Production Bundle
+```bash
+npm run build
+```
+
+### 4. Run Linter
+```bash
+npm run lint
+```
