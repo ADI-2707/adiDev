@@ -3,8 +3,8 @@
   min-height: 100vh;
   display: flex;
   align-items: center;
-  padding-top: 7rem;
-  padding-bottom: 3rem;
+  padding-top: clamp(5rem, 10vw, 7rem);
+  padding-bottom: clamp(2rem, 5vw, 3rem);
   background-color: var(--bg-primary);
   width: 100%;
 }
@@ -219,7 +219,7 @@
 
 
 .documentPageSheet {
-  padding: 2.5rem;
+  padding: clamp(1rem, 4vw, 2.5rem);
   background: var(--bg-tertiary);
   display: flex;
   flex-direction: column;
@@ -272,7 +272,8 @@
   padding: 0.5rem 1rem;
   border-radius: 2px;
   text-align: center;
-  width: 250px;
+  width: 100%;
+  max-width: 250px;
 }
 
 .arrow {

@@ -3,8 +3,8 @@
   min-height: 100vh;
   display: flex;
   align-items: center;
-  padding-top: 7rem;
-  padding-bottom: 3rem;
+  padding-top: clamp(5rem, 10vw, 7rem);
+  padding-bottom: clamp(2rem, 5vw, 3rem);
   background-color: var(--bg-primary);
   width: 100%;
   overflow: hidden;
@@ -78,9 +78,9 @@
 
 .paperReportSheet {
   width: 100%;
-  background-color: #f1f3f6; 
-  color: #12161f; 
-  padding: 2.5rem;
+  background-color: #f1f3f6;
+  color: #12161f;
+  padding: clamp(1rem, 4vw, 2.5rem);
   font-family: var(--font-mono);
   display: flex;
   flex-direction: column;
@@ -140,10 +140,10 @@
   position: absolute;
   top: 15%;
   right: 10%;
-  border: 4px double var(--status-success);
+  border: 3px double var(--status-success);
   color: var(--status-success);
   font-family: var(--font-heading);
-  font-size: 30px;
+  font-size: clamp(18px, 5vw, 30px);
   font-weight: 900;
   padding: 6px 16px;
   border-radius: 4px;
@@ -195,6 +195,14 @@
   transition: all 0.2s;
   flex: 1 1 180px;
   max-width: 220px;
+  text-align: center;
+}
+
+@media (max-width: 479px) {
+  .actionBtn {
+    flex: 1 1 100%;
+    max-width: none;
+  }
 }
 
 .actionBtn:hover {

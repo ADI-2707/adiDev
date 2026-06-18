@@ -3,8 +3,8 @@
   min-height: 100vh;
   display: flex;
   align-items: center;
-  padding-top: 7rem;
-  padding-bottom: 3rem;
+  padding-top: clamp(5rem, 10vw, 7rem);
+  padding-bottom: clamp(2rem, 5vw, 3rem);
   background-color: var(--bg-primary);
   width: 100%;
   overflow: hidden;
@@ -110,7 +110,7 @@
 }
 
 .panelBody {
-  padding: 1.25rem;
+  padding: clamp(0.75rem, 3vw, 1.25rem);
 }
 
 
@@ -125,6 +125,7 @@
   flex-direction: column;
   gap: 3px;
   overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
 }
 
 .contribRow {
