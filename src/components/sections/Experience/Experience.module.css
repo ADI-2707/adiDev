@@ -1,189 +1,215 @@
 .section {
-  padding: 5rem 2rem;
-  max-width: 1200px;
-  margin: 0 auto;
+  position: relative;
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  padding-top: 7rem;
+  padding-bottom: 3rem;
+  background-color: var(--bg-primary);
+  width: 100%;
 }
 
-.header {
+.container {
   display: flex;
   flex-direction: column;
-  align-items: center;
-  gap: 1rem;
-  margin-bottom: 4rem;
+  gap: 2rem;
+  width: 100%;
 }
 
-.heading {
-  font-size: clamp(2rem, 4vw, 2.75rem);
-  font-weight: 700;
-  text-align: center;
-  color: #fff;
-}
-
-.gradientSpan {
-  background: linear-gradient(to right, var(--color-lavender), var(--color-fuchsia));
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
-}
-
-.subtext {
-  color: #a3a3a3;
-  text-align: center;
-  max-width: 28rem;
-  line-height: 1.6;
-}
-
-.timeline {
-  position: relative;
-  max-width: 56rem;
-  margin: 0 auto;
-}
-
-.centerLine {
-  position: absolute;
-  left: 50%;
-  top: 0;
-  bottom: 0;
-  width: 1px;
-  background: linear-gradient(to bottom, rgba(51, 194, 204, 0), rgba(51, 194, 204, 0.2), rgba(51, 194, 204, 0));
-  transform: translateX(-50%);
-}
-
-.timelineItem {
-  position: relative;
+.splitGrid {
   display: grid;
   grid-template-columns: 1fr;
-  gap: 1.5rem;
-  margin-bottom: 3rem;
+  gap: 2rem;
+  width: 100%;
 }
 
-.card {
-  position: relative;
+@media (min-width: 1024px) {
+  .splitGrid {
+    grid-template-columns: 0.9fr 1.1fr;
+  }
+}
+
+.facListColumn, .facDetailColumn {
+  display: flex;
+  flex-direction: column;
+}
+
+.facListBody {
   padding: 1.5rem;
-  border-radius: 1rem;
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  background: linear-gradient(to bottom right, rgba(26, 37, 64, 0.6), rgba(30, 27, 75, 0.4));
-  backdrop-filter: blur(8px);
-  transition: border-color 0.3s;
 }
 
-.card:hover {
-  border-color: rgba(255, 255, 255, 0.15);
+.facItemsList {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
 }
 
-.accentBar {
-  position: absolute;
-  left: 0;
-  top: 1.5rem;
-  bottom: 1.5rem;
-  width: 2px;
-  border-radius: 9999px;
-}
-
-.cardInner {
-  padding-left: 1rem;
-}
-
-.periodBadge {
-  font-size: 0.75rem;
-  padding: 0.125rem 0.5rem;
-  border-radius: 9999px;
-  border: 1px solid transparent;
-  display: inline-block;
-  margin-bottom: 0.75rem;
-}
-
-.role {
-  font-size: 1.125rem;
-  font-weight: 700;
-  color: #fff;
-}
-
-.company {
-  color: #a3a3a3;
-  font-size: 0.875rem;
-  margin-bottom: 0.75rem;
-}
-
-.list {
+.facCard {
+  background: rgba(255, 255, 255, 0.02);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  border-radius: 4px;
+  padding: 1.25rem;
+  text-align: left;
   display: flex;
   flex-direction: column;
   gap: 0.5rem;
-  margin-bottom: 1rem;
-  padding: 0;
-  list-style: none;
+  transition: all 0.25s ease;
+  user-select: none;
 }
 
-.listItem {
-  color: #a3a3a3;
-  font-size: 0.875rem;
+.facCard:hover {
+  background: var(--bg-tertiary);
+  border-color: rgba(58, 134, 255, 0.3);
+}
+
+.facCardSelected {
+  background: rgba(58, 134, 255, 0.03) !important;
+  border-color: var(--accent-blue) !important;
+  box-shadow: inset 0 0 10px rgba(58, 134, 255, 0.05);
+}
+
+.facCode {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  color: var(--accent-cyan);
+}
+
+.facTitle {
+  font-family: var(--font-heading);
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.facPeriod {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  color: var(--text-muted);
+}
+
+.roleBadge {
+  color: var(--accent-cyan);
+  font-size: 10px;
+}
+
+/* Blueprint Machine Schematic Animation */
+.blueprintWrapper {
+  border: 1px dashed rgba(255, 255, 255, 0.08);
+  border-radius: 4px;
+  padding: 1rem 1.5rem;
+  background: rgba(0, 0, 0, 0.15);
   display: flex;
-  gap: 0.5rem;
+  align-items: center;
+  gap: 1.5rem;
+  margin-bottom: 1.5rem;
 }
 
-.listItemMarker {
+.blueprintSymbol {
+  position: relative;
+  width: 50px;
+  height: 50px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   flex-shrink: 0;
-  margin-top: 0.125rem;
 }
 
-.tagContainer {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0.5rem;
-}
-
-.tag {
-  padding: 0.125rem 0.5rem;
-  font-size: 0.75rem;
-  border-radius: 0.375rem;
-  background-color: rgba(255, 255, 255, 0.05);
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  color: #a3a3a3;
-}
-
-.dotContainer {
-  display: none;
-}
-
-.dot {
-  width: 0.75rem;
-  height: 0.75rem;
+.gearOuter {
+  position: absolute;
+  inset: 0;
+  border: 2px dashed var(--accent-blue);
   border-radius: 50%;
-  border-width: 2px;
-  border-style: solid;
+  animation: rotateGear 10s linear infinite;
 }
 
-@media (min-width: 768px) {
-  .timelineItem {
-    grid-template-columns: 1fr 1fr;
-    gap: 3rem;
-  }
+.gearInner {
+  position: absolute;
+  inset: 6px;
+  border: 1px dashed var(--accent-cyan);
+  border-radius: 50%;
+  animation: rotateGear 6s linear infinite reverse;
+}
 
-  .timelineItemLeft .cardWrapper {
-    grid-column-start: 1;
-  }
+.blueprintText {
+  font-family: var(--font-mono);
+  font-size: 8px;
+  color: var(--text-muted);
+  text-align: center;
+  z-index: 2;
+}
 
-  .timelineItemRight .cardWrapper {
-    grid-column-start: 2;
-  }
+@keyframes rotateGear {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
 
-  .timelineItemLeft .spacer {
-    grid-column-start: 2;
-  }
+.blueprintLines {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  width: 100%;
+}
 
-  .timelineItemRight .spacer {
-    grid-column-start: 1;
-    grid-row-start: 1;
-  }
+.gridLine {
+  height: 1px;
+  background: linear-gradient(to right, rgba(110, 231, 255, 0.3), rgba(110, 231, 255, 0.02));
+}
 
-  .dotContainer {
-    display: flex;
-    position: absolute;
-    left: 50%;
-    top: 1.5rem;
-    transform: translateX(-50%);
-    flex-direction: column;
-    align-items: center;
-    z-index: 10;
-  }
+.blueprintCode {
+  font-family: var(--font-mono);
+  font-size: 9px;
+  color: var(--status-success);
+}
+
+/* Logs Container */
+.logsContainer {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+}
+
+.logField {
+  border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+  padding-bottom: 0.75rem;
+}
+
+.logLabel {
+  display: block;
+  font-family: var(--font-mono);
+  font-size: 10px;
+  color: var(--text-muted);
+  margin-bottom: 0.25rem;
+  letter-spacing: 0.05em;
+}
+
+.logValue {
+  font-size: 13px;
+  color: var(--text-secondary);
+  line-height: 1.5;
+}
+
+/* Footer bottom next Cta */
+.bottomNav {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 1rem;
+}
+
+.nextCta {
+  background: transparent;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  color: var(--accent-cyan);
+  font-family: var(--font-mono);
+  font-size: 12px;
+  font-weight: bold;
+  letter-spacing: 0.05em;
+  padding: 0.8rem 1.5rem;
+  border-radius: 2px;
+  transition: all 0.2s;
+}
+
+.nextCta:hover {
+  background: rgba(110, 231, 255, 0.05);
+  border-color: var(--accent-cyan);
+  box-shadow: 0 0 15px rgba(110, 231, 255, 0.25);
 }

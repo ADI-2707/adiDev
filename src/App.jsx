@@ -1,41 +1,200 @@
-import { useLenis } from './hooks/useLenis';
-import { useScrollSection } from './hooks/useScrollSection';
+/* eslint-disable no-unused-vars */
+import { useState, useEffect } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
 import Navbar from './components/Navbar/Navbar';
 import CompanionCanvas from './components/companion/CompanionCanvas';
 import Hero from './components/sections/Hero/Hero';
 import About from './components/sections/About/About';
 import Skills from './components/sections/Skills/Skills';
-import Experience from './components/sections/Experience/Experience';
 import Projects from './components/sections/Projects/Projects';
+import Experience from './components/sections/Experience/Experience';
+import Philosophy from './components/sections/Philosophy/Philosophy';
+import Operations from './components/sections/Operations/Operations';
 import Contact from './components/sections/Contact/Contact';
-import Game from './components/sections/Game/Game';
-import Footer from './components/sections/Footer/Footer';
+import { playDoorSlide } from './utils/audio';
 
-const SECTION_IDS = ['hero', 'about', 'skills', 'experience', 'projects', 'contact', 'game'];
+const STAGE_HASHES = {
+  0: '',
+  1: '#dossier',
+  2: '#evaluation',
+  3: '#systems',
+  4: '#cases',
+  5: '#facilities',
+  6: '#philosophy',
+  7: '#operations',
+  8: '#report',
+};
+
+const HASH_TO_STAGE = {
+  '': 0,
+  '#dossier': 1,
+  '#evaluation': 2,
+  '#systems': 3,
+  '#cases': 4,
+  '#facilities': 5,
+  '#philosophy': 6,
+  '#operations': 7,
+  '#report': 8,
+};
 
 const App = () => {
-  useLenis();
-  const activeSection = useScrollSection(SECTION_IDS);
+  const [activeStage, setActiveStage] = useState(0);
+  const [maxUnlockedStage, setMaxUnlockedStage] = useState(1);
+  const [soundMuted, setSoundMuted] = useState(true);
+  const [isTransitioning, setIsTransitioning] = useState(false);
+
+  // Synchronize audio preference to window level for utils reference
+  useEffect(() => {
+    window.__soundMuted = soundMuted;
+  }, [soundMuted]);
+
+  // Sync hash routing on mount and change
+  useEffect(() => {
+    const handleHashChange = () => {
+      const hash = window.location.hash;
+      const stage = HASH_TO_STAGE[hash] !== undefined ? HASH_TO_STAGE[hash] : 0;
+      
+      setActiveStage(stage);
+      if (stage > maxUnlockedStage) {
+        setMaxUnlockedStage(stage);
+      }
+    };
+
+    handleHashChange();
+    window.addEventListener('hashchange', handleHashChange);
+    return () => window.removeEventListener('hashchange', handleHashChange);
+  }, [maxUnlockedStage]);
+
+  // Mechanical stage transition trigger
+  const handleSetStage = (newStage) => {
+    if (newStage === activeStage) return;
+
+    setIsTransitioning(true);
+    playDoorSlide();
+
+    setTimeout(() => {
+      // Halfway through (door closed): swap components and hashes
+      setActiveStage(newStage);
+      if (newStage > maxUnlockedStage) {
+        setMaxUnlockedStage(newStage);
+      }
+      window.location.hash = STAGE_HASHES[newStage] || '';
+    }, 400);
+
+    setTimeout(() => {
+      // Transition complete: open doors
+      setIsTransitioning(false);
+    }, 800);
+  };
+
+  const toggleMute = () => {
+    setSoundMuted((m) => !m);
+  };
 
   return (
-    <div>
+    <div style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column' }}>
+      {/* Global telemetry grids and scan sweeping lines */}
       <div className="galaxy-background" />
-      <div className={`space-overlay ${activeSection === 'hero' ? '' : 'darker'}`} />
-      <Navbar />
+      <div className="space-overlay" />
+      <div className="scanline-sweep" />
 
-      <main>
-        <Hero />
-        <About />
-        <Skills />
-        <Experience />
-        <Projects />
-        <Contact />
-        <Game />
+      {/* Instrumentation Header HUD */}
+      <Navbar 
+        activeStage={activeStage} 
+        setStage={handleSetStage} 
+        maxUnlockedStage={maxUnlockedStage}
+        soundMuted={soundMuted}
+        toggleMute={toggleMute}
+      />
+
+      <main style={{ flex: 1, display: 'flex', flexDirection: 'column' }}>
+        <AnimatePresence mode="wait">
+          {activeStage === 0 && (
+            <motion.div key="boot" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} style={{ flex: 1, display: 'flex' }}>
+              <Hero activeStage={activeStage} setStage={handleSetStage} />
+            </motion.div>
+          )}
+          {activeStage === 1 && (
+            <motion.div key="dossier" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} style={{ flex: 1, display: 'flex' }}>
+              <Hero activeStage={activeStage} setStage={handleSetStage} />
+            </motion.div>
+          )}
+          {activeStage === 2 && (
+            <motion.div key="eval" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} style={{ flex: 1, display: 'flex' }}>
+              <About activeStage={activeStage} setStage={handleSetStage} />
+            </motion.div>
+          )}
+          {activeStage === 3 && (
+            <motion.div key="skills" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} style={{ flex: 1, display: 'flex' }}>
+              <Skills activeStage={activeStage} setStage={handleSetStage} />
+            </motion.div>
+          )}
+          {activeStage === 4 && (
+            <motion.div key="projects" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} style={{ flex: 1, display: 'flex' }}>
+              <Projects activeStage={activeStage} setStage={handleSetStage} />
+            </motion.div>
+          )}
+          {activeStage === 5 && (
+            <motion.div key="experience" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} style={{ flex: 1, display: 'flex' }}>
+              <Experience activeStage={activeStage} setStage={handleSetStage} />
+            </motion.div>
+          )}
+          {activeStage === 6 && (
+            <motion.div key="philosophy" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} style={{ flex: 1, display: 'flex' }}>
+              <Philosophy activeStage={activeStage} setStage={handleSetStage} />
+            </motion.div>
+          )}
+          {activeStage === 7 && (
+            <motion.div key="operations" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} style={{ flex: 1, display: 'flex' }}>
+              <Operations activeStage={activeStage} setStage={handleSetStage} />
+            </motion.div>
+          )}
+          {activeStage === 8 && (
+            <motion.div key="report" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} style={{ flex: 1, display: 'flex' }}>
+              <Contact activeStage={activeStage} setStage={handleSetStage} />
+            </motion.div>
+          )}
+        </AnimatePresence>
       </main>
 
-      <Footer />
+      {/* R3F wireframe globe backplane telemetry */}
+      <CompanionCanvas activeStage={activeStage} />
 
-      <CompanionCanvas activeSection={activeSection} />
+      {/* Interactive mechanical doors transition layer */}
+      <AnimatePresence>
+        {isTransitioning && (
+          <div style={{ position: 'fixed', inset: 0, zIndex: 9999, display: 'flex', pointerEvents: 'none' }}>
+            <motion.div
+              initial={{ x: '-100%' }}
+              animate={{ x: '0%' }}
+              exit={{ x: '-100%' }}
+              transition={{ duration: 0.4, ease: 'easeInOut' }}
+              style={{ 
+                width: '50%', 
+                height: '100%', 
+                backgroundColor: 'var(--bg-secondary)', 
+                borderRight: '1px solid var(--accent-blue)', 
+                boxShadow: '10px 0 30px rgba(0,0,0,0.5)',
+                pointerEvents: 'auto' 
+              }}
+            />
+            <motion.div
+              initial={{ x: '100%' }}
+              animate={{ x: '0%' }}
+              exit={{ x: '100%' }}
+              transition={{ duration: 0.4, ease: 'easeInOut' }}
+              style={{ 
+                width: '50%', 
+                height: '100%', 
+                backgroundColor: 'var(--bg-secondary)', 
+                borderLeft: '1px solid var(--accent-blue)', 
+                boxShadow: '-10px 0 30px rgba(0,0,0,0.5)',
+                pointerEvents: 'auto' 
+              }}
+            />
+          </div>
+        )}
+      </AnimatePresence>
     </div>
   );
 };
