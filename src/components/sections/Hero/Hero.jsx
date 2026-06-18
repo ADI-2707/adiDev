@@ -1,6 +1,6 @@
-/* eslint-disable no-unused-vars */
+
 import { useState, useEffect } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
+import { AnimatePresence } from 'framer-motion';
 import styles from './Hero.module.css';
 import Typewriter from '../../ui/Typewriter';
 import { playSuccess, playDoorSlide, playTone } from '../../../utils/audio';
@@ -11,17 +11,17 @@ const Hero = ({ activeStage, setStage }) => {
   const [bootStep, setBootStep] = useState(0);
   const [showFlash, setShowFlash] = useState(false);
 
-  // Auto-advance boot sequence steps
+  
   useEffect(() => {
     if (activeStage !== 0) return;
 
-    const timer1 = setTimeout(() => setBootStep(1), 1200); // Initializing
-    const timer2 = setTimeout(() => setBootStep(2), 2600); // Connecting
-    const timer3 = setTimeout(() => setBootStep(3), 4000); // Decrypting
-    const timer4 = setTimeout(() => setBootStep(4), 5400); // Authenticating
-    const timer5 = setTimeout(() => setBootStep(5), 7000); // Progress bar complete
+    const timer1 = setTimeout(() => setBootStep(1), 1200); 
+    const timer2 = setTimeout(() => setBootStep(2), 2600); 
+    const timer3 = setTimeout(() => setBootStep(3), 4000); 
+    const timer4 = setTimeout(() => setBootStep(4), 5400); 
+    const timer5 = setTimeout(() => setBootStep(5), 7000); 
     const timer6 = setTimeout(() => {
-      setBootStep(6); // Access Granted
+      setBootStep(6); 
       playSuccess();
     }, 7800);
     const timer7 = setTimeout(() => {
@@ -30,7 +30,7 @@ const Hero = ({ activeStage, setStage }) => {
     }, 9200);
     const timer8 = setTimeout(() => {
       setShowFlash(false);
-      // Handoff to Dossier Stage 1
+      
       setStage(1);
     }, 9400);
 
@@ -46,17 +46,17 @@ const Hero = ({ activeStage, setStage }) => {
     };
   }, [activeStage, setStage]);
 
-  // Stage 1 Action trigger
+  
   const handleInitialize = () => {
     playDoorSlide();
-    // Move to Stage 2: Candidate Evaluation
+    
     setStage(2);
   };
 
   if (activeStage === 0) {
     return (
       <div className={styles.bootContainer}>
-        {/* Faint blueprint grid backdrop */}
+        {}
         <div className="galaxy-background" />
         
         <div className={styles.terminal}>
@@ -95,7 +95,7 @@ const Hero = ({ activeStage, setStage }) => {
           </div>
         </div>
 
-        {/* White handoff flash */}
+        {}
         <AnimatePresence>
           {showFlash && (
             <motion.div
@@ -114,7 +114,7 @@ const Hero = ({ activeStage, setStage }) => {
   if (activeStage === 1) {
     return (
       <section id="hero" className={styles.dossierSection}>
-        {/* CAD Blueprint grid overlay */}
+        {}
         <div className={styles.cadBlueprintPaper}>
           <div className={styles.cadCoordinate}>A-14</div>
           <div className={styles.cadCoordinate} style={{ right: '2rem', bottom: '2rem' }}>X:42 / Y:15</div>
@@ -183,7 +183,7 @@ const Hero = ({ activeStage, setStage }) => {
             </motion.div>
           </div>
 
-          {/* Spacer column on right for the rotating globe Canvas */}
+          {}
           <div className={styles.rightSpace} />
         </div>
       </section>
@@ -193,7 +193,7 @@ const Hero = ({ activeStage, setStage }) => {
   return null;
 };
 
-// Simulated progress bar component for Stage 0
+
 const ProgressBar = ({ duration }) => {
   const [progress, setProgress] = useState(0);
 
@@ -204,7 +204,7 @@ const ProgressBar = ({ duration }) => {
       let pct = Math.min(100, Math.floor((elapsed / duration) * 100));
       setProgress(pct);
       
-      // Subtly play keyboard-style click during loading ticks
+      
       if (pct % 8 === 0) {
         playTone(300 + pct * 2, 0.015, 0.005);
       }
@@ -217,7 +217,7 @@ const ProgressBar = ({ duration }) => {
     return () => clearInterval(interval);
   }, [duration]);
 
-  // Visual text loading bar
+  
   const barsCount = Math.floor(progress / 5);
   const fillText = '█'.repeat(barsCount) + ' '.repeat(20 - barsCount);
 

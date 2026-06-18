@@ -1,6 +1,6 @@
-/* eslint-disable no-unused-vars */
+
 import { useState } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
+import { AnimatePresence } from 'framer-motion';
 import styles from './Skills.module.css';
 import { playTone } from '../../../utils/audio';
 
@@ -214,7 +214,7 @@ const Skills = ({ activeStage, setStage }) => {
     <section id="skills" className={styles.section}>
       <div className={`${styles.container} c-space`}>
         <div className={styles.splitGrid}>
-          {/* Left Side: Installed Systems Modules Grid */}
+          {}
           <div className={styles.gridColumn}>
             <div className="tech-panel" style={{ height: '100%' }}>
               <div className="tech-panel-header">
@@ -245,7 +245,7 @@ const Skills = ({ activeStage, setStage }) => {
             </div>
           </div>
 
-          {/* Right Side: Detailed Tech Spec Document */}
+          {}
           <div className={styles.detailColumn}>
             <AnimatePresence mode="wait">
               {activeModuleData ? (

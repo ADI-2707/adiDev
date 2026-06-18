@@ -1,6 +1,6 @@
-/* eslint-disable no-unused-vars */
+
 import { useState } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
+import { AnimatePresence } from 'framer-motion';
 import styles from './Experience.module.css';
 import { playTone } from '../../../utils/audio';
 
@@ -56,7 +56,7 @@ const Experience = ({ activeStage, setStage }) => {
     <section id="experience" className={styles.section}>
       <div className={`${styles.container} c-space`}>
         <div className={styles.splitGrid}>
-          {/* Left Column: Facility Register */}
+          {}
           <div className={styles.facListColumn}>
             <div className="tech-panel" style={{ height: '100%' }}>
               <div className="tech-panel-header">
@@ -84,7 +84,7 @@ const Experience = ({ activeStage, setStage }) => {
             </div>
           </div>
 
-          {/* Right Column: Facility Blueprint & Logs */}
+          {}
           <div className={styles.facDetailColumn}>
             <AnimatePresence mode="wait">
               {currentFac && (
@@ -102,7 +102,7 @@ const Experience = ({ activeStage, setStage }) => {
                     <span className={styles.roleBadge}>{currentFac.role.toUpperCase()}</span>
                   </div>
                   <div className="tech-panel-body">
-                    {/* Industrial Animation Schematic */}
+                    {}
                     <div className={styles.blueprintWrapper}>
                       <div className={styles.blueprintSymbol}>
                         <div className={styles.gearOuter} />
@@ -116,7 +116,7 @@ const Experience = ({ activeStage, setStage }) => {
                       </div>
                     </div>
 
-                    {/* Declassified Logs */}
+                    {}
                     <div className={styles.logsContainer}>
                       <div className={styles.logField}>
                         <span className={styles.logLabel}>[DELIVERABLES] PROJECTS DELIVERED</span>

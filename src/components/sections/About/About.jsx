@@ -1,6 +1,6 @@
-/* eslint-disable no-unused-vars */
+
 import { useState, useEffect } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
+import { AnimatePresence } from 'framer-motion';
 import styles from './About.module.css';
 import { playSuccess, playTone } from '../../../utils/audio';
 
@@ -14,18 +14,18 @@ const TIMELINE_EVENTS = [
 ];
 
 const About = ({ activeStage, setStage }) => {
-  const [scanStep, setScanStep] = useState(0); // 0: Academic, 1: Professional, 2: Technical, 3: Completed
+  const [scanStep, setScanStep] = useState(0); 
   const [academicProgress, setAcademicProgress] = useState(0);
   const [professionalProgress, setProfessionalProgress] = useState(0);
   const [technicalProgress, setTechnicalProgress] = useState(0);
   
   const [expandedCard, setExpandedCard] = useState(null);
 
-  // Sequential Scanning Logic
+  
   useEffect(() => {
     if (activeStage !== 2) return;
     
-    // Academic Scan
+    
     let interval;
     if (scanStep === 0) {
       interval = setInterval(() => {
@@ -131,7 +131,7 @@ const About = ({ activeStage, setStage }) => {
               transition={{ duration: 0.5 }}
               className={styles.resultsGrid}
             >
-              {/* Summary Block */}
+              {}
               <div className={styles.summaryBlock}>
                 <div className="tech-panel">
                   <div className="tech-panel-header">
@@ -160,7 +160,7 @@ const About = ({ activeStage, setStage }) => {
                   </div>
                 </div>
 
-                {/* Interactive Personality Section */}
+                {}
                 <div className={styles.personalitySection}>
                   <h3 className={styles.sectionHeader}>WHY WAS THIS ENGINEER BUILT? // MOTIVATION</h3>
                   <div className={styles.personalityGrid}>
@@ -214,7 +214,7 @@ const About = ({ activeStage, setStage }) => {
                 </div>
               </div>
 
-              {/* Timeline Block */}
+              {}
               <div className={styles.timelineBlock}>
                 <div className="tech-panel" style={{ height: '100%' }}>
                   <div className="tech-panel-header">

@@ -52,7 +52,7 @@
   pointer-events: none;
 }
 
-/* Stage 1 Dossier Layout */
+
 .dossierSection {
   position: relative;
   min-height: 100vh;
@@ -63,7 +63,7 @@
   background-color: var(--bg-primary);
 }
 
-/* CAD Blueprint Lines Overlay */
+
 .cadBlueprintPaper {
   position: absolute;
   inset: 0;

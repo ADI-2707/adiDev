@@ -10,7 +10,7 @@
   overflow: hidden;
 }
 
-/* World Telemetry Graphic Overlay */
+
 .worldBackplane {
   position: absolute;
   inset: 0;
@@ -113,7 +113,7 @@
   padding: 1.25rem;
 }
 
-/* Contribution matrix styling */
+
 .contribWrapper {
   display: flex;
   flex-direction: column;
@@ -154,7 +154,7 @@
   justify-content: flex-end;
 }
 
-/* Stack tags gauges */
+
 .stackTagsGrid {
   display: flex;
   flex-wrap: wrap;
@@ -182,7 +182,7 @@
   box-shadow: 0 0 6px var(--accent-cyan);
 }
 
-/* Public repos list */
+
 .reposList {
   display: flex;
   flex-direction: column;
@@ -227,7 +227,7 @@
   line-height: 1.4;
 }
 
-/* Current Learning Tracks */
+
 .tracksList {
   display: flex;
   flex-direction: column;
@@ -263,7 +263,7 @@
   color: var(--accent-cyan);
 }
 
-/* Footer bottom cta */
+
 .bottomNav {
   display: flex;
   justify-content: flex-end;

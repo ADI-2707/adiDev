@@ -114,7 +114,7 @@
   padding: 0 1rem;
 }
 
-/* Hide scrollbar for navContainer */
+
 .navContainer::-webkit-scrollbar {
   display: none;
 }
@@ -162,7 +162,7 @@
     display: none;
   }
   .telemetryItem:nth-child(1) {
-    display: none; /* Hide clock on mobile */
+    display: none; 
   }
   .navItem {
     padding: 0.6rem 0.8rem;

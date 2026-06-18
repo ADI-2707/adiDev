@@ -10,7 +10,7 @@
   overflow: hidden;
 }
 
-/* CAD blueprint background overlay */
+
 .cadBlueprintPaper {
   position: absolute;
   inset: 0;
@@ -45,7 +45,7 @@
   z-index: 10;
 }
 
-/* Printer Shell Slot Animation */
+
 .printerSlotWrapper {
   width: 100%;
   max-width: 550px;
@@ -75,11 +75,11 @@
   letter-spacing: 0.05em;
 }
 
-/* Physical printed paper page sheet */
+
 .paperReportSheet {
   width: 100%;
-  background-color: #f1f3f6; /* Near-white industrial paper sheet */
-  color: #12161f; /* Dark text */
+  background-color: #f1f3f6; 
+  color: #12161f; 
   padding: 2.5rem;
   font-family: var(--font-mono);
   display: flex;
@@ -135,7 +135,7 @@
   min-height: 1.6em;
 }
 
-/* Red / Green Approved Stamp Overlay */
+
 .approvedStamp {
   position: absolute;
   top: 15%;
@@ -154,7 +154,7 @@
   pointer-events: none;
 }
 
-/* Outro and Action buttons */
+
 .outroAndCtas {
   display: flex;
   flex-direction: column;

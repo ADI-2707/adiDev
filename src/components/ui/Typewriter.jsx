@@ -34,7 +34,7 @@ export const Typewriter = ({
         const char = text.charAt(index);
         setDisplayedText((prev) => prev + char);
         
-        // Only click for non-whitespace characters to feel more natural
+        
         if (char.trim() !== '') {
           playClick();
         }

@@ -1,5 +1,5 @@
-/* eslint-disable no-unused-vars */
-import { useState, useEffect, useMemo } from 'react';
+
+import { useState, useEffect } from 'react';
 import styles from './Operations.module.css';
 import { playTone } from '../../../utils/audio';
 
@@ -34,7 +34,7 @@ const CONTRIB_GRID = (() => {
 const Operations = ({ activeStage, setStage }) => {
   const [livePulse, setLivePulse] = useState(0);
 
-  // Live sensor ticking pulse
+  
   useEffect(() => {
     if (activeStage !== 7) return;
     const interval = setInterval(() => {
@@ -53,7 +53,7 @@ const Operations = ({ activeStage, setStage }) => {
 
   return (
     <section id="operations" className={styles.section}>
-      {/* World Telemetry Backplane */}
+      {}
       <div className={styles.worldBackplane}>
         <div className={styles.worldGridLines} />
         <div className={styles.satelliteTracker} style={{ top: '25%', left: '40%' }} />
@@ -62,7 +62,7 @@ const Operations = ({ activeStage, setStage }) => {
 
       <div className={`${styles.container} c-space`}>
         <div className={styles.gridContainer}>
-          {/* Header log */}
+          {}
           <div className={styles.consoleHeader}>
             <div className={styles.consoleBrand}>
               <span className={styles.liveIndicator}>• LIVE</span>
@@ -72,9 +72,9 @@ const Operations = ({ activeStage, setStage }) => {
           </div>
 
           <div className={styles.panelsLayout}>
-            {/* Top row: Activity Graph & Stack */}
+            {}
             <div className={styles.rowTop}>
-              {/* GitHub Contributions Grid */}
+              {}
               <div className="tech-panel" style={{ flex: 1.5 }}>
                 <div className="tech-panel-header">
                   <span>LIVE_ACTIVITY // CONTRIBUTION_MATRIX</span>
@@ -116,7 +116,7 @@ const Operations = ({ activeStage, setStage }) => {
                 </div>
               </div>
 
-              {/* Current stack gauge */}
+              {}
               <div className="tech-panel" style={{ flex: 0.8 }}>
                 <div className="tech-panel-header">
                   <span>ACTIVE_STACK // ENG_TOOLS</span>
@@ -135,9 +135,9 @@ const Operations = ({ activeStage, setStage }) => {
               </div>
             </div>
 
-            {/* Bottom row: Repositories & Learnings */}
+            {}
             <div className={styles.rowBottom}>
-              {/* Repos list */}
+              {}
               <div className="tech-panel" style={{ flex: 1.2 }}>
                 <div className="tech-panel-header">
                   <span>PUBLIC_REPOS // CODE_DECLASSIFIED</span>
@@ -161,7 +161,7 @@ const Operations = ({ activeStage, setStage }) => {
                 </div>
               </div>
 
-              {/* Current Learning Tracks */}
+              {}
               <div className="tech-panel" style={{ flex: 1.1 }}>
                 <div className="tech-panel-header">
                   <span>RESEARCH_LOGS // LEARNING_TRACKS</span>

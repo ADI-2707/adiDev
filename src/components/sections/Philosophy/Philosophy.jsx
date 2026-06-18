@@ -1,6 +1,6 @@
-/* eslint-disable no-unused-vars */
+
 import { useState } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
+import { AnimatePresence } from 'framer-motion';
 import styles from './Philosophy.module.css';
 import { playTone } from '../../../utils/audio';
 
@@ -66,7 +66,7 @@ const Philosophy = ({ activeStage, setStage }) => {
         </div>
 
         <div className={styles.splitGrid}>
-          {/* Left panel: Rationale selector */}
+          {}
           <div className={styles.selectorColumn}>
             <div className="tech-panel" style={{ height: '100%' }}>
               <div className="tech-panel-header">
@@ -93,7 +93,7 @@ const Philosophy = ({ activeStage, setStage }) => {
             </div>
           </div>
 
-          {/* Right panel: Detail trade-offs view */}
+          {}
           <div className={styles.detailColumn}>
             <AnimatePresence mode="wait">
               {activeRationale && (

@@ -1,6 +1,6 @@
-/* eslint-disable no-unused-vars */
+
 import { useState, useEffect } from 'react';
-import { motion } from 'framer-motion';
+
 import styles from './Navbar.module.css';
 
 const STAGE_LABELS = [
@@ -17,7 +17,7 @@ const STAGE_LABELS = [
 const Navbar = ({ activeStage, setStage, maxUnlockedStage, soundMuted, toggleMute }) => {
   const [systemTime, setSystemTime] = useState('');
 
-  // Real-time ticking system clock for tech aesthetic
+  
   useEffect(() => {
     const updateTime = () => {
       const d = new Date();
@@ -29,7 +29,7 @@ const Navbar = ({ activeStage, setStage, maxUnlockedStage, soundMuted, toggleMut
     return () => clearInterval(interval);
   }, []);
 
-  // Show nothing during boot sequence
+  
   if (activeStage === 0) return null;
 
   return (

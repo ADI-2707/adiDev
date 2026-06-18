@@ -1,8 +1,8 @@
-/* eslint-disable no-unused-vars */
+
 import { useState } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
+import { AnimatePresence } from 'framer-motion';
 import styles from './Projects.module.css';
-import { playTone, playSuccess } from '../../../utils/audio';
+import { playTone } from '../../../utils/audio';
 
 
 const CASES_DATA = [
@@ -10,7 +10,7 @@ const CASES_DATA = [
     id: '001',
     subject: 'Stockyard System',
     objectiveName: 'Offline Warehouse Platform',
-    status: 'CLOSED', // Success/Green
+    status: 'CLOSED', 
     accent: '#34D399',
     docs: {
       objective: {
@@ -254,7 +254,7 @@ const FolderBlueprint = ({ type }) => {
 
 const Projects = ({ activeStage, setStage }) => {
   const [selectedCase, setSelectedCase] = useState(null);
-  const [activeTab, setActiveTab] = useState('objective'); // 'objective', 'constraints', 'reconnaissance', 'blueprint', 'timeline', 'decisions', 'incidents', 'outcome'
+  const [activeTab, setActiveTab] = useState('objective'); 
 
   if (activeStage !== 4) return null;
 
@@ -318,7 +318,7 @@ const Projects = ({ activeStage, setStage }) => {
               transition={{ duration: 0.4 }}
               className={`${styles.openFolderWrapper} tech-panel`}
             >
-              {/* Folder header block */}
+              {}
               <div className={styles.openFolderHeader}>
                 <div className={styles.openFolderBrand}>
                   <span className={styles.brandPrompt}>&gt;</span>
@@ -329,9 +329,9 @@ const Projects = ({ activeStage, setStage }) => {
                 </button>
               </div>
 
-              {/* Folder body containing the 8-document sequence */}
+              {}
               <div className={styles.folderContentGrid}>
-                {/* Side document tabs list */}
+                {}
                 <div className={styles.documentTabsColumn}>
                   {[
                     { id: 'objective', label: '1. OBJECTIVE' },
@@ -356,7 +356,7 @@ const Projects = ({ activeStage, setStage }) => {
                   ))}
                 </div>
 
-                {/* Main document page paper sheet */}
+                {}
                 <div className={styles.documentPageSheet}>
                   <AnimatePresence mode="wait">
                     <motion.div
@@ -371,21 +371,21 @@ const Projects = ({ activeStage, setStage }) => {
                         {currentCase.docs[activeTab]?.title || activeTab.toUpperCase()}
                       </h4>
                       
-                      {/* Document text content */}
+                      {}
                       {currentCase.docs[activeTab]?.text && (
                         <p className={styles.documentPageBodyText}>
                           {currentCase.docs[activeTab].text}
                         </p>
                       )}
 
-                      {/* Document schematics (Blueprint) */}
+                      {}
                       {activeTab === 'blueprint' && (
                         <div className={styles.documentSchematicBox}>
                           <FolderBlueprint type={currentCase.docs.blueprint.diagram} />
                         </div>
                       )}
 
-                      {/* Document timeline events */}
+                      {}
                       {activeTab === 'timeline' && (
                         <div className={styles.documentTimelineList}>
                           {currentCase.docs.timeline.events.map((evt, index) => (
@@ -397,7 +397,7 @@ const Projects = ({ activeStage, setStage }) => {
                         </div>
                       )}
 
-                      {/* Document decisions log */}
+                      {}
                       {activeTab === 'decisions' && (
                         <div className={styles.documentDecisionList}>
                           {currentCase.docs.decisions.items.map((item, index) => (
@@ -421,7 +421,7 @@ const Projects = ({ activeStage, setStage }) => {
                         </div>
                       )}
 
-                      {/* Document incident logs */}
+                      {}
                       {activeTab === 'incidents' && (
                         <div className={styles.documentIncidentList}>
                           {currentCase.docs.incidents.reports.map((rpt, index) => (
@@ -440,7 +440,7 @@ const Projects = ({ activeStage, setStage }) => {
                         </div>
                       )}
 
-                      {/* Document outcome links */}
+                      {}
                       {activeTab === 'outcome' && currentCase.docs.outcome.links && (
                         <div className={styles.outcomeLinksRow}>
                           <a

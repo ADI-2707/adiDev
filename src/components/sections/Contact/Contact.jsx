@@ -1,6 +1,6 @@
-/* eslint-disable no-unused-vars */
+
 import { useState, useEffect } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
+import { AnimatePresence } from 'framer-motion';
 import styles from './Contact.module.css';
 import Typewriter from '../../ui/Typewriter';
 import { playPrinter, playSuccess, playTone } from '../../../utils/audio';
@@ -15,15 +15,15 @@ const REPORT_ROWS = [
 ];
 
 const Contact = ({ activeStage, setStage }) => {
-  const [printState, setPrintState] = useState(0); // 0: Idle, 1: Printing/Sliding, 2: Typing, 3: Stamp, 4: Finished
+  const [printState, setPrintState] = useState(0); 
 
   useEffect(() => {
     if (activeStage !== 8) return;
     
-    // Start whirr
+    
     playPrinter();
     
-    // Slide paper (deferred to avoid synchronous state updates in effect body)
+    
     const slideTimer = setTimeout(() => {
       setPrintState(1);
     }, 50);
@@ -60,7 +60,7 @@ const Contact = ({ activeStage, setStage }) => {
 
   return (
     <section id="contact" className={styles.section}>
-      {/* CAD blueprint coordinate background */}
+      {}
       <div className={styles.cadBlueprintPaper}>
         <div className={styles.cadCoordinate}>VERDICT_STAGE_8</div>
         <div className={styles.cadGridMark} style={{ top: '30%' }} />
@@ -69,7 +69,7 @@ const Contact = ({ activeStage, setStage }) => {
 
       <div className={`${styles.container} c-space`}>
         <div className={styles.printerSlotWrapper}>
-          {/* Printer top slot body */}
+          {}
           <div className={styles.printerSlotHeader}>
             <span className={styles.printerStatusText}>PRINTER_ONLINE // SYSTEM_VERDICT_OUTPUT</span>
           </div>
@@ -114,7 +114,7 @@ const Contact = ({ activeStage, setStage }) => {
                     </div>
                   )}
 
-                  {/* Stamp Graphic */}
+                  {}
                   <AnimatePresence>
                     {printState >= 3 && (
                       <motion.div
@@ -133,7 +133,7 @@ const Contact = ({ activeStage, setStage }) => {
           </AnimatePresence>
         </div>
 
-        {/* Final CTA Buttons and Outro */}
+        {}
         <AnimatePresence>
           {printState === 4 && (
             <motion.div

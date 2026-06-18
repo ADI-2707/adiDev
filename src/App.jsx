@@ -1,6 +1,6 @@
-/* eslint-disable no-unused-vars */
+
 import { useState, useEffect } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
+import { AnimatePresence } from 'framer-motion';
 import Navbar from './components/Navbar/Navbar';
 import CompanionCanvas from './components/companion/CompanionCanvas';
 import Hero from './components/sections/Hero/Hero';
@@ -43,12 +43,12 @@ const App = () => {
   const [soundMuted, setSoundMuted] = useState(true);
   const [isTransitioning, setIsTransitioning] = useState(false);
 
-  // Synchronize audio preference to window level for utils reference
+  
   useEffect(() => {
     window.__soundMuted = soundMuted;
   }, [soundMuted]);
 
-  // Sync hash routing on mount and change
+  
   useEffect(() => {
     const handleHashChange = () => {
       const hash = window.location.hash;
@@ -65,7 +65,7 @@ const App = () => {
     return () => window.removeEventListener('hashchange', handleHashChange);
   }, [maxUnlockedStage]);
 
-  // Mechanical stage transition trigger
+  
   const handleSetStage = (newStage) => {
     if (newStage === activeStage) return;
 
@@ -93,12 +93,12 @@ const App = () => {
 
   return (
     <div style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column' }}>
-      {/* Global telemetry grids and scan sweeping lines */}
+      {}
       <div className="galaxy-background" />
       <div className="space-overlay" />
       <div className="scanline-sweep" />
 
-      {/* Instrumentation Header HUD */}
+      {}
       <Navbar 
         activeStage={activeStage} 
         setStage={handleSetStage} 
@@ -157,10 +157,10 @@ const App = () => {
         </AnimatePresence>
       </main>
 
-      {/* R3F wireframe globe backplane telemetry */}
+      {}
       <CompanionCanvas activeStage={activeStage} />
 
-      {/* Interactive mechanical doors transition layer */}
+      {}
       <AnimatePresence>
         {isTransitioning && (
           <div style={{ position: 'fixed', inset: 0, zIndex: 9999, display: 'flex', pointerEvents: 'none' }}>

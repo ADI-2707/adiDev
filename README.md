@@ -4,7 +4,7 @@ PROJECT AEGIS is a simulated restricted-access Personnel Assessment Console and 
 
 ---
 
-## 🖥️ System Architecture & Mechanics
+##  System Architecture & Mechanics
 
 ### 1. Instrumentation HUD & State Control
 *   **Sequential Stage Controller:** Built on a single-page React state engine (managing Stages 0 to 8) synchronized with window hash routes (`#boot`, `#dossier`, `#evaluation`, `#systems`, `#cases`, `#facilities`, `#philosophy`, `#operations`, `#report`).
@@ -32,7 +32,7 @@ PROJECT AEGIS is a simulated restricted-access Personnel Assessment Console and 
 
 ---
 
-## 🛠️ Technology Stack
+##  Technology Stack
 
 *   **Core**: React 19, JavaScript (ES6+), CSS3 Modules, HTML5.
 *   **Build Environment**: Vite, npm.
@@ -44,7 +44,7 @@ PROJECT AEGIS is a simulated restricted-access Personnel Assessment Console and 
 
 ---
 
-## 🚀 Local Operations & Building
+##  Local Operations & Building
 
 ### 1. Install Dependencies
 ```bash

@@ -1,21 +1,21 @@
-/* eslint-disable no-unused-vars */
+
 import { Canvas, useFrame, useThree } from '@react-three/fiber';
-import { Suspense, useRef, useState, useEffect } from 'react';
+import { Suspense, useRef } from 'react';
 import * as THREE from 'three';
 import styles from './CompanionCanvas.module.css';
 
-// A single satellite dot moving along an orbit
+
 const Satellite = ({ radius, speed, color, inclination = 0 }) => {
   const meshRef = useRef();
   
   useFrame((state) => {
     if (!meshRef.current) return;
-    // Calculate orbital position
+    
     const t = state.clock.getElapsedTime() * speed;
     const x = Math.cos(t) * radius;
     const z = Math.sin(t) * radius;
     
-    // Apply inclination rotation
+    
     const pos = new THREE.Vector3(x, 0, z);
     pos.applyAxisAngle(new THREE.Vector3(1, 0, 0), inclination);
     
@@ -30,7 +30,7 @@ const Satellite = ({ radius, speed, color, inclination = 0 }) => {
   );
 };
 
-// Wireframe Globe Component
+
 const GlobeMesh = ({ activeStage }) => {
   const groupRef = useRef();
   const sphereRef = useRef();
@@ -49,34 +49,28 @@ const GlobeMesh = ({ activeStage }) => {
       // Other stages: Faded out or tucked away
       let targetPos = [1.3, 0, 0];
       let targetScale = 1.0;
-      let targetOpacity = 0.85;
 
       const isMobile = window.innerWidth < 768;
 
       if (activeStage === 0) {
         // Boot: hidden
-        targetOpacity = 0.0;
         targetScale = 0.1;
       } else if (activeStage === 1 || activeStage === 8) {
         // Dossier and Report: right panel
         targetPos = isMobile ? [0, -0.6, 0] : [viewport.width * 0.22, 0, 0];
         targetScale = isMobile ? 0.55 : viewport.width * 0.13;
-        targetOpacity = 0.85;
       } else if (activeStage === 2) {
         // Evaluation: Central background, smaller
         targetPos = [0, 0, -2];
         targetScale = 1.5;
-        targetOpacity = 0.25;
       } else if (activeStage === 7) {
         // Operations: Central background
         targetPos = [0, 0, -2.5];
         targetScale = 1.8;
-        targetOpacity = 0.15;
       } else {
         // Hidden/highly faded for skills, projects, experience, philosophy
         targetPos = [0, 0, -5];
         targetScale = 0.8;
-        targetOpacity = 0.05;
       }
 
       // Smooth lerp
@@ -92,7 +86,7 @@ const GlobeMesh = ({ activeStage }) => {
 
   return (
     <group ref={groupRef}>
-      {/* Base wireframe sphere */}
+      {}
       <mesh ref={sphereRef}>
         <sphereGeometry args={[1.0, 30, 30]} />
         <meshBasicMaterial 
@@ -103,7 +97,7 @@ const GlobeMesh = ({ activeStage }) => {
         />
       </mesh>
       
-      {/* Outer orbit rings */}
+      {}
       <mesh rotation={[Math.PI / 4, 0, 0]}>
         <torusGeometry args={[1.2, 0.003, 8, 64]} />
         <meshBasicMaterial color="#6EE7FF" transparent={true} opacity={0.25} />
@@ -114,7 +108,7 @@ const GlobeMesh = ({ activeStage }) => {
         <meshBasicMaterial color="#3A86FF" transparent={true} opacity={0.15} />
       </mesh>
       
-      {/* Moving dots (telemetry satellites) */}
+      {}
       <Satellite radius={1.2} speed={0.4} color="#6EE7FF" inclination={Math.PI / 4} />
       <Satellite radius={1.3} speed={-0.3} color="#3A86FF" inclination={-Math.PI / 4} />
       <Satellite radius={1.1} speed={0.5} color="#34D399" inclination={0} />

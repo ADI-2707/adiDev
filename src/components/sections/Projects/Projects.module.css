@@ -66,7 +66,7 @@
   border-radius: 4px;
   text-align: left;
   position: relative;
-  padding-top: 25px; /* space for the folder tab */
+  padding-top: 25px; 
   transition: all 0.25s ease;
   user-select: none;
 }
@@ -116,7 +116,7 @@
   line-height: 1.4;
 }
 
-/* Open Manila Folder Detailed Shell */
+
 .openFolderWrapper {
   width: 100%;
   background: var(--bg-secondary);
@@ -168,7 +168,7 @@
   }
 }
 
-/* Document tabs selection index */
+
 .documentTabsColumn {
   border-right: 1px solid rgba(255, 255, 255, 0.08);
   background: rgba(0, 0, 0, 0.15);
@@ -217,7 +217,7 @@
   font-weight: 500;
 }
 
-/* Manila Document Sheet Page */
+
 .documentPageSheet {
   padding: 2.5rem;
   background: var(--bg-tertiary);
@@ -248,7 +248,7 @@
   color: var(--text-secondary);
 }
 
-/* Blueprint nodes list */
+
 .documentSchematicBox {
   border: 1px dashed rgba(255, 255, 255, 0.08);
   border-radius: 4px;
@@ -281,7 +281,7 @@
   color: var(--accent-cyan);
 }
 
-/* Timeline lists */
+
 .documentTimelineList {
   display: flex;
   flex-direction: column;
@@ -307,7 +307,7 @@
   color: var(--text-secondary);
 }
 
-/* Decision list table */
+
 .documentDecisionList {
   display: flex;
   flex-direction: column;
@@ -361,7 +361,7 @@
   line-height: 1.4;
 }
 
-/* Incidents list */
+
 .documentIncidentList {
   display: flex;
   flex-direction: column;
@@ -383,7 +383,7 @@
   color: var(--status-critical);
 }
 
-/* Outcome links row */
+
 .outcomeLinksRow {
   display: flex;
   flex-wrap: wrap;
@@ -408,7 +408,7 @@
   box-shadow: 0 0 15px rgba(110, 231, 255, 0.2);
 }
 
-/* Footer bottom cta */
+
 .bottomNav {
   display: flex;
   justify-content: flex-end;

@@ -111,7 +111,7 @@
   color: var(--text-muted);
 }
 
-/* Document details */
+
 .docWrapper {
   display: flex;
   flex-direction: column;
@@ -182,7 +182,7 @@
   color: var(--text-muted);
 }
 
-/* Footer next cta */
+
 .bottomNav {
   display: flex;
   justify-content: flex-end;
