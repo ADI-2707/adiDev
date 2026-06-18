@@ -3,8 +3,8 @@
   min-height: 100vh;
   display: flex;
   align-items: center;
-  padding-top: 7rem;
-  padding-bottom: 3rem;
+  padding-top: clamp(5rem, 10vw, 7rem);
+  padding-bottom: clamp(2rem, 5vw, 3rem);
   background-color: var(--bg-primary);
   width: 100%;
 }
@@ -33,7 +33,7 @@
 
 .statementText {
   font-family: var(--font-heading);
-  font-size: 2.2rem;
+  font-size: clamp(1.4rem, 5vw, 2.2rem);
   font-weight: 700;
   color: var(--text-primary);
   line-height: 1.2;

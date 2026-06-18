@@ -3,8 +3,8 @@
   min-height: 100vh;
   display: flex;
   align-items: center;
-  padding-top: 7rem;
-  padding-bottom: 3rem;
+  padding-top: clamp(5rem, 10vw, 7rem);
+  padding-bottom: clamp(2rem, 5vw, 3rem);
   background-color: var(--bg-primary);
   width: 100%;
 }
@@ -137,7 +137,7 @@
 }
 
 .docValueTitle {
-  font-size: 20px;
+  font-size: clamp(15px, 4vw, 20px);
   font-weight: 700;
   color: var(--accent-cyan);
 }
