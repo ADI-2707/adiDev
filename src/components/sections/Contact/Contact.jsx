@@ -36,8 +36,6 @@ const Contact = ({ activeStage, setStage }) => {
     };
   }, [activeStage]);
 
-  if (activeStage !== 8) return null;
-
   const handleTypingComplete = useCallback(() => {
     setPrintState((prev) => {
       if (prev >= 3) return prev;
@@ -46,6 +44,8 @@ const Contact = ({ activeStage, setStage }) => {
       return 3;
     });
   }, []);
+
+  if (activeStage !== 8) return null;
 
   const handleRestart = () => {
     playTone(400, 0.1, 0.05);

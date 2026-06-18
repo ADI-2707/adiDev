@@ -265,6 +265,24 @@
   }
 }
 
+@media (min-width: 768px) and (max-width: 1023px) {
+  .brandSubtitle {
+    display: none;
+  }
+
+  .telemetryItem:nth-child(1) {
+    display: none;
+  }
+
+  .topBar {
+    padding: 0.5rem 1rem;
+  }
+
+  .telemetry {
+    gap: 0.75rem;
+  }
+}
+
 @media (max-width: 479px) {
   .telemetryItem:nth-child(2) {
     display: none;
