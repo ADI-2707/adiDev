@@ -40,7 +40,7 @@ const HASH_TO_STAGE = {
 const App = () => {
   const [activeStage, setActiveStage] = useState(0);
   const [maxUnlockedStage, setMaxUnlockedStage] = useState(1);
-  const [soundMuted, setSoundMuted] = useState(true);
+  const [soundMuted, setSoundMuted] = useState(false);
   const [isTransitioning, setIsTransitioning] = useState(false);
 
   
