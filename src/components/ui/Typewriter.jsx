@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { playClick } from '../../utils/audio';
 
 export const Typewriter = ({
@@ -9,13 +9,17 @@ export const Typewriter = ({
   className = '',
   showCursor = true
 }) => {
-
   const [displayedText, setDisplayedText] = useState('');
   const [started, setStarted] = useState(false);
   const [complete, setComplete] = useState(false);
+  const onCompleteRef = useRef(onComplete);
 
   useEffect(() => {
-    let startTimeout = setTimeout(() => {
+    onCompleteRef.current = onComplete;
+  }, [onComplete]);
+
+  useEffect(() => {
+    const startTimeout = setTimeout(() => {
       setStarted(true);
     }, delay);
 
@@ -33,38 +37,37 @@ export const Typewriter = ({
       if (index < text.length) {
         const char = text.charAt(index);
         setDisplayedText((prev) => prev + char);
-        
-        
+
         if (char.trim() !== '') {
           playClick();
         }
-        
+
         index++;
       } else {
         clearInterval(interval);
         setComplete(true);
-        if (onComplete) {
-          onComplete();
+        if (onCompleteRef.current) {
+          onCompleteRef.current();
         }
       }
     }, speed);
 
     return () => clearInterval(interval);
-  }, [started, text, speed, onComplete]);
+  }, [started, text, speed]);
 
   return (
     <span className={className}>
       {displayedText}
       {showCursor && !complete && (
-        <span 
-          style={{ 
-            display: 'inline-block', 
-            width: '8px', 
-            height: '15px', 
-            backgroundColor: 'var(--accent-blue)', 
+        <span
+          style={{
+            display: 'inline-block',
+            width: '8px',
+            height: '15px',
+            backgroundColor: 'var(--accent-blue)',
             marginLeft: '4px',
             animation: 'blink 0.8s infinite'
-          }} 
+          }}
         />
       )}
       <style>{`
