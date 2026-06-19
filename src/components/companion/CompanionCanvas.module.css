@@ -3,8 +3,18 @@
   inset: 0;
   width: 100vw;
   height: 100vh;
-  z-index: 5;
   pointer-events: none;
   overflow: hidden;
 }
 
+@media (max-width: 479px) {
+  .canvasContainer {
+    display: none;
+  }
+}
+
+@media (min-width: 480px) and (max-width: 1199px) {
+  .canvasContainer {
+    opacity: 0.3;
+  }
+}

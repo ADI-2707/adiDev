@@ -1,6 +1,6 @@
 
 import { useState, useEffect } from 'react';
-import { motion } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
 import styles from './Navbar.module.css';
 
 const STAGE_LABELS = [
@@ -16,8 +16,8 @@ const STAGE_LABELS = [
 
 const Navbar = ({ activeStage, setStage, maxUnlockedStage, soundMuted, toggleMute }) => {
   const [systemTime, setSystemTime] = useState('');
+  const [menuOpen, setMenuOpen] = useState(false);
 
-  
   useEffect(() => {
     const updateTime = () => {
       const d = new Date();
@@ -29,8 +29,18 @@ const Navbar = ({ activeStage, setStage, maxUnlockedStage, soundMuted, toggleMut
     return () => clearInterval(interval);
   }, []);
 
-  
+  useEffect(() => {
+    setMenuOpen(false);
+  }, [activeStage]);
+
   if (activeStage === 0) return null;
+
+  const handleStage = (id) => {
+    const isUnlocked = id <= maxUnlockedStage;
+    if (!isUnlocked) return;
+    setMenuOpen(false);
+    setStage(id);
+  };
 
   return (
     <motion.header
@@ -60,15 +70,26 @@ const Navbar = ({ activeStage, setStage, maxUnlockedStage, soundMuted, toggleMut
             <span className={`${styles.statusIndicator} ${activeStage === 8 ? styles.statusApproved : styles.statusEvaluating}`} />
             <span className={styles.value}>{activeStage === 8 ? 'APPROVED' : 'EVALUATING'}</span>
           </div>
-          
-          <button 
-            onClick={toggleMute} 
+
+          <button
+            onClick={toggleMute}
             className={styles.muteButton}
-            title={soundMuted ? "Unmute UI Sounds" : "Mute UI Sounds"}
+            title={soundMuted ? 'Unmute UI Sounds' : 'Mute UI Sounds'}
           >
             {soundMuted ? '🔇 MUTED' : '🔊 AUDIO'}
           </button>
         </div>
+
+        <button
+          className={styles.hamburger}
+          onClick={() => setMenuOpen((o) => !o)}
+          aria-label="Toggle navigation menu"
+          aria-expanded={menuOpen}
+        >
+          <span className={`${styles.bar} ${menuOpen ? styles.barOpen1 : ''}`} />
+          <span className={`${styles.bar} ${menuOpen ? styles.barOpen2 : ''}`} />
+          <span className={`${styles.bar} ${menuOpen ? styles.barOpen3 : ''}`} />
+        </button>
       </div>
 
       <nav className={styles.navBar}>
@@ -76,7 +97,7 @@ const Navbar = ({ activeStage, setStage, maxUnlockedStage, soundMuted, toggleMut
           {STAGE_LABELS.map((stage) => {
             const isUnlocked = stage.id <= maxUnlockedStage;
             const isActive = activeStage === stage.id;
-            
+
             return (
               <button
                 key={stage.id}
@@ -86,7 +107,7 @@ const Navbar = ({ activeStage, setStage, maxUnlockedStage, soundMuted, toggleMut
               >
                 <span className={styles.navLabel}>{stage.label}</span>
                 {isActive && (
-                  <motion.div 
+                  <motion.div
                     layoutId="activeIndicator"
                     className={styles.activeLine}
                     transition={{ type: 'tween', duration: 0.25 }}
@@ -97,6 +118,35 @@ const Navbar = ({ activeStage, setStage, maxUnlockedStage, soundMuted, toggleMut
           })}
         </div>
       </nav>
+
+      <AnimatePresence>
+        {menuOpen && (
+          <motion.nav
+            key="drawer"
+            initial={{ opacity: 0, y: -8 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -8 }}
+            transition={{ duration: 0.2 }}
+            className={styles.drawer}
+          >
+            {STAGE_LABELS.map((stage) => {
+              const isUnlocked = stage.id <= maxUnlockedStage;
+              const isActive = activeStage === stage.id;
+
+              return (
+                <button
+                  key={stage.id}
+                  onClick={() => handleStage(stage.id)}
+                  disabled={!isUnlocked}
+                  className={`${styles.drawerItem} ${isActive ? styles.drawerItemActive : ''} ${!isUnlocked ? styles.drawerItemLocked : ''}`}
+                >
+                  {stage.label}
+                </button>
+              );
+            })}
+          </motion.nav>
+        )}
+      </AnimatePresence>
     </motion.header>
   );
 };

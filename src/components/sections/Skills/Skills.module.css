@@ -3,10 +3,16 @@
   min-height: 100vh;
   display: flex;
   align-items: center;
-  padding-top: 7rem;
-  padding-bottom: 3rem;
+  padding-top: clamp(5rem, 10vw, 7rem);
+  padding-bottom: clamp(2rem, 5vw, 3rem);
   background-color: var(--bg-primary);
   width: 100%;
+}
+
+@media (min-width: 480px) and (max-width: 1199px) {
+  .section {
+    background-color: rgba(9, 11, 16, 0.6);
+  }
 }
 
 .container {
@@ -23,7 +29,7 @@
   width: 100%;
 }
 
-@media (min-width: 1024px) {
+@media (min-width: 1200px) {
   .splitGrid {
     grid-template-columns: 1fr 1fr;
   }
@@ -137,7 +143,7 @@
 }
 
 .docValueTitle {
-  font-size: 20px;
+  font-size: clamp(15px, 4vw, 20px);
   font-weight: 700;
   color: var(--accent-cyan);
 }
@@ -187,6 +193,12 @@
   display: flex;
   justify-content: flex-end;
   margin-top: 1rem;
+}
+
+@media (max-width: 479px) {
+  .bottomNav {
+    justify-content: center;
+  }
 }
 
 .nextCta {

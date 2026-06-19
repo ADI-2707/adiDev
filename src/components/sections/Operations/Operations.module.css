@@ -3,11 +3,17 @@
   min-height: 100vh;
   display: flex;
   align-items: center;
-  padding-top: 7rem;
-  padding-bottom: 3rem;
+  padding-top: clamp(5rem, 10vw, 7rem);
+  padding-bottom: clamp(2rem, 5vw, 3rem);
   background-color: var(--bg-primary);
   width: 100%;
   overflow: hidden;
+}
+
+@media (min-width: 480px) and (max-width: 1199px) {
+  .section {
+    background-color: rgba(9, 11, 16, 0.6);
+  }
 }
 
 
@@ -103,14 +109,14 @@
   gap: 1.5rem;
 }
 
-@media (min-width: 1024px) {
+@media (min-width: 1200px) {
   .rowTop, .rowBottom {
     flex-direction: row;
   }
 }
 
 .panelBody {
-  padding: 1.25rem;
+  padding: clamp(0.75rem, 3vw, 1.25rem);
 }
 
 
@@ -125,6 +131,7 @@
   flex-direction: column;
   gap: 3px;
   overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
 }
 
 .contribRow {
@@ -267,7 +274,13 @@
 .bottomNav {
   display: flex;
   justify-content: flex-end;
-  margin-top: 1rem;
+  margin-top: 2rem;
+}
+
+@media (max-width: 479px) {
+  .bottomNav {
+    justify-content: center;
+  }
 }
 
 .nextCta {

@@ -3,10 +3,16 @@
   min-height: 100vh;
   display: flex;
   align-items: center;
-  padding-top: 7rem;
-  padding-bottom: 3rem;
+  padding-top: clamp(5rem, 10vw, 7rem);
+  padding-bottom: clamp(2rem, 5vw, 3rem);
   background-color: var(--bg-primary);
   width: 100%;
+}
+
+@media (min-width: 480px) and (max-width: 1199px) {
+  .section {
+    background-color: rgba(9, 11, 16, 0.6);
+  }
 }
 
 .container {
@@ -61,7 +67,7 @@
   width: 100%;
 }
 
-@media (min-width: 1024px) {
+@media (min-width: 1200px) {
   .resultsGrid {
     grid-template-columns: 1.2fr 0.8fr;
   }
@@ -178,7 +184,7 @@
 }
 
 .timelineBody {
-  padding: 2rem 1.5rem;
+  padding: clamp(1rem, 3vw, 2rem) clamp(0.75rem, 2.5vw, 1.5rem);
 }
 
 .timelineList {
@@ -254,6 +260,12 @@
   display: flex;
   justify-content: flex-end;
   margin-top: 1rem;
+}
+
+@media (max-width: 479px) {
+  .bottomNav {
+    justify-content: center;
+  }
 }
 
 .nextCta {
