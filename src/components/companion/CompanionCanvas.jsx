@@ -45,7 +45,7 @@ const GlobeMesh = ({ activeStage }) => {
       let targetPos = [1.3, 0, 0];
       let targetScale = 1.0;
 
-      const isDesktop = window.innerWidth >= 1024;
+      const isDesktop = window.innerWidth >= 1200;
 
       if (activeStage === 0) {
         targetScale = 0.1;
@@ -78,7 +78,7 @@ const GlobeMesh = ({ activeStage }) => {
     }
   });
 
-  const isDesktop = window.innerWidth >= 1024;
+  const isDesktop = window.innerWidth >= 1200;
   const wireframeOpacity = isDesktop ? 0.12 : 0.22;
   const ring1Opacity     = isDesktop ? 0.25 : 0.40;
   const ring2Opacity     = isDesktop ? 0.15 : 0.28;
@@ -113,7 +113,7 @@ const GlobeMesh = ({ activeStage }) => {
 };
 
 const CompanionCanvas = ({ activeStage }) => {
-  const isDesktop = window.innerWidth >= 1024;
+  const isDesktop = window.innerWidth >= 1200;
   const zIndex = (isDesktop && (activeStage === 1 || activeStage === 8)) ? 15 : 2;
 
   return (
