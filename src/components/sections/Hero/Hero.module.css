@@ -56,8 +56,10 @@
 .dossierSection {
   position: relative;
   min-height: 100vh;
+  width: 100%;
   display: flex;
   align-items: center;
+  justify-content: center;
   overflow: hidden;
   padding-top: clamp(4rem, 8vw, 5rem);
   background-color: var(--bg-primary);
