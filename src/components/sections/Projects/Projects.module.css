@@ -419,7 +419,13 @@
 .bottomNav {
   display: flex;
   justify-content: flex-end;
-  margin-top: 1rem;
+  margin-top: 1.5rem;
+}
+
+@media (max-width: 479px) {
+  .bottomNav {
+    justify-content: center;
+  }
 }
 
 .nextCta {
