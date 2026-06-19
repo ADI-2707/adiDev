@@ -51,8 +51,8 @@ const GlobeMesh = ({ activeStage }) => {
         targetScale = 0.1;
       } else if (activeStage === 1 || activeStage === 8) {
         if (isDesktop) {
-          targetPos = [viewport.width * 0.22, 0, 0];
-          targetScale = viewport.width * 0.13;
+          targetPos = [viewport.width * 0.28, 0, 0];
+          targetScale = viewport.width * 0.12;
         } else {
           targetPos = [0, 0, 0];
           targetScale = 1.4;
