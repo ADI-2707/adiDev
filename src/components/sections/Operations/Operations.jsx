@@ -4,7 +4,7 @@ import { playTone } from '../../../utils/audio';
 
 import { CURRENT_LEARNING, REPOS_LIST, CURRENT_STACK } from '../../../data/operationsData';
 
-const GITHUB_USERNAME = 'torvalds'; // <-- Change this to your actual GitHub username!
+const GITHUB_USERNAME = 'ADI-2707';
 
 const Operations = ({ activeStage, setStage }) => {
   const [livePulse, setLivePulse] = useState(0);
@@ -20,7 +20,7 @@ const Operations = ({ activeStage, setStage }) => {
         const res = await fetch(`https://github-contributions-api.deno.dev/${GITHUB_USERNAME}.json`);
         if (!res.ok) throw new Error('Failed to fetch github data');
         const data = await res.json();
-        
+
         // Data format: data.contributions is an array of weeks (columns), each week is an array of days (rows)
         // We only want the last 30 weeks to fit the terminal window nicely
         const weeks = data.contributions || [];
@@ -33,13 +33,13 @@ const Operations = ({ activeStage, setStage }) => {
           for (let c = 0; c < recentWeeks.length; c++) {
             const dayData = recentWeeks[c][r];
             const count = dayData ? dayData.contributionCount : 0;
-            
+
             // Map count to intensity 0-3
             let val = 0;
             if (count > 0 && count <= 3) val = 1;
             else if (count > 3 && count <= 8) val = 2;
             else if (count > 8) val = 3;
-            
+
             row.push(val);
           }
           grid.push(row);
@@ -107,24 +107,24 @@ const Operations = ({ activeStage, setStage }) => {
                       <div className={styles.contribGrid}>
                         {contribGrid.map((row, rIdx) => (
 
-                        <div key={rIdx} className={styles.contribRow}>
-                          {row.map((val, cIdx) => (
-                            <div
-                              key={cIdx}
-                              className={`${styles.contribCell} ${val === 0
-                                ? styles.cellNone
-                                : val === 1
-                                  ? styles.cellLow
-                                  : val === 2
-                                    ? styles.cellMed
-                                    : styles.cellHigh
-                                }`}
-                              title={`${val} commits verified`}
-                            />
-                          ))}
-                        </div>
-                      ))}
-                    </div>
+                          <div key={rIdx} className={styles.contribRow}>
+                            {row.map((val, cIdx) => (
+                              <div
+                                key={cIdx}
+                                className={`${styles.contribCell} ${val === 0
+                                  ? styles.cellNone
+                                  : val === 1
+                                    ? styles.cellLow
+                                    : val === 2
+                                      ? styles.cellMed
+                                      : styles.cellHigh
+                                  }`}
+                                title={`${val} commits verified`}
+                              />
+                            ))}
+                          </div>
+                        ))}
+                      </div>
                     )}
                     <div className={styles.contribLeg}>
                       <span>Less</span>
