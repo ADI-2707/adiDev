@@ -29,3 +29,4 @@ venv/
 # Python
 __pycache__/
 *.pyc
+pyrefly.toml

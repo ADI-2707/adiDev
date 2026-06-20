@@ -24,7 +24,7 @@ const Philosophy = ({ activeStage, setStage }) => {
         <div className={styles.statementWrapper}>
           <span className={styles.monoPre}>&gt; OPERATOR_STATEMENT:</span>
           <h2 className={styles.statementText}>
-            "Good software isn't written. <span className={styles.accentText}>It's engineered.</span>"
+            “Good software isn't written. <span className={styles.accentText}>It's engineered.</span>”
           </h2>
         </div>
 

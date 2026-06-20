@@ -1,9 +1,10 @@
-from fastapi import APIRouter, Depends, HTTPException, Request
+from fastapi import APIRouter, Depends, HTTPException, Request, BackgroundTasks
 from fastapi.responses import FileResponse
 from sqlalchemy.orm import Session
 from app.db.session import get_db
 from app.models.models import Message, Download, Testimonial
 from app.schemas.schemas import MessageCreate, MessageResponse, DownloadResponse, TestimonialCreate, TestimonialResponse
+from app.core.email import send_contact_email
 from typing import List
 import os
 
@@ -14,7 +15,7 @@ def health_check():
     return {"status": "ok", "message": "FastAPI server is running!"}
 
 @router.post("/messages", response_model=MessageResponse)
-def create_message(message_in: MessageCreate, db: Session = Depends(get_db)):
+def create_message(message_in: MessageCreate, background_tasks: BackgroundTasks, db: Session = Depends(get_db)):
     db_message = Message(
         name=message_in.name,
         email=message_in.email,
@@ -23,6 +24,15 @@ def create_message(message_in: MessageCreate, db: Session = Depends(get_db)):
     db.add(db_message)
     db.commit()
     db.refresh(db_message)
+    
+    # Securely queue email dispatch asynchronously
+    background_tasks.add_task(
+        send_contact_email,
+        name=message_in.name,
+        email=message_in.email,
+        content=message_in.content
+    )
+    
     return db_message
 
 @router.get("/resume/download")
