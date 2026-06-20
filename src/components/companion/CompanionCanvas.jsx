@@ -114,7 +114,7 @@ const GlobeMesh = ({ activeStage }) => {
 
 const CompanionCanvas = ({ activeStage }) => {
   const isDesktop = window.innerWidth >= 1200;
-  const zIndex = (isDesktop && activeStage === 1) ? 15 : 2;
+  const zIndex = 2;
 
   return (
     <div className={styles.canvasContainer} style={{ zIndex }}>

@@ -5,7 +5,7 @@
   align-items: center;
   padding-top: clamp(5rem, 10vw, 7rem);
   padding-bottom: clamp(2rem, 5vw, 3rem);
-  background-color: var(--bg-primary);
+  background-color: transparent;
   width: 100%;
 }
 
@@ -148,7 +148,7 @@
 
 .personalityExpanded {
   border-color: var(--accent-blue) !important;
-  background: rgba(58, 134, 255, 0.02);
+  background: var(--bg-tertiary) !important;
 }
 
 .personalityHeader {
