@@ -10,6 +10,7 @@ import Projects from './components/sections/Projects/Projects';
 import Experience from './components/sections/Experience/Experience';
 import Philosophy from './components/sections/Philosophy/Philosophy';
 import Operations from './components/sections/Operations/Operations';
+import Testimonials from './components/sections/Testimonials/Testimonials';
 import Contact from './components/sections/Contact/Contact';
 import { playDoorSlide } from './utils/audio';
 
@@ -22,7 +23,8 @@ const STAGE_HASHES = {
   5: '#facilities',
   6: '#philosophy',
   7: '#operations',
-  8: '#report',
+  8: '#testimonials',
+  9: '#report',
 };
 
 const HASH_TO_STAGE = {
@@ -34,7 +36,8 @@ const HASH_TO_STAGE = {
   '#facilities': 5,
   '#philosophy': 6,
   '#operations': 7,
-  '#report': 8,
+  '#testimonials': 8,
+  '#report': 9,
 };
 
 const App = () => {
@@ -150,6 +153,11 @@ const App = () => {
             </motion.div>
           )}
           {activeStage === 8 && (
+            <motion.div key="testimonials" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} style={{ flex: 1, display: 'flex' }}>
+              <Testimonials activeStage={activeStage} setStage={handleSetStage} />
+            </motion.div>
+          )}
+          {activeStage === 9 && (
             <motion.div key="report" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} style={{ flex: 1, display: 'flex' }}>
               <Contact activeStage={activeStage} setStage={handleSetStage} />
             </motion.div>

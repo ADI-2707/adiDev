@@ -62,7 +62,7 @@
   justify-content: center;
   overflow: hidden;
   padding-top: clamp(4rem, 8vw, 5rem);
-  background-color: var(--bg-primary);
+  background-color: transparent;
 }
 
 @media (min-width: 480px) and (max-width: 1199px) {

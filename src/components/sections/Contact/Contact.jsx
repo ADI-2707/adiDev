@@ -20,7 +20,7 @@ const Contact = ({ activeStage, setStage }) => {
   const [isFormOpen, setIsFormOpen] = useState(false);
 
   useEffect(() => {
-    if (activeStage !== 8) return;
+    if (activeStage !== 9) return;
 
     playPrinter();
 
@@ -47,7 +47,7 @@ const Contact = ({ activeStage, setStage }) => {
     });
   }, []);
 
-  if (activeStage !== 8) return null;
+  if (activeStage !== 9) return null;
 
   const handleRestart = () => {
     playTone(400, 0.1, 0.05);
@@ -57,7 +57,7 @@ const Contact = ({ activeStage, setStage }) => {
   return (
     <section id="contact" className={styles.section}>
       <div className={styles.cadBlueprintPaper}>
-        <div className={styles.cadCoordinate}>VERDICT_STAGE_8</div>
+        <div className={styles.cadCoordinate}>VERDICT_STAGE_9</div>
         <div className={styles.cadGridMark} style={{ top: '30%' }} />
         <div className={styles.cadGridMark} style={{ left: '80%' }} />
       </div>

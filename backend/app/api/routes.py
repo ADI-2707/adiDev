@@ -2,8 +2,9 @@ from fastapi import APIRouter, Depends, HTTPException, Request
 from fastapi.responses import FileResponse
 from sqlalchemy.orm import Session
 from app.db.session import get_db
-from app.models.models import Message, Download
-from app.schemas.schemas import MessageCreate, MessageResponse, DownloadResponse
+from app.models.models import Message, Download, Testimonial
+from app.schemas.schemas import MessageCreate, MessageResponse, DownloadResponse, TestimonialCreate, TestimonialResponse
+from typing import List
 import os
 
 router = APIRouter()
@@ -45,3 +46,21 @@ def download_resume(request: Request, db: Session = Depends(get_db)):
         filename="Aditya_Singh_Resume.pdf",
         media_type="application/pdf"
     )
+
+@router.get("/testimonials", response_model=List[TestimonialResponse])
+def get_testimonials(db: Session = Depends(get_db)):
+    # Get the latest 5 testimonials
+    testimonials = db.query(Testimonial).order_by(Testimonial.created_at.desc()).limit(5).all()
+    return testimonials
+
+@router.post("/testimonials", response_model=TestimonialResponse)
+def create_testimonial(testimonial_in: TestimonialCreate, db: Session = Depends(get_db)):
+    db_testimonial = Testimonial(
+        author=testimonial_in.author,
+        role=testimonial_in.role,
+        content=testimonial_in.content
+    )
+    db.add(db_testimonial)
+    db.commit()
+    db.refresh(db_testimonial)
+    return db_testimonial

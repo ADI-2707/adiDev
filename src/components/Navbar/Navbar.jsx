@@ -11,7 +11,8 @@ const STAGE_LABELS = [
   { id: 5, label: 'L5: DEPLOYMENTS', hash: '#facilities' },
   { id: 6, label: 'L6: PHILOSOPHY', hash: '#philosophy' },
   { id: 7, label: 'L7: OPERATIONS', hash: '#operations' },
-  { id: 8, label: 'L8: VERDICT', hash: '#report' },
+  { id: 8, label: 'L8: DEBRIEFINGS', hash: '#testimonials' },
+  { id: 9, label: 'L9: VERDICT', hash: '#report' },
 ];
 
 const Navbar = ({ activeStage, setStage, maxUnlockedStage, soundMuted, toggleMute }) => {
@@ -67,8 +68,8 @@ const Navbar = ({ activeStage, setStage, maxUnlockedStage, soundMuted, toggleMut
           </div>
           <div className={styles.telemetryItem}>
             <span className={styles.label}>STATUS:</span>
-            <span className={`${styles.statusIndicator} ${activeStage === 8 ? styles.statusApproved : styles.statusEvaluating}`} />
-            <span className={styles.value}>{activeStage === 8 ? 'APPROVED' : 'EVALUATING'}</span>
+            <span className={`${styles.statusIndicator} ${activeStage === 9 ? styles.statusApproved : styles.statusEvaluating}`} />
+            <span className={styles.value}>{activeStage === 9 ? 'APPROVED' : 'EVALUATING'}</span>
           </div>
 
           <button
