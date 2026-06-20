@@ -1,22 +1,8 @@
-
 import { useState, useEffect } from 'react';
 import styles from './Operations.module.css';
 import { playTone } from '../../../utils/audio';
 
-const CURRENT_LEARNING = [
-  { topic: 'Distributed Consensus Systems', desc: 'Analyzing Raft protocol implementations for multi-node database sync.' },
-  { topic: 'Rust System Programming', desc: 'Developing zero-overhead system utilities and local memory managers.' },
-  { topic: 'Kubernetes Cluster Provisioning', desc: 'Automating high-availability microservice scaling configurations.' }
-];
-
-const REPOS_LIST = [
-  { name: 'stockyard-desktop', desc: 'Electron desktop warehouse system wrapper with local SQLite offline sync.', stars: 12, forks: 2 },
-  { name: 'elearning-dotnet', desc: 'High-throughput course streaming API gateway built using ASP.NET Core.', stars: 8, forks: 1 },
-  { name: 'tenant-auth-gate', desc: 'Multi-tenant SSO workspace controller provisioning role credentials via Auth0.', stars: 15, forks: 4 },
-  { name: 'realtime-crm-wasm', desc: 'Blazor WASM client dashboard integrating SignalR synchronization loops.', stars: 9, forks: 3 }
-];
-
-const CURRENT_STACK = ['React 19', '.NET 9', 'Node 22', 'PostgreSQL 16', 'Docker Engine', 'Electron Shell'];
+import { CURRENT_LEARNING, REPOS_LIST, CURRENT_STACK } from '../../../data/operationsData';
 
 const CONTRIB_GRID = (() => {
   const grid = [];
@@ -34,7 +20,7 @@ const CONTRIB_GRID = (() => {
 const Operations = ({ activeStage, setStage }) => {
   const [livePulse, setLivePulse] = useState(0);
 
-  
+
   useEffect(() => {
     if (activeStage !== 7) return;
     const interval = setInterval(() => {
@@ -53,7 +39,7 @@ const Operations = ({ activeStage, setStage }) => {
 
   return (
     <section id="operations" className={styles.section}>
-      {}
+      { }
       <div className={styles.worldBackplane}>
         <div className={styles.worldGridLines} />
         <div className={styles.satelliteTracker} style={{ top: '25%', left: '40%' }} />
@@ -62,7 +48,7 @@ const Operations = ({ activeStage, setStage }) => {
 
       <div className={`${styles.container} c-space`}>
         <div className={styles.gridContainer}>
-          {}
+          { }
           <div className={styles.consoleHeader}>
             <div className={styles.consoleBrand}>
               <span className={styles.liveIndicator}>• LIVE</span>
@@ -72,9 +58,9 @@ const Operations = ({ activeStage, setStage }) => {
           </div>
 
           <div className={styles.panelsLayout}>
-            {}
+            { }
             <div className={styles.rowTop}>
-              {}
+              { }
               <div className="tech-panel" style={{ flex: 1.5 }}>
                 <div className="tech-panel-header">
                   <span>LIVE_ACTIVITY // CONTRIBUTION_MATRIX</span>
@@ -89,15 +75,14 @@ const Operations = ({ activeStage, setStage }) => {
                           {row.map((val, cIdx) => (
                             <div
                               key={cIdx}
-                              className={`${styles.contribCell} ${
-                                val === 0
-                                  ? styles.cellNone
-                                  : val === 1
+                              className={`${styles.contribCell} ${val === 0
+                                ? styles.cellNone
+                                : val === 1
                                   ? styles.cellLow
                                   : val === 2
-                                  ? styles.cellMed
-                                  : styles.cellHigh
-                              }`}
+                                    ? styles.cellMed
+                                    : styles.cellHigh
+                                }`}
                               title={`${val} commits verified`}
                             />
                           ))}
@@ -116,7 +101,7 @@ const Operations = ({ activeStage, setStage }) => {
                 </div>
               </div>
 
-              {}
+              { }
               <div className="tech-panel" style={{ flex: 0.8 }}>
                 <div className="tech-panel-header">
                   <span>ACTIVE_STACK // ENG_TOOLS</span>
@@ -135,9 +120,9 @@ const Operations = ({ activeStage, setStage }) => {
               </div>
             </div>
 
-            {}
+            { }
             <div className={styles.rowBottom}>
-              {}
+              { }
               <div className="tech-panel" style={{ flex: 1.2 }}>
                 <div className="tech-panel-header">
                   <span>PUBLIC_REPOS // CODE_DECLASSIFIED</span>
@@ -161,7 +146,7 @@ const Operations = ({ activeStage, setStage }) => {
                 </div>
               </div>
 
-              {}
+              { }
               <div className="tech-panel" style={{ flex: 1.1 }}>
                 <div className="tech-panel-header">
                   <span>RESEARCH_LOGS // LEARNING_TRACKS</span>
@@ -183,8 +168,8 @@ const Operations = ({ activeStage, setStage }) => {
         </div>
 
         <div className={styles.bottomNav}>
-          <button 
-            onClick={() => setStage(8)} 
+          <button
+            onClick={() => setStage(8)}
             className={styles.nextCta}
           >
             COMPILE FINAL ASSESSMENT REPORT &gt;&gt;
