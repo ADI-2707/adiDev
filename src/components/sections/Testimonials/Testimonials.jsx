@@ -27,7 +27,7 @@ const Testimonials = ({ activeStage, setStage }) => {
     try {
       const response = await fetch('/api/v1/testimonials');
       if (!response.ok) {
-        throw new Error('Failed to retrieve endorsements database logs.');
+        throw new Error('Failed to retrieve mission debrief database logs.');
       }
       const data = await response.json();
       setTestimonials(data);
@@ -93,19 +93,19 @@ const Testimonials = ({ activeStage, setStage }) => {
   return (
     <section id="testimonials" className={styles.section}>
       <div className={styles.cadBlueprintPaper}>
-        <div className={styles.cadCoordinate}>ENDORSEMENTS_STAGE_8</div>
+        <div className={styles.cadCoordinate}>DEBRIEFING_LOGS_STAGE_8</div>
         <div className={styles.cadGridMark} style={{ top: '20%', left: '10%' }} />
         <div className={styles.cadGridMark} style={{ top: '70%', left: '80%' }} />
       </div>
 
       <div className={`${styles.container} c-space`}>
         <div className={styles.header}>
-          <span className={styles.monoPre}>&gt; LEVEL_8 // ENCRYPTED_COMMUNICATIONS</span>
+          <span className={styles.monoPre}>&gt; LEVEL_8 // DECLASSIFIED_MISSION_REPORTS</span>
           <h2 className={styles.title}>
-            Client <span className={styles.accentText}>Endorsements</span>
+            Field <span className={styles.accentText}>Debriefings</span>
           </h2>
           <p className={styles.subtitle}>
-            Archived logs of performance validation and architectural reviews from verified operators.
+            Declassified operation logs and mission outcome debriefs from verified field agents.
           </p>
         </div>
 
@@ -114,7 +114,7 @@ const Testimonials = ({ activeStage, setStage }) => {
           <div className={styles.feedColumn}>
             <div className="tech-panel" style={{ height: '100%', display: 'flex', flexDirection: 'column' }}>
               <div className="tech-panel-header">
-                <span>COMMUNICATIONS_DECRYPTED // DATABASE_FEED</span>
+                <span>INTELLIGENCE_REPORTS // OPERATOR_LOG_FEED</span>
                 <span className={styles.liveIndicator}>LIVE_STREAM</span>
               </div>
               <div className={`${styles.panelBody} tech-panel-body`}>
@@ -132,7 +132,7 @@ const Testimonials = ({ activeStage, setStage }) => {
                   </div>
                 ) : testimonials.length === 0 ? (
                   <div className={styles.statusMsg}>
-                    <span>NO VERIFIED ENDORSEMENTS LOGGED IN SYSTEM database.</span>
+                    <span>NO VERIFIED MISSION LOGS RECORDED IN THE INTELLIGENCE DATABASE.</span>
                   </div>
                 ) : (
                   <div className={styles.testimonialsList}>
@@ -169,44 +169,44 @@ const Testimonials = ({ activeStage, setStage }) => {
           <div className={styles.formColumn}>
             <div className="tech-panel">
               <div className="tech-panel-header">
-                <span>LOG_NEW_ENDORSEMENT // UPLINK_TRANSMITTER</span>
+                <span>RECORD_FIELD_DEBRIEF // SECURE_UPLINK</span>
                 <span className={styles.terminalLabel}>SECURE_PORT</span>
               </div>
               <div className="tech-panel-body">
                 <form onSubmit={handleSubmit} className={styles.form}>
                   <div className={styles.inputGroup}>
-                    <label htmlFor="author">OPERATOR IDENTIFIER / NAME</label>
+                    <label htmlFor="author">OPERATIVE CODENAME / AGENT NAME</label>
                     <input
                       type="text"
                       id="author"
                       value={author}
                       onChange={(e) => setAuthor(e.target.value)}
-                      placeholder="e.g., Jane Doe"
+                      placeholder="e.g., Agent Jenkins"
                       required
                       className={styles.input}
                     />
                   </div>
 
                   <div className={styles.inputGroup}>
-                    <label htmlFor="role">OPERATIONAL ROLE / ORG</label>
+                    <label htmlFor="role">DIVISION / ASSIGNED SECTOR</label>
                     <input
                       type="text"
                       id="role"
                       value={role}
                       onChange={(e) => setRole(e.target.value)}
-                      placeholder="e.g., Principal Engineer, Acme Corp"
+                      placeholder="e.g., Systems division, Apex Automation"
                       required
                       className={styles.input}
                     />
                   </div>
 
                   <div className={styles.inputGroup}>
-                    <label htmlFor="content">ENDORSEMENT STATEMENT / MESSAGE</label>
+                    <label htmlFor="content">MISSION LOG CONTENT / DEBRIEF STATEMENT</label>
                     <textarea
                       id="content"
                       value={content}
                       onChange={(e) => setContent(e.target.value)}
-                      placeholder="Enter transmission data..."
+                      placeholder="Enter tactical details and mission report..."
                       required
                       rows={5}
                       className={styles.textarea}
@@ -215,7 +215,7 @@ const Testimonials = ({ activeStage, setStage }) => {
 
                   {submitSuccess && (
                     <div className={styles.successNotification}>
-                      &gt;&gt; UPLINK TRANSMITTED SUCCESSFULLY. DATABASE LOG SEEDED.
+                      &gt;&gt; LOG UPLOADED. MISSION DEBRIEF SEEDED INTO SECURE INTELLIGENCE DATABASE.
                     </div>
                   )}
 
@@ -230,7 +230,7 @@ const Testimonials = ({ activeStage, setStage }) => {
                     disabled={submitting}
                     className={styles.submitBtn}
                   >
-                    {submitting ? 'TRANSMITTING...' : '[TRANSMIT_ENDORSEMENT_LOG]'}
+                    {submitting ? 'TRANSMITTING...' : '[SUBMIT_MISSION_DEBRIEF]'}
                   </button>
                 </form>
               </div>
@@ -240,7 +240,7 @@ const Testimonials = ({ activeStage, setStage }) => {
 
         <div className={styles.bottomNav}>
           <button onClick={handleNextStage} className={styles.nextCta}>
-            COMPILE SYSTEM EVALUATION REPORT &gt;&gt;
+            ASSEMBLE FINAL VERDICT RECORD &gt;&gt;
           </button>
         </div>
       </div>
