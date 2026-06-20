@@ -11,7 +11,7 @@ const STAGE_LABELS = [
   { id: 5, label: 'L5: DEPLOYMENTS', hash: '#facilities' },
   { id: 6, label: 'L6: PHILOSOPHY', hash: '#philosophy' },
   { id: 7, label: 'L7: OPERATIONS', hash: '#operations' },
-  { id: 8, label: 'L8: ENDORSEMENTS', hash: '#testimonials' },
+  { id: 8, label: 'L8: DEBRIEFINGS', hash: '#testimonials' },
   { id: 9, label: 'L9: VERDICT', hash: '#report' },
 ];
 
