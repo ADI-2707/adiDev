@@ -1,7 +1,7 @@
-
 import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import styles from './Navbar.module.css';
+import pkg from '../../../package.json';
 
 const STAGE_LABELS = [
   { id: 1, label: 'L1: DOSSIER', hash: '#dossier' },
@@ -54,7 +54,7 @@ const Navbar = ({ activeStage, setStage, maxUnlockedStage, soundMuted, toggleMut
         <div className={styles.brand}>
           <span className={styles.terminalPrompt}>&gt;</span>
           <span className={styles.brandName}>adiDev</span>
-          <span className={styles.brandSubtitle}>// PERSONNEL ASSESSMENT CONSOLE</span>
+          <span className={styles.brandSubtitle}>// AGENT_OS_v{pkg.version}</span>
         </div>
 
         <div className={styles.telemetry}>
