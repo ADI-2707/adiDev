@@ -1,47 +1,10 @@
-
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import styles from './Philosophy.module.css';
 import { playTone } from '../../../utils/audio';
 
 
-const RATIONALE_DATA = [
-  {
-    id: 'react',
-    title: 'Why React?',
-    decision: 'Single Page UI Rendering Core',
-    reason: 'Modular component isolation, rich declarative state hooks, and robust virtual DOM tree reconcilers.',
-    tradeoff: 'Increased client-side JavaScript download payload and initial render loading latency.'
-  },
-  {
-    id: 'django',
-    title: 'Why Django?',
-    decision: 'Secure Relational MVC API Layer',
-    reason: 'Out-of-the-box admin interfaces, comprehensive security middleware arrays, and structured ORM models.',
-    tradeoff: 'Rigid architectural design limits flexibility; heavier runtime package footprint than Node Express.'
-  },
-  {
-    id: 'electron',
-    title: 'Why Electron?',
-    decision: 'Cross-Platform Local Desktop Shell',
-    reason: 'Bridges web stack designs directly to local system OS APIs, native files, and local relational databases.',
-    tradeoff: 'Substantially larger executable package binaries and high memory usage profiles per running instance.'
-  },
-  {
-    id: 'postgres',
-    title: 'Why PostgreSQL?',
-    decision: 'Primary Relational Data Store',
-    reason: 'Strict ACID transaction compliance, rich query indexes, support for concurrent read pools, and native JSON queries.',
-    tradeoff: 'Horizontal scaling is complex, requiring database read-replicas and connection pooling layers.'
-  },
-  {
-    id: 'docker',
-    title: 'Why Docker?',
-    decision: 'Containerized Infrastructure Isolation',
-    reason: 'Ensures strict configuration parity between local developer environments and remote production VPS hosts.',
-    tradeoff: 'Increases container build pipeline complexity and introduces container networking/orchestration overhead.'
-  }
-];
+import { RATIONALE_DATA } from '../../../data/philosophyData';
 
 const Philosophy = ({ activeStage, setStage }) => {
   const [selectedItem, setSelectedItem] = useState('react');
@@ -66,7 +29,7 @@ const Philosophy = ({ activeStage, setStage }) => {
         </div>
 
         <div className={styles.splitGrid}>
-          {}
+          { }
           <div className={styles.selectorColumn}>
             <div className="tech-panel" style={{ height: '100%' }}>
               <div className="tech-panel-header">
@@ -93,7 +56,7 @@ const Philosophy = ({ activeStage, setStage }) => {
             </div>
           </div>
 
-          {}
+          { }
           <div className={styles.detailColumn}>
             <AnimatePresence mode="wait">
               {activeRationale && (
@@ -140,8 +103,8 @@ const Philosophy = ({ activeStage, setStage }) => {
         </div>
 
         <div className={styles.bottomNav}>
-          <button 
-            onClick={() => setStage(7)} 
+          <button
+            onClick={() => setStage(7)}
             className={styles.nextCta}
           >
             ACTIVATE LIVE OPERATIONS GATE &gt;&gt;

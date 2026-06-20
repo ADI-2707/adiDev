@@ -126,6 +126,17 @@
   gap: 0.75rem;
 }
 
+.loadingContribs {
+  height: 98px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: 'Courier New', Courier, monospace;
+  font-size: 0.8rem;
+  color: var(--accent-blue);
+  animation: pulse 1.5s infinite;
+}
+
 .contribGrid {
   display: flex;
   flex-direction: column;

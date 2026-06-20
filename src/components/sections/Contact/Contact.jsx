@@ -4,6 +4,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import styles from './Contact.module.css';
 import Typewriter from '../../ui/Typewriter';
 import { playPrinter, playSuccess, playTone } from '../../../utils/audio';
+import ContactForm from './ContactForm';
 
 const REPORT_ROWS = [
   'Technical Ability ............ Excellent',
@@ -16,6 +17,7 @@ const REPORT_ROWS = [
 
 const Contact = ({ activeStage, setStage }) => {
   const [printState, setPrintState] = useState(0);
+  const [isFormOpen, setIsFormOpen] = useState(false);
 
   useEffect(() => {
     if (activeStage !== 8) return;
@@ -137,7 +139,7 @@ const Contact = ({ activeStage, setStage }) => {
               </p>
 
               <div className={styles.actionsGrid}>
-                <a href="/cv.pdf" download className={styles.actionBtn}>
+                <a href="/api/v1/resume/download" className={styles.actionBtn}>
                   [DOWNLOAD_RESUME]
                 </a>
                 <a href="https://github.com" target="_blank" rel="noreferrer" className={styles.actionBtn}>
@@ -146,9 +148,9 @@ const Contact = ({ activeStage, setStage }) => {
                 <a href="https://linkedin.com" target="_blank" rel="noreferrer" className={styles.actionBtn}>
                   [LINKEDIN_PROFILE]
                 </a>
-                <a href="mailto:adi@example.com" className={styles.actionBtn}>
+                <button onClick={() => setIsFormOpen(true)} className={styles.actionBtn}>
                   [TRANSMIT_EMAIL]
-                </a>
+                </button>
                 <a href="https://calendly.com" target="_blank" rel="noreferrer" className={`${styles.actionBtn} ${styles.scheduleCta}`}>
                   [SCHEDULE_MEETING]
                 </a>
@@ -163,6 +165,10 @@ const Contact = ({ activeStage, setStage }) => {
           )}
         </AnimatePresence>
       </div>
+
+      <AnimatePresence>
+        {isFormOpen && <ContactForm isOpen={isFormOpen} onClose={() => setIsFormOpen(false)} />}
+      </AnimatePresence>
     </section>
   );
 };
