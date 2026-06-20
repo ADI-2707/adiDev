@@ -4,25 +4,58 @@ import { playTone } from '../../../utils/audio';
 
 import { CURRENT_LEARNING, REPOS_LIST, CURRENT_STACK } from '../../../data/operationsData';
 
-const CONTRIB_GRID = (() => {
-  const grid = [];
-  for (let r = 0; r < 7; r++) {
-    const row = [];
-    for (let c = 0; c < 30; c++) {
-      const val = Math.random() > 0.45 ? Math.floor(Math.random() * 4) : 0;
-      row.push(val);
-    }
-    grid.push(row);
-  }
-  return grid;
-})();
+const GITHUB_USERNAME = 'torvalds'; // <-- Change this to your actual GitHub username!
 
 const Operations = ({ activeStage, setStage }) => {
   const [livePulse, setLivePulse] = useState(0);
+  const [contribGrid, setContribGrid] = useState([]);
+  const [isLoadingContribs, setIsLoadingContribs] = useState(true);
 
-
+  // Fetch GitHub Contributions
   useEffect(() => {
     if (activeStage !== 7) return;
+
+    const fetchContributions = async () => {
+      try {
+        const res = await fetch(`https://github-contributions-api.deno.dev/${GITHUB_USERNAME}.json`);
+        if (!res.ok) throw new Error('Failed to fetch github data');
+        const data = await res.json();
+        
+        // Data format: data.contributions is an array of weeks (columns), each week is an array of days (rows)
+        // We only want the last 30 weeks to fit the terminal window nicely
+        const weeks = data.contributions || [];
+        const recentWeeks = weeks.slice(-30);
+
+        // Transpose [weeks][days] into [rows(7)][cols(30)]
+        const grid = [];
+        for (let r = 0; r < 7; r++) {
+          const row = [];
+          for (let c = 0; c < recentWeeks.length; c++) {
+            const dayData = recentWeeks[c][r];
+            const count = dayData ? dayData.contributionCount : 0;
+            
+            // Map count to intensity 0-3
+            let val = 0;
+            if (count > 0 && count <= 3) val = 1;
+            else if (count > 3 && count <= 8) val = 2;
+            else if (count > 8) val = 3;
+            
+            row.push(val);
+          }
+          grid.push(row);
+        }
+        setContribGrid(grid);
+      } catch (err) {
+        console.error("Could not load github contributions:", err);
+        // Fallback to empty grid
+        const emptyGrid = Array(7).fill(Array(30).fill(0));
+        setContribGrid(emptyGrid);
+      } finally {
+        setIsLoadingContribs(false);
+      }
+    };
+
+    fetchContributions();
     const interval = setInterval(() => {
       setLivePulse((prev) => {
         const next = prev + 1;
@@ -68,8 +101,11 @@ const Operations = ({ activeStage, setStage }) => {
                 </div>
                 <div className={`${styles.panelBody} tech-panel-body`}>
                   <div className={styles.contribWrapper}>
-                    <div className={styles.contribGrid}>
-                      {CONTRIB_GRID.map((row, rIdx) => (
+                    {isLoadingContribs ? (
+                      <div className={styles.loadingContribs}>[ FETCHING DATA FROM GITHUB_SAT ]</div>
+                    ) : (
+                      <div className={styles.contribGrid}>
+                        {contribGrid.map((row, rIdx) => (
 
                         <div key={rIdx} className={styles.contribRow}>
                           {row.map((val, cIdx) => (
@@ -89,6 +125,7 @@ const Operations = ({ activeStage, setStage }) => {
                         </div>
                       ))}
                     </div>
+                    )}
                     <div className={styles.contribLeg}>
                       <span>Less</span>
                       <div className={`${styles.contribCell} ${styles.cellNone}`} />
