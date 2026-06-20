@@ -20,3 +20,17 @@ class DownloadResponse(BaseModel):
     downloaded_at: datetime
 
     model_config = ConfigDict(from_attributes=True)
+
+class TestimonialCreate(BaseModel):
+    author: str
+    role: str
+    content: str
+
+class TestimonialResponse(BaseModel):
+    id: int
+    author: str
+    role: str
+    content: str
+    created_at: datetime
+
+    model_config = ConfigDict(from_attributes=True)
