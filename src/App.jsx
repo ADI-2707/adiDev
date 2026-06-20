@@ -96,7 +96,7 @@ const App = () => {
       {}
       <div className="galaxy-background" />
       <div className="space-overlay" />
-      <div className="scanline-sweep" />
+      {activeStage === 0 && <div className="scanline-sweep" />}
 
       {}
       <Navbar 
