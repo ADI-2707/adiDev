@@ -10,8 +10,12 @@ def send_contact_email(name: str, email: str, content: str):
     """
     Constructs and dispatches a contact notification email via SMTP.
     """
-    if not settings.SMTP_USER or not settings.SMTP_TO:
-        logger.warning("SMTP configuration is incomplete. Skipping email dispatch.")
+    if (not settings.SMTP_USER or 
+        not settings.SMTP_TO or 
+        "placeholder" in settings.SMTP_USER or 
+        "your-app-password" in settings.SMTP_PASSWORD or
+        "recipient@gmail.com" in settings.SMTP_TO):
+        logger.warning("SMTP configuration is incomplete or using placeholders. Skipping email dispatch.")
         return
 
     try:
@@ -32,13 +36,18 @@ def send_contact_email(name: str, email: str, content: str):
         )
         msg.attach(MIMEText(body, 'plain'))
         
-        logger.info(f"Initiating secure email dispatch to {settings.SMTP_TO} via {settings.SMTP_HOST}...")
+        logger.info(f"Initiating secure email dispatch to {settings.SMTP_TO} via {settings.SMTP_HOST}:{settings.SMTP_PORT}...")
         
-        with smtplib.SMTP(settings.SMTP_HOST, settings.SMTP_PORT, timeout=10) as server:
-            if settings.SMTP_TLS:
-                server.starttls()
-            server.login(settings.SMTP_USER, settings.SMTP_PASSWORD)
-            server.send_message(msg)
+        if settings.SMTP_PORT == 465:
+            with smtplib.SMTP_SSL(settings.SMTP_HOST, settings.SMTP_PORT, timeout=10) as server:
+                server.login(settings.SMTP_USER, settings.SMTP_PASSWORD)
+                server.send_message(msg)
+        else:
+            with smtplib.SMTP(settings.SMTP_HOST, settings.SMTP_PORT, timeout=10) as server:
+                if settings.SMTP_TLS:
+                    server.starttls()
+                server.login(settings.SMTP_USER, settings.SMTP_PASSWORD)
+                server.send_message(msg)
             
         logger.info("Communication payload transmitted successfully via SMTP link.")
     except Exception as e:
