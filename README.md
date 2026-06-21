@@ -1,67 +1,213 @@
 # adiDev // PROJECT AEGIS: Personnel Assessment Console
 
-PROJECT AEGIS is a simulated restricted-access Personnel Assessment Console and Engineer Evaluation Interface, designed to showcase the work, projects, and skills of Aditya Singh in a premium, gamified format. Visitors act as system operators, navigating through clearances, system logs, and security evaluations.
+PROJECT AEGIS is a restricted-access, retro-futuristic Personnel Assessment Console and Engineer Evaluation Interface, designed to showcase the work, projects, and skills of Aditya Singh in a premium, gamified format. Visitors act as system operators, navigating through clearances, system logs, and security evaluations.
 
 ---
 
-##  System Architecture & Mechanics
+## System Architecture
 
-### 1. Instrumentation HUD & State Control
-*   **Sequential Stage Controller:** Built on a single-page React state engine (managing Stages 0 to 8) synchronized with window hash routes (`#boot`, `#dossier`, `#evaluation`, `#systems`, `#cases`, `#facilities`, `#philosophy`, `#operations`, `#report`).
-*   **Mechanical Panel Transitions:** Programmed horizontal sliding steel security doors that part and close during stage switches, styled with custom shadows and border beams.
-*   **Telemetry Navbar HUD:** Includes ticking system clocks, clearance level monitors, audio status indicators, and locked/unlocked indicators corresponding to the operator's evaluation progress.
+The application is structured as a decoupled Full-Stack Web Application:
+1. **Frontend**: React SPA client featuring vanilla CSS Modules, Three.js, React Three Fiber (R3F) wireframe telemetry, procedural synthesizer audio effects, and Framer Motion.
+2. **Backend**: FastAPI (Python) REST API serving as a secure intelligence uplink for logging resume downloads, saving contact messages, routing email notifications asynchronously, and seeding testimonials.
 
-### 2. Procedural 3D Wireframe Telemetry
-*   **React Three Fiber Globe:** Renders a custom 3D wireframe telemetry globe with orbiting satellite trackers that transition dynamically in rotation, position, scale, and opacity as stages change.
-*   **Adaptive Stacking Layering:** The canvas container dynamically swaps z-indexes (`15` in Dossier and Report stages to render in front of solid backgrounds; `2` in other stages to float behind interactive content panels), ensuring readability and preventing clipping.
+```mermaid
+graph TD
+    subgraph Frontend [React SPA Client]
+        UI[HUD Console Interface]
+        Audio[Procedural Audio Synthesizer]
+        Canvas[React Three Fiber Telemetry Canvas]
+        Framer[Framer Motion Page Transitions]
+    end
 
-### 3. Synthesized UI Audio System
-*   **Web Audio API Synthesizer:** Fully procedural offline UI sounds (mechanical typewriter keyboard clicks, heavy hydraulic door sweeps, status warning/success beeps, and continuous thermal printer whirrs) generated in real-time with zero audio asset downloads.
-*   **Global Mute Hook:** Accessible in the header HUD to toggle audio feedback, defaulting to muted.
+    subgraph Backend [FastAPI Service]
+        App[FastAPI Core Router]
+        Bg[Async Background Tasks - Email]
+    end
 
-### 4. Interactive Console Sections
-*   **Stage 0: Boot sequence:** A command-line logging terminal that types out server initialization logs and runs load percentages leading to a white coordinate handoff flash.
-*   **Stage 1: Dossier File:** Restricted candidate record files detailing security clearance levels, status indicators, and specialization areas.
-*   **Stage 2: Active Scanners:** Multi-scanner panels executing visual grid animations, expandable candidate story modules, and vertical event timeline log charts.
-*   **Stage 3: Systems Registry:** Interactive documentation panels for core languages and frameworks. Selecting a module triggers real-time SVG schematic animations of micro-architectures.
-*   **Stage 4: Bureau Desk:** Manila project folders spread across a steel grid desk. Opening folders displays project autopsy logs, constraint parameters, obstacle summaries, decision logs (Decision/Reason/Trade-off), and success metric logs.
-*   **Stage 5: Deployment Facilities:** Industrial facility status logs with rotating hardware cogwheels.
-*   **Stage 6: Engineering Philosophy:** Trade-off analysis records answering "Why X?" for core technologies.
-*   **Stage 7: Live Operations:** GitHub contribution matrix grids, live activity radars, and active tool registries.
-*   **Stage 8: Verdict Output:** A virtual thermal slot printer that rolls out a final evaluation report and stamps "APPROVED" with spring-cushioned scaling.
+    subgraph Database [PostgreSQL Database]
+        T1[(messages)]
+        T2[(downloads)]
+        T3[(testimonials)]
+    end
 
----
-
-##  Technology Stack
-
-*   **Core**: React 19, JavaScript (ES6+), CSS3 Modules, HTML5.
-*   **Build Environment**: Vite, npm.
-*   **Graphics & Animation**:
-    *   Three.js (WebGL rendering)
-    *   React Three Fiber (Declarative R3F wrapper)
-    *   Framer Motion (React 2D transitions & door mechanisms)
-*   **Styling**: JetBrains Mono, Space Grotesk, and Inter typography; custom crosshair pointers; carbon, graphite, electric blue, and cyan highlight tokens.
+    UI -->|API Requests| App
+    App -->|SQLAlchemy ORM| Database
+    App -->|Background Task| Bg
+    Bg -->|SMTP Protocol| MailServer[Secure SMTP Mail Server]
+```
 
 ---
 
-##  Local Operations & Building
+## Technology Stack
 
-### 1. Install Dependencies
+### Frontend Core
+*   **React 19 & JavaScript (ES6+)**: Core UI engine and custom stage state manager.
+*   **Vite**: Frontend development server and build tool.
+*   **Three.js & React Three Fiber (R3F)**: Renders a dynamic, interactive 3D wireframe telemetry globe with orbiting satellite trackers.
+*   **Framer Motion**: Handles hydraulic metal security door slide transitions, spring-stamped animations, and smooth fade transitions.
+*   **Vanilla CSS Modules**: Curated color palettes (carbon, graphite, electric blue, and cyan highlight tokens) utilizing customized responsive grids and cybernetic layout systems.
+*   **Web Audio API**: Real-time synthesized procedural UI sounds (typewriter clicks, mechanical door sweeps, success alert chime, and thermal printer whirring) with zero audio asset downloads.
+
+### Backend Core
+*   **FastAPI (Python 3)**: High-performance, asynchronous web router API framework.
+*   **SQLAlchemy ORM**: Database object-relational mapping interface.
+*   **pg8000 Driver**: A pure-python PostgreSQL connection library.
+*   **Pydantic v2**: Data parsing, serialization, and strict input validation.
+*   **python-dotenv**: Environment configuration manager.
+*   **SMTP Service**: Dispatches contact notifications asynchronously via Python standard SMTP library.
+
+---
+
+## Console Security Clearances (Stages 0–9)
+
+The operator progresses sequentially through 10 security clearances synchronized with URL hash routes:
+
+1.  **Stage 0: Boot Sequence (`""`)**
+    *   Initiates a command-line terminal emulator printing loading state diagnostics, system checks, and telemetry initialization.
+2.  **Stage 1: Dossier File (`#dossier`)**
+    *   Displays restricted personnel details, specialized areas, and credentials for Aditya Singh.
+3.  **Stage 2: Active Scanners (`#evaluation`)**
+    *   Executes visual radar grid sweeps, displays interactive candidate timeline logs, and maps out engineering competencies.
+4.  **Stage 3: Systems Registry (`#systems`)**
+    *   Lists core programming languages and framework proficiencies. Selecting any tech item renders a custom animated SVG schematic of the corresponding micro-architecture.
+5.  **Stage 4: Bureau Desk (`#cases`)**
+    *   Displays retro-style Manila project folders on a structural grid. Interactive autopsies include project parameters, constraint limits, obstacle overviews, trade-offs, and success metrics.
+6.  **Stage 5: Deployment Facilities (`#facilities`)**
+    *   Renders industrial hardware status logs showing rotating gear cogs representing professional experience timeline details.
+7.  **Stage 6: Engineering Philosophy (`#philosophy`)**
+    *   Exposes critical technical trade-off documents answering architectural queries (e.g., "Why X?").
+8.  **Stage 7: Live Operations (`#operations`)**
+    *   Pulls real-time telemetry from active developer resources featuring simulated radars and utility matrices.
+9.  **Stage 8: Field Debriefings (`#testimonials`)**
+    *   Uplinks with the FastAPI server to fetch and display the latest declassified testimonials from external operatives and allows submitting new field logs.
+10. **Stage 9: Verdict Output (`#report`)**
+    *   A mechanical thermal printer simulation rolls down the final audit verdict, printing and stamping "APPROVED" with dynamic spring mechanics. Provides the main exit CTAs: Downloading the resume, profiles, launching the email submission modal, and scheduling a meeting.
+
+---
+
+## API Reference & Endpoints
+
+All backend endpoints are prefixed with `/api/v1` and enforce strict validation.
+
+| Method | Endpoint | Request Body | Response Type | Description |
+| :--- | :--- | :--- | :--- | :--- |
+| **GET** | `/health` | None | JSON | Returns the server connection state and diagnostic message. |
+| **POST** | `/messages` | `MessageCreate` | `MessageResponse` | Saves contact messages in the DB and triggers a background email task to send the message details to the owner via SMTP. |
+| **GET** | `/resume/download` | None | File | Logs the requesting client's IP in the DB and serves the official resume PDF file (`public/resume.pdf`). |
+| **GET** | `/testimonials` | None | List[`TestimonialResponse`] | Retrieves the latest 5 declassified testimonials from the database. |
+| **POST** | `/testimonials` | `TestimonialCreate` | `TestimonialResponse` | Inserts a new testimonial log into the database. |
+
+### Data Schemas
+
+#### Message Schema
+```json
+// MessageCreate
+{
+  "name": "string",
+  "email": "user@example.com",
+  "content": "string"
+}
+```
+
+#### Testimonial Schema
+```json
+// TestimonialCreate
+{
+  "author": "string",
+  "role": "string",
+  "content": "string"
+}
+```
+
+---
+
+## Setup & Execution Guide
+
+### Prerequisite Environment
+*   **Node.js** (v18+ recommended)
+*   **Python** (v3.10+ recommended)
+*   **PostgreSQL** database service active
+
+---
+
+### 1. Backend Service Configuration
+
+Navigate to the `backend` folder:
+```bash
+cd backend
+```
+
+#### Create Virtual Environment
+```bash
+python -m venv venv
+```
+
+#### Activate Virtual Environment
+*   **Windows (PowerShell)**:
+    ```powershell
+    .\venv\Scripts\Activate.ps1
+    ```
+*   **Linux/macOS**:
+    ```bash
+    source venv/bin/activate
+    ```
+
+#### Install Dependencies
+```bash
+pip install -r requirements.txt
+```
+
+#### Environment Variables Config
+Create a `.env` file in the `backend/` directory:
+```env
+PROJECT_NAME="adiDev"
+DATABASE_URL="postgresql+pg8000://<username>:<password>@localhost:5432/<database_name>"
+
+# SMTP Configuration (For Contact Form Notification Emails)
+SMTP_HOST="smtp.gmail.com"
+SMTP_PORT=587
+SMTP_USER="your-email@gmail.com"
+SMTP_PASSWORD="your-app-password"
+SMTP_TLS=True
+SMTP_FROM="your-email@gmail.com"
+SMTP_TO="your-email@gmail.com"
+```
+
+#### Seed Database
+Initialize tables and populate initial testimonials:
+```bash
+python init_db.py
+```
+
+#### Start FastAPI Server
+```bash
+uvicorn app.main:app --reload
+```
+The documentation interactive docs will be available at `http://127.0.0.1:8000/api/v1/docs`.
+
+---
+
+### 2. Frontend Web Client Configuration
+
+From the root directory:
+
+#### Install NPM Packages
 ```bash
 npm install
 ```
 
-### 2. Start Local Server
+#### Start Frontend Client
 ```bash
 npm run dev
 ```
+The console will launch on `http://localhost:5173`. Vite is pre-configured to proxy API requests to the backend server.
 
-### 3. Compile Production Bundle
+#### Create Production Bundle
 ```bash
 npm run build
 ```
 
-### 4. Run Linter
+#### Check Source Linting
 ```bash
 npm run lint
 ```
