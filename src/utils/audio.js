@@ -126,3 +126,111 @@ export const playPrinter = () => {
     void 0;
   }
 };
+
+export const playCRTClick = () => {
+  if (window.__soundMuted) return;
+  try {
+    const ctx = getAudioContext();
+    const osc = ctx.createOscillator();
+    const gainNode = ctx.createGain();
+
+    osc.type = 'triangle';
+    osc.frequency.setValueAtTime(2000, ctx.currentTime);
+    osc.frequency.exponentialRampToValueAtTime(100, ctx.currentTime + 0.04);
+
+    gainNode.gain.setValueAtTime(0.015, ctx.currentTime);
+    gainNode.gain.exponentialRampToValueAtTime(0.0001, ctx.currentTime + 0.04);
+
+    osc.connect(gainNode);
+    gainNode.connect(ctx.destination);
+
+    osc.start();
+    osc.stop(ctx.currentTime + 0.04);
+  } catch {
+    void 0;
+  }
+};
+
+export const playNotification = () => {
+  if (window.__soundMuted) return;
+  try {
+    const ctx = getAudioContext();
+    const osc = ctx.createOscillator();
+    const gainNode = ctx.createGain();
+
+    osc.type = 'sine';
+    osc.frequency.setValueAtTime(1200, ctx.currentTime);
+
+    gainNode.gain.setValueAtTime(0.02, ctx.currentTime);
+    gainNode.gain.exponentialRampToValueAtTime(0.0001, ctx.currentTime + 0.15);
+
+    osc.connect(gainNode);
+    gainNode.connect(ctx.destination);
+
+    osc.start();
+    osc.stop(ctx.currentTime + 0.15);
+  } catch {
+    void 0;
+  }
+};
+
+export const playScanSweep = () => {
+  if (window.__soundMuted) return;
+  try {
+    const ctx = getAudioContext();
+    const osc = ctx.createOscillator();
+    const filter = ctx.createBiquadFilter();
+    const gainNode = ctx.createGain();
+
+    osc.type = 'sawtooth';
+    osc.frequency.setValueAtTime(80, ctx.currentTime);
+    
+    filter.type = 'peaking';
+    filter.frequency.setValueAtTime(200, ctx.currentTime);
+    filter.frequency.linearRampToValueAtTime(800, ctx.currentTime + 0.5);
+    filter.frequency.linearRampToValueAtTime(200, ctx.currentTime + 1.0);
+
+    gainNode.gain.setValueAtTime(0.01, ctx.currentTime);
+    gainNode.gain.exponentialRampToValueAtTime(0.0001, ctx.currentTime + 1.0);
+
+    osc.connect(filter);
+    filter.connect(gainNode);
+    gainNode.connect(ctx.destination);
+
+    osc.start();
+    osc.stop(ctx.currentTime + 1.0);
+  } catch {
+    void 0;
+  }
+};
+
+export const playAccessDenied = () => {
+  if (window.__soundMuted) return;
+  try {
+    const ctx = getAudioContext();
+    const osc1 = ctx.createOscillator();
+    const osc2 = ctx.createOscillator();
+    const gainNode = ctx.createGain();
+
+    osc1.type = 'sawtooth';
+    osc1.frequency.setValueAtTime(110, ctx.currentTime);
+    
+    osc2.type = 'square';
+    osc2.frequency.setValueAtTime(115, ctx.currentTime);
+
+    gainNode.gain.setValueAtTime(0.05, ctx.currentTime);
+    gainNode.gain.exponentialRampToValueAtTime(0.0001, ctx.currentTime + 0.6);
+
+    osc1.connect(gainNode);
+    osc2.connect(gainNode);
+    gainNode.connect(ctx.destination);
+
+    osc1.start();
+    osc2.start();
+    
+    osc1.stop(ctx.currentTime + 0.6);
+    osc2.stop(ctx.currentTime + 0.6);
+  } catch {
+    void 0;
+  }
+};

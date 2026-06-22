@@ -13,6 +13,7 @@ const STAGE_LABELS = [
   { id: 7, label: 'L7: OPERATIONS', hash: '#operations' },
   { id: 8, label: 'L8: DEBRIEFINGS', hash: '#testimonials' },
   { id: 9, label: 'L9: VERDICT', hash: '#report' },
+  { id: 10, label: 'L10: OVERRIDE', hash: '#override', isSecret: true },
 ];
 
 const Navbar = ({ activeStage, setStage, maxUnlockedStage, soundMuted, toggleMute }) => {
@@ -97,6 +98,8 @@ const Navbar = ({ activeStage, setStage, maxUnlockedStage, soundMuted, toggleMut
       <nav className={styles.navBar}>
         <div className={styles.navContainer}>
           {STAGE_LABELS.map((stage) => {
+            if (stage.isSecret && maxUnlockedStage < 10) return null;
+
             const isUnlocked = stage.id <= maxUnlockedStage;
             const isActive = activeStage === stage.id;
 
@@ -105,9 +108,12 @@ const Navbar = ({ activeStage, setStage, maxUnlockedStage, soundMuted, toggleMut
                 key={stage.id}
                 onClick={() => isUnlocked && setStage(stage.id)}
                 disabled={!isUnlocked}
-                className={`${styles.navItem} ${isActive ? styles.navActive : ''} ${!isUnlocked ? styles.navLocked : ''}`}
+                className={`${styles.navItem} ${isActive ? styles.navActive : ''} ${!isUnlocked ? styles.navLocked : ''} ${stage.isSecret ? styles.navSecret : ''}`}
               >
-                <span className={styles.navLabel}>{stage.label}</span>
+                <span className={styles.navLabel}>
+                  {stage.label}
+                  {stage.isSecret && <span className={styles.pulseDot} />}
+                </span>
                 {isActive && (
                   <motion.div
                     layoutId="activeIndicator"
@@ -132,6 +138,8 @@ const Navbar = ({ activeStage, setStage, maxUnlockedStage, soundMuted, toggleMut
             className={styles.drawer}
           >
             {STAGE_LABELS.map((stage) => {
+              if (stage.isSecret && maxUnlockedStage < 10) return null;
+
               const isUnlocked = stage.id <= maxUnlockedStage;
               const isActive = activeStage === stage.id;
 
@@ -140,9 +148,10 @@ const Navbar = ({ activeStage, setStage, maxUnlockedStage, soundMuted, toggleMut
                   key={stage.id}
                   onClick={() => handleStage(stage.id)}
                   disabled={!isUnlocked}
-                  className={`${styles.drawerItem} ${isActive ? styles.drawerItemActive : ''} ${!isUnlocked ? styles.drawerItemLocked : ''}`}
+                  className={`${styles.drawerItem} ${isActive ? styles.drawerItemActive : ''} ${!isUnlocked ? styles.drawerItemLocked : ''} ${stage.isSecret ? styles.navSecret : ''}`}
                 >
                   {stage.label}
+                  {stage.isSecret && <span className={styles.pulseDotMobile} />}
                 </button>
               );
             })}

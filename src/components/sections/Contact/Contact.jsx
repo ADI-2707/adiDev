@@ -3,7 +3,7 @@ import { useState, useEffect, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import styles from './Contact.module.css';
 import Typewriter from '../../ui/Typewriter';
-import { playPrinter, playSuccess, playTone } from '../../../utils/audio';
+import { playPrinter, playSuccess, playTone, playCRTClick } from '../../../utils/audio';
 import ContactForm from './ContactForm';
 
 const REPORT_ROWS = [
@@ -15,7 +15,7 @@ const REPORT_ROWS = [
   'Overall Recommendation ... Highly Recommended'
 ];
 
-const Contact = ({ activeStage, setStage }) => {
+const Contact = ({ activeStage, setStage, unlockOverride }) => {
   const [printState, setPrintState] = useState(0);
   const [isFormOpen, setIsFormOpen] = useState(false);
 
@@ -42,10 +42,29 @@ const Contact = ({ activeStage, setStage }) => {
     setPrintState((prev) => {
       if (prev >= 3) return prev;
       playSuccess();
-      setTimeout(() => setPrintState(4), 1200);
+
+      // Trigger CRT click sound and screen scanline glitch
+      setTimeout(() => {
+        playCRTClick();
+        const sectionEl = document.getElementById('contact');
+        if (sectionEl) {
+          sectionEl.classList.add(styles.screenFlicker);
+          setTimeout(() => {
+            sectionEl.classList.remove(styles.screenFlicker);
+          }, 150);
+        }
+      }, 600);
+
+      setTimeout(() => {
+        setPrintState(4);
+        if (unlockOverride) {
+          unlockOverride();
+        }
+      }, 1200);
+
       return 3;
     });
-  }, []);
+  }, [unlockOverride]);
 
   if (activeStage !== 9) return null;
 
@@ -159,6 +178,12 @@ const Contact = ({ activeStage, setStage }) => {
               <div className={styles.restartRow}>
                 <button onClick={handleRestart} className={styles.restartBtn}>
                   &lt;&lt; RESTART RECRUITMENT PROTOCOL
+                </button>
+              </div>
+
+              <div className={styles.secretBypassRow}>
+                <button onClick={() => setStage(10)} className={styles.bypassLink}>
+                  [`&gt;`] systems_override.exe --allow-bypass
                 </button>
               </div>
             </motion.div>

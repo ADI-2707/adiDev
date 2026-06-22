@@ -247,3 +247,55 @@
 .restartBtn:hover {
   color: var(--accent-cyan);
 }
+
+.screenFlicker {
+  animation: crtGlitch 0.15s ease-out;
+}
+
+@keyframes crtGlitch {
+  0% {
+    filter: brightness(1) contrast(1);
+    transform: skewX(0deg);
+  }
+  25% {
+    filter: brightness(1.2) contrast(1.1);
+    transform: skewX(1deg);
+  }
+  50% {
+    filter: brightness(0.9) contrast(0.95);
+    transform: skewX(-1deg);
+  }
+  75% {
+    filter: brightness(1.1) contrast(1.05);
+    transform: skewX(0.5deg);
+  }
+  100% {
+    filter: brightness(1) contrast(1);
+    transform: skewX(0deg);
+  }
+}
+
+.secretBypassRow {
+  margin-top: 1.5rem;
+  display: flex;
+  justify-content: center;
+}
+
+.bypassLink {
+  background: transparent;
+  border: none;
+  color: var(--text-disabled);
+  font-family: var(--font-mono);
+  font-size: 11px;
+  cursor: pointer;
+  opacity: 0.5;
+  transition: all 0.2s ease;
+  letter-spacing: 0.05em;
+  user-select: none;
+}
+
+.bypassLink:hover {
+  opacity: 1;
+  color: var(--accent-cyan);
+  text-shadow: 0 0 8px rgba(110, 231, 255, 0.4);
+}

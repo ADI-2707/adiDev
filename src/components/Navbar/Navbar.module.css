@@ -293,3 +293,47 @@
     padding: 2px 4px;
   }
 }
+
+.pulseDot {
+  display: inline-block;
+  width: 6px;
+  height: 6px;
+  background-color: var(--status-success);
+  border-radius: 50%;
+  margin-left: 6px;
+  box-shadow: 0 0 8px var(--status-success);
+  animation: pulseDotAnim 1.0s infinite alternate;
+  vertical-align: middle;
+}
+
+.pulseDotMobile {
+  display: inline-block;
+  width: 6px;
+  height: 6px;
+  background-color: var(--status-success);
+  border-radius: 50%;
+  margin-left: 6px;
+  box-shadow: 0 0 8px var(--status-success);
+  animation: pulseDotAnim 1.0s infinite alternate;
+  vertical-align: middle;
+}
+
+@keyframes pulseDotAnim {
+  0% {
+    opacity: 0.3;
+    transform: scale(0.9);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1.1);
+  }
+}
+
+.navSecret {
+  color: var(--status-success) !important;
+}
+
+.navSecret:hover:not(:disabled) {
+  text-shadow: 0 0 6px var(--status-success);
+  background: rgba(52, 211, 153, 0.04) !important;
+}
