@@ -9,6 +9,7 @@ const Satellite = ({ radius, speed, color, inclination = 0 }) => {
   const meshRef = useRef();
 
   useFrame((state) => {
+    if (document.hidden) return; // Pause updates if browser tab is inactive
     if (!meshRef.current) return;
 
     const t = state.clock.getElapsedTime() * speed;
@@ -36,6 +37,7 @@ const GlobeMesh = ({ activeStage }) => {
   const { viewport } = useThree();
 
   useFrame((state, delta) => {
+    if (document.hidden) return; // Pause updates if browser tab is inactive
     if (sphereRef.current) {
       sphereRef.current.rotation.y += delta * 0.05;
       sphereRef.current.rotation.x += delta * 0.02;
@@ -105,11 +107,28 @@ const GlobeMesh = ({ activeStage }) => {
 const CompanionCanvas = ({ activeStage }) => {
   const zIndex = 2;
 
+  const handleCanvasCreated = ({ gl }) => {
+    const canvasEl = gl.domElement;
+    
+    const handleContextLost = (event) => {
+      event.preventDefault();
+      console.warn("CompanionCanvas: WebGL Context Lost.");
+    };
+    
+    const handleContextRestored = () => {
+      console.log("CompanionCanvas: WebGL Context Restored.");
+    };
+
+    canvasEl.addEventListener("webglcontextlost", handleContextLost);
+    canvasEl.addEventListener("webglcontextrestored", handleContextRestored);
+  };
+
   return (
     <div className={styles.canvasContainer} style={{ zIndex }}>
       <Canvas
         camera={{ position: [0, 0, 4.5], fov: 40 }}
         gl={{ antialias: true, alpha: true }}
+        onCreated={handleCanvasCreated}
         style={{ background: 'transparent', width: '100%', height: '100%', pointerEvents: 'none' }}
       >
         <ambientLight intensity={0.5} />
