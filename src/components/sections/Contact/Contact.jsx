@@ -51,9 +51,9 @@ const Contact = ({ activeStage, setStage, unlockOverride }) => {
           sectionEl.classList.add(styles.screenFlicker);
           setTimeout(() => {
             sectionEl.classList.remove(styles.screenFlicker);
-          }, 150);
+          }, 350);
         }
-      }, 600);
+      }, 250);
 
       setTimeout(() => {
         setPrintState(4);
