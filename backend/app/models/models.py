@@ -1,4 +1,4 @@
-from sqlalchemy import Column, Integer, String, DateTime
+from sqlalchemy import Column, Integer, String, DateTime, Boolean
 from sqlalchemy.sql import func
 from app.db.session import Base
 
@@ -25,5 +25,6 @@ class Testimonial(Base):
     author = Column(String, index=True)
     role = Column(String)
     content = Column(String)
+    is_approved = Column(Boolean, default=False, index=True, server_default="false")
     created_at = Column(DateTime(timezone=True), server_default=func.now())
 
