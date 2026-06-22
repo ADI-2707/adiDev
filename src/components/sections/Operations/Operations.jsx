@@ -22,33 +22,28 @@ const Operations = ({ activeStage, setStage }) => {
         const data = await res.json();
 
         // Data format: data.contributions is an array of weeks (columns), each week is an array of days (rows)
-        // We only want the last 30 weeks to fit the terminal window nicely
+        // We slice the last 53 weeks for a full-year matrix
         const weeks = data.contributions || [];
-        const recentWeeks = weeks.slice(-30);
+        const recentWeeks = weeks.slice(-53);
 
-        // Transpose [weeks][days] into [rows(7)][cols(30)]
-        const grid = [];
-        for (let r = 0; r < 7; r++) {
-          const row = [];
-          for (let c = 0; c < recentWeeks.length; c++) {
-            const dayData = recentWeeks[c][r];
+        // Map intensity 0-3 for each day in each week
+        const grid = recentWeeks.map((week) => {
+          const days = Array.isArray(week) ? week : [];
+          return days.map((dayData) => {
             const count = dayData ? dayData.contributionCount : 0;
-
             // Map count to intensity 0-3
             let val = 0;
             if (count > 0 && count <= 3) val = 1;
             else if (count > 3 && count <= 8) val = 2;
             else if (count > 8) val = 3;
-
-            row.push(val);
-          }
-          grid.push(row);
-        }
+            return val;
+          });
+        });
         setContribGrid(grid);
       } catch (err) {
         console.error("Could not load github contributions:", err);
-        // Fallback to empty grid
-        const emptyGrid = Array(7).fill(Array(30).fill(0));
+        // Fallback to empty grid: 53 columns (weeks), each containing 7 rows (days)
+        const emptyGrid = Array(53).fill(null).map(() => Array(7).fill(0));
         setContribGrid(emptyGrid);
       } finally {
         setIsLoadingContribs(false);
@@ -105,12 +100,11 @@ const Operations = ({ activeStage, setStage }) => {
                       <div className={styles.loadingContribs}>[ FETCHING DATA FROM GITHUB_SAT ]</div>
                     ) : (
                       <div className={styles.contribGrid}>
-                        {contribGrid.map((row, rIdx) => (
-
-                          <div key={rIdx} className={styles.contribRow}>
-                            {row.map((val, cIdx) => (
+                        {contribGrid.map((week, wIdx) => (
+                          <div key={wIdx} className={styles.contribCol}>
+                            {week.map((val, dIdx) => (
                               <div
-                                key={cIdx}
+                                key={dIdx}
                                 className={`${styles.contribCell} ${val === 0
                                   ? styles.cellNone
                                   : val === 1

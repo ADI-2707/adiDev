@@ -31,6 +31,7 @@ const Navbar = ({ activeStage, setStage, maxUnlockedStage, soundMuted, toggleMut
   }, []);
 
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setMenuOpen(false);
   }, [activeStage]);
 

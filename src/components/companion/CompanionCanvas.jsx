@@ -103,7 +103,6 @@ const GlobeMesh = ({ activeStage }) => {
 };
 
 const CompanionCanvas = ({ activeStage }) => {
-  const isDesktop = window.innerWidth >= 1200;
   const zIndex = 2;
 
   return (

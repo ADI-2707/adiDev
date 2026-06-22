@@ -139,14 +139,16 @@
 
 .contribGrid {
   display: flex;
-  flex-direction: column;
+  flex-direction: row;
   gap: 3px;
   overflow-x: auto;
   -webkit-overflow-scrolling: touch;
+  padding-bottom: 0.5rem;
 }
 
-.contribRow {
+.contribCol {
   display: flex;
+  flex-direction: column;
   gap: 3px;
 }
 
