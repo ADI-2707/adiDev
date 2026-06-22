@@ -11,6 +11,7 @@ sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "..")
 from app.main import app
 from app.db.session import Base, get_db
 from app.models.models import Testimonial, Message
+Testimonial.__test__ = False
 from app.core.config import settings
 
 # Setup clean SQLite testing database
@@ -88,7 +89,12 @@ def test_xss_sanitization():
     
     # Angle brackets should be escaped into HTML entities
     assert "&lt;script&gt;" in data["name"]
-    assert "&lt;img" in data["content"]
+    
+    # MessageResponse doesn't return content, so query the DB to verify XSS sanitization
+    db = next(override_get_db())
+    db_message = db.query(Message).filter(Message.id == data["id"]).first()
+    assert db_message is not None
+    assert "&lt;img" in db_message.content
 
 # 4. Test Testimonial Submission & Moderation Lock
 def test_testimonial_flow():
@@ -174,3 +180,70 @@ def test_detect_host():
     response = client.get("/api/v1/admin/detect-host")
     assert response.status_code == 200
     assert "username" in response.json()
+
+# 7. Test Resume Download (Success and Not Found)
+def test_resume_download_success_and_not_found():
+    from unittest.mock import patch
+    
+    # Success case (using the existing resume.pdf)
+    response = client.get("/api/v1/resume/download")
+    assert response.status_code == 200
+    assert response.headers["content-type"] == "application/pdf"
+    
+    # Error case (mocking that the file does not exist)
+    with patch("os.path.exists", return_value=False):
+        response = client.get("/api/v1/resume/download")
+        assert response.status_code == 404
+        assert response.json()["detail"] == "Resume not found on server."
+
+# 8. Test Testimonial XSS Sanitization
+def test_testimonial_xss_sanitization():
+    xss_payload = {
+        "author": "<script>alert('xss_author')</script>",
+        "role": "<b>QA</b>",
+        "content": "<img src=x onerror=alert('xss_content')>"
+    }
+    response = client.post("/api/v1/testimonials", json=xss_payload)
+    assert response.status_code == 200
+    data = response.json()
+    
+    # Angle brackets should be escaped into HTML entities
+    assert "&lt;script&gt;" in data["author"]
+    assert "&lt;b&gt;" in data["role"]
+    assert "&lt;img" in data["content"]
+
+# 9. Test Testimonial Rate Limiting (Limit = 5)
+def test_testimonial_rate_limit():
+    payload = {
+        "author": "Steve Rogers",
+        "role": "Captain",
+        "content": "Good job."
+    }
+    # First 5 requests should succeed
+    for _ in range(5):
+        response = client.post("/api/v1/testimonials", json=payload)
+        assert response.status_code == 200
+        
+    # 6th request must fail with 429 Too Many Requests
+    response = client.post("/api/v1/testimonials", json=payload)
+    assert response.status_code == 429
+    assert "Rate limit exceeded" in response.json()["detail"]
+
+# 10. Test Non-existent Testimonial Operations
+def test_non_existent_testimonial_operations():
+    # Approve non-existent testimonial -> 404
+    approve_response = client.put(
+        "/api/v1/testimonials/9999/approve",
+        headers={"X-Admin-Passcode": "secret_ops_passcode"}
+    )
+    assert approve_response.status_code == 404
+    assert approve_response.json()["detail"] == "Testimonial record not found"
+    
+    # Delete non-existent testimonial -> 404
+    delete_response = client.delete(
+        "/api/v1/testimonials/9999",
+        headers={"X-Admin-Passcode": "secret_ops_passcode"}
+    )
+    assert delete_response.status_code == 404
+    assert delete_response.json()["detail"] == "Testimonial record not found"
+
