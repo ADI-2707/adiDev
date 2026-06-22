@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import Navbar from './components/Navbar/Navbar';
@@ -12,6 +11,7 @@ import Philosophy from './components/sections/Philosophy/Philosophy';
 import Operations from './components/sections/Operations/Operations';
 import Testimonials from './components/sections/Testimonials/Testimonials';
 import Contact from './components/sections/Contact/Contact';
+import AdminOverride from './components/sections/AdminOverride/AdminOverride';
 import { playDoorSlide } from './utils/audio';
 
 const STAGE_HASHES = {
@@ -25,6 +25,7 @@ const STAGE_HASHES = {
   7: '#operations',
   8: '#testimonials',
   9: '#report',
+  10: '#override',
 };
 
 const HASH_TO_STAGE = {
@@ -38,6 +39,7 @@ const HASH_TO_STAGE = {
   '#operations': 7,
   '#testimonials': 8,
   '#report': 9,
+  '#override': 10,
 };
 
 const App = () => {
@@ -46,17 +48,17 @@ const App = () => {
   const [soundMuted, setSoundMuted] = useState(false);
   const [isTransitioning, setIsTransitioning] = useState(false);
 
-  
+
   useEffect(() => {
     window.__soundMuted = soundMuted;
   }, [soundMuted]);
 
-  
+
   useEffect(() => {
     const handleHashChange = () => {
       const hash = window.location.hash;
       const stage = HASH_TO_STAGE[hash] !== undefined ? HASH_TO_STAGE[hash] : 0;
-      
+
       setActiveStage(stage);
       if (stage > maxUnlockedStage) {
         setMaxUnlockedStage(stage);
@@ -68,7 +70,7 @@ const App = () => {
     return () => window.removeEventListener('hashchange', handleHashChange);
   }, [maxUnlockedStage]);
 
-  
+
   const handleSetStage = (newStage) => {
     if (newStage === activeStage) return;
 
@@ -96,15 +98,15 @@ const App = () => {
 
   return (
     <div style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column' }}>
-      {}
+      { }
       <div className="galaxy-background" />
       <div className="space-overlay" />
       {activeStage === 0 && <div className="scanline-sweep" />}
 
-      {}
-      <Navbar 
-        activeStage={activeStage} 
-        setStage={handleSetStage} 
+      { }
+      <Navbar
+        activeStage={activeStage}
+        setStage={handleSetStage}
         maxUnlockedStage={maxUnlockedStage}
         soundMuted={soundMuted}
         toggleMute={toggleMute}
@@ -159,16 +161,21 @@ const App = () => {
           )}
           {activeStage === 9 && (
             <motion.div key="report" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} style={{ flex: 1, display: 'flex' }}>
-              <Contact activeStage={activeStage} setStage={handleSetStage} />
+              <Contact activeStage={activeStage} setStage={handleSetStage} unlockOverride={() => setMaxUnlockedStage(10)} />
+            </motion.div>
+          )}
+          {activeStage === 10 && (
+            <motion.div key="override" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} style={{ flex: 1, display: 'flex' }}>
+              <AdminOverride activeStage={activeStage} setStage={handleSetStage} />
             </motion.div>
           )}
         </AnimatePresence>
       </main>
 
-      {}
+      { }
       <CompanionCanvas activeStage={activeStage} />
 
-      {}
+      { }
       <AnimatePresence>
         {isTransitioning && (
           <div style={{ position: 'fixed', inset: 0, zIndex: 9999, display: 'flex', pointerEvents: 'none' }}>
@@ -177,13 +184,13 @@ const App = () => {
               animate={{ x: '0%' }}
               exit={{ x: '-100%' }}
               transition={{ duration: 0.4, ease: 'easeInOut' }}
-              style={{ 
-                width: '50%', 
-                height: '100%', 
-                backgroundColor: 'var(--bg-secondary)', 
-                borderRight: '1px solid var(--accent-blue)', 
+              style={{
+                width: '50%',
+                height: '100%',
+                backgroundColor: 'var(--bg-secondary)',
+                borderRight: '1px solid var(--accent-blue)',
                 boxShadow: '10px 0 30px rgba(0,0,0,0.5)',
-                pointerEvents: 'auto' 
+                pointerEvents: 'auto'
               }}
             />
             <motion.div
@@ -191,13 +198,13 @@ const App = () => {
               animate={{ x: '0%' }}
               exit={{ x: '100%' }}
               transition={{ duration: 0.4, ease: 'easeInOut' }}
-              style={{ 
-                width: '50%', 
-                height: '100%', 
-                backgroundColor: 'var(--bg-secondary)', 
-                borderLeft: '1px solid var(--accent-blue)', 
+              style={{
+                width: '50%',
+                height: '100%',
+                backgroundColor: 'var(--bg-secondary)',
+                borderLeft: '1px solid var(--accent-blue)',
                 boxShadow: '-10px 0 30px rgba(0,0,0,0.5)',
-                pointerEvents: 'auto' 
+                pointerEvents: 'auto'
               }}
             />
           </div>
