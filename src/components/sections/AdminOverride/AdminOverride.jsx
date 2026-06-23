@@ -2,6 +2,8 @@ import { useState, useEffect, useRef } from 'react';
 import styles from './AdminOverride.module.css';
 import { playClick, playTone, playSuccess, playScanSweep, playAccessDenied, playNotification } from '../../../utils/audio';
 import Typewriter from '../../ui/Typewriter';
+import { AnimatePresence } from 'framer-motion';
+
 
 const AdminOverride = ({ activeStage, setStage, isFullscreen, accessMode }) => {
   const [phase, setPhase] = useState('scan'); // 'scan' | 'tracer' | 'briefing' | 'self_destruct' | 'detective_game' | 'game_over' | 'game_success' | 'auth' | 'denied' | 'dashboard'
@@ -89,6 +91,222 @@ const AdminOverride = ({ activeStage, setStage, isFullscreen, accessMode }) => {
     }
   };
 
+  // --- HELPER FUNCTION DECLARATIONS (Ordered before Effects to prevent TDZ) ---
+  const stopWebcam = () => {
+    if (streamRef.current) {
+      streamRef.current.getTracks().forEach(track => track.stop());
+      streamRef.current = null;
+    }
+  };
+
+  const handleSelfDestruct = () => {
+    playAccessDenied();
+    setPhase('self_destruct');
+    setTimeout(() => {
+      setStage(1);
+    }, 3000);
+  };
+
+  const acceptMission = () => {
+    playClick();
+    setPhase('detective_game');
+    setGameStage(1);
+    setGameTimer(40);
+  };
+
+  const handleGameAbort = () => {
+    playAccessDenied();
+    setPhase('game_over');
+
+    const saved = localStorage.getItem('detective_scoreboard');
+    let list = [];
+    if (saved) {
+      try {
+        list = JSON.parse(saved);
+      } catch {}
+    }
+    const rand = Math.floor(100 + Math.random() * 900);
+    const mockLost = [{ operative: `OPERATIVE_${rand}`, outcome: 'LOST' }, ...list].slice(0, 10);
+    localStorage.setItem('detective_scoreboard', JSON.stringify(mockLost));
+
+    setTimeout(() => {
+      setStage(1);
+    }, 4000);
+  };
+
+  const handleSelectClue = (val) => {
+    playClick();
+    const correct = PUZZLES[gameStage].correct;
+    if (val === correct) {
+      setGameError('');
+      setHintActive(false);
+      if (gameStage === 3) {
+        setPhase('game_success');
+      } else {
+        setGameStage(prev => prev + 1);
+        setGameTimer(40);
+      }
+    } else {
+      setGameError('INCORRECT SECTOR OFFSET ACCESS REJECTED. 10 SEC PENALTY INCURRED.');
+      setGameTimer(prev => Math.max(0, prev - 10));
+      playTone(180, 0.25, 0.05, 'triangle');
+    }
+  };
+
+  const closeTestimonialModal = () => {
+    playClick();
+    setIsModalOpen(false);
+    setBaseCountdown(3);
+  };
+
+  const handleTestimonialSubmit = async (e) => {
+    e.preventDefault();
+    if (!modalAuthor || !modalRole || !modalContent) return;
+
+    setModalSubmitting(true);
+    setModalSuccessMsg('');
+    setModalErrorMsg('');
+    playTone(500, 0.05, 0.03);
+
+    try {
+      const response = await fetch('/api/v1/testimonials', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          author: modalAuthor,
+          role: modalRole,
+          content: modalContent
+        })
+      });
+
+      if (!response.ok) {
+        throw new Error('Signal transmission blocked.');
+      }
+      playSuccess();
+      setModalSuccessMsg('DEBRIEF LOG RECEIVED. DATABASE UPDATED.');
+      setTimeout(() => {
+        closeTestimonialModal();
+      }, 1500);
+    } catch {
+      setModalErrorMsg('UPLINK FAILURE. MESSAGE LOG DUMPED LOCALLY.');
+    } finally {
+      setModalSubmitting(false);
+    }
+  };
+
+  const handleDenied = () => {
+    playAccessDenied();
+    setPhase('denied');
+    setTimeout(() => {
+      setStage(0);
+    }, 4000);
+  };
+
+  const fetchDashboardData = async (code = passcode) => {
+    setDashLoading(true);
+    const authHeaders = { 'X-Admin-Passcode': code || sessionStorage.getItem('adminPasscode') };
+    try {
+      const [messagesRes, testimonialsRes] = await Promise.all([
+        fetch('/api/v1/admin/messages', { headers: authHeaders }),
+        fetch('/api/v1/admin/testimonials', { headers: authHeaders })
+      ]);
+      
+      if (messagesRes.ok && testimonialsRes.ok) {
+        const msgs = await messagesRes.json();
+        const tests = await testimonialsRes.json();
+        setMessages(msgs);
+        setTestimonials(tests);
+      }
+    } catch (err) {
+      console.error("Dashboard fetch error:", err);
+    } finally {
+      setDashLoading(false);
+    }
+  };
+
+  const validatePasscode = async (code) => {
+    setSubmitting(true);
+    setErrorMsg('');
+    try {
+      const res = await fetch('/api/v1/admin/testimonials', {
+        headers: { 'X-Admin-Passcode': code }
+      });
+      if (res.ok) {
+        sessionStorage.setItem('adminPasscode', code);
+        setPhase('dashboard');
+        fetchDashboardData(code);
+      } else {
+        sessionStorage.removeItem('adminPasscode');
+        if (phase === 'auth') {
+          handleDenied();
+        }
+      }
+    } catch {
+      setErrorMsg("CONNECTION_FAILED: Server offline or proxy blocked.");
+    } finally {
+      setSubmitting(false);
+    }
+  };
+
+  const handleSubmitAuth = (e) => {
+    e.preventDefault();
+    if (!passcode || submitting) return;
+    validatePasscode(passcode);
+  };
+
+  const handleApprove = async (id) => {
+    playClick();
+    const code = passcode || sessionStorage.getItem('adminPasscode');
+    setActionStatus(`Approving testimonial ${id}...`);
+    try {
+      const res = await fetch(`/api/v1/testimonials/${id}/approve`, {
+        method: 'PUT',
+        headers: { 'X-Admin-Passcode': code }
+      });
+      if (res.ok) {
+        playSuccess();
+        setActionStatus(`Testimonial ${id} approved successfully.`);
+        fetchDashboardData();
+      } else {
+        setActionStatus(`Failed to approve testimonial.`);
+      }
+    } catch {
+      setActionStatus(`Uplink error during approval.`);
+    }
+    setTimeout(() => setActionStatus(''), 3000);
+  };
+
+  const handleDelete = async (id) => {
+    if (!window.confirm(`Force deletion of testimonial ${id}?`)) return;
+    playClick();
+    const code = passcode || sessionStorage.getItem('adminPasscode');
+    setActionStatus(`Purging testimonial ${id}...`);
+    try {
+      const res = await fetch(`/api/v1/testimonials/${id}`, {
+        method: 'DELETE',
+        headers: { 'X-Admin-Passcode': code }
+      });
+      if (res.ok) {
+        playTone(300, 0.2, 0.05, 'sawtooth');
+        setActionStatus(`Testimonial ${id} deleted.`);
+        fetchDashboardData();
+      } else {
+        setActionStatus(`Failed to delete testimonial.`);
+      }
+    } catch {
+      setActionStatus(`Uplink error during deletion.`);
+    }
+    setTimeout(() => setActionStatus(''), 3000);
+  };
+
+  const handleLogout = () => {
+    playClick();
+    sessionStorage.removeItem('adminPasscode');
+    setStage(0);
+  };
+
+  // --- EFFECT HOOKS ---
+
   // Mount initialization: split between game flow and direct passcode entry flow
   useEffect(() => {
     if (activeStage === 10) {
@@ -115,16 +333,20 @@ const AdminOverride = ({ activeStage, setStage, isFullscreen, accessMode }) => {
     
     playScanSweep();
     
-    navigator.mediaDevices.getUserMedia({ video: { width: 300, height: 300 } })
-      .then((stream) => {
-        streamRef.current = stream;
-        if (videoRef.current) {
-          videoRef.current.srcObject = stream;
-        }
-      })
-      .catch((err) => {
-        console.log("Retinal Scan: Camera blocked or unavailable. Falling back to wireframe simulation.", err);
-      });
+    if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
+      navigator.mediaDevices.getUserMedia({ video: { width: 300, height: 300 } })
+        .then((stream) => {
+          streamRef.current = stream;
+          if (videoRef.current) {
+            videoRef.current.srcObject = stream;
+          }
+        })
+        .catch((err) => {
+          console.log("Retinal Scan: Camera blocked or unavailable. Falling back to wireframe simulation.", err);
+        });
+    } else {
+      console.log("Retinal Scan: mediaDevices not supported or unavailable.");
+    }
       
     const timer = setTimeout(() => {
       stopWebcam();
@@ -136,13 +358,6 @@ const AdminOverride = ({ activeStage, setStage, isFullscreen, accessMode }) => {
       stopWebcam();
     };
   }, [phase]);
-
-  const stopWebcam = () => {
-    if (streamRef.current) {
-      streamRef.current.getTracks().forEach(track => track.stop());
-      streamRef.current = null;
-    }
-  };
 
   // Run geolocation lookup & fetch host user
   useEffect(() => {
@@ -267,53 +482,6 @@ const AdminOverride = ({ activeStage, setStage, isFullscreen, accessMode }) => {
     return () => clearInterval(interval);
   }, [phase]);
 
-  // Scoreboard loader on victory
-  useEffect(() => {
-    if (phase !== 'game_success') return;
-
-    const saved = localStorage.getItem('detective_scoreboard');
-    let list = [];
-    if (saved) {
-      list = JSON.parse(saved);
-    } else {
-      list = [
-        { operative: 'OPERATIVE_118', outcome: 'WON' },
-        { operative: 'OPERATIVE_982', outcome: 'LOST' },
-        { operative: 'OPERATIVE_405', outcome: 'WON' },
-        { operative: 'OPERATIVE_211', outcome: 'WON' },
-        { operative: 'OPERATIVE_734', outcome: 'LOST' },
-        { operative: 'OPERATIVE_509', outcome: 'WON' },
-        { operative: 'OPERATIVE_861', outcome: 'WON' },
-        { operative: 'OPERATIVE_190', outcome: 'LOST' },
-        { operative: 'OPERATIVE_623', outcome: 'WON' },
-        { operative: 'OPERATIVE_475', outcome: 'WON' }
-      ];
-    }
-
-    let currentOp = '';
-    let rand = 0;
-    let attempts = 0;
-    do {
-      rand = Math.floor(100 + Math.random() * 900);
-      currentOp = `OPERATIVE_${rand}`;
-      attempts++;
-    } while (list.some(item => item.operative === currentOp) && attempts < 100);
-
-    setCurrentOperative(currentOp);
-    setModalAuthor(currentOp);
-    setModalRole(`Assigned Sector: ${geoData?.city || 'NODE_SECTOR'}`);
-
-    const newList = [{ operative: currentOp, outcome: 'WON' }, ...list].slice(0, 10);
-    setScoreboard(newList);
-    localStorage.setItem('detective_scoreboard', JSON.stringify(newList));
-
-    playSuccess();
-    
-    setTimeout(() => {
-      setIsModalOpen(true);
-    }, 2000);
-  }, [phase, geoData]);
-
   // Base returning countdown timer
   useEffect(() => {
     if (baseCountdown === null) return;
@@ -326,211 +494,6 @@ const AdminOverride = ({ activeStage, setStage, isFullscreen, accessMode }) => {
     }, 1000);
     return () => clearTimeout(timer);
   }, [baseCountdown]);
-
-  const acceptMission = () => {
-    playClick();
-    setPhase('detective_game');
-    setGameStage(1);
-    setGameTimer(40);
-  };
-
-  const handleSelfDestruct = () => {
-    playAccessDenied();
-    setPhase('self_destruct');
-    setTimeout(() => {
-      setStage(1);
-    }, 3000);
-  };
-
-  const handleGameAbort = () => {
-    playAccessDenied();
-    setPhase('game_over');
-
-    const saved = localStorage.getItem('detective_scoreboard');
-    let list = [];
-    if (saved) {
-      list = JSON.parse(saved);
-    }
-    const rand = Math.floor(100 + Math.random() * 900);
-    const mockLost = [{ operative: `OPERATIVE_${rand}`, outcome: 'LOST' }, ...list].slice(0, 10);
-    localStorage.setItem('detective_scoreboard', JSON.stringify(mockLost));
-
-    setTimeout(() => {
-      setStage(1);
-    }, 4000);
-  };
-
-  const handleSelectClue = (val) => {
-    playClick();
-    const correct = PUZZLES[gameStage].correct;
-    if (val === correct) {
-      setGameError('');
-      setHintActive(false);
-      if (gameStage === 3) {
-        setPhase('game_success');
-      } else {
-        setGameStage(prev => prev + 1);
-        setGameTimer(40);
-      }
-    } else {
-      setGameError('INCORRECT SECTOR OFFSET ACCESS REJECTED. 10 SEC PENALTY INCURRED.');
-      setGameTimer(prev => Math.max(0, prev - 10));
-      playTone(180, 0.25, 0.05, 'triangle');
-    }
-  };
-
-  const handleTestimonialSubmit = async (e) => {
-    e.preventDefault();
-    if (!modalAuthor || !modalRole || !modalContent) return;
-
-    setModalSubmitting(true);
-    setModalSuccessMsg('');
-    setModalErrorMsg('');
-    playTone(500, 0.05, 0.03);
-
-    try {
-      const response = await fetch('/api/v1/testimonials', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          author: modalAuthor,
-          role: modalRole,
-          content: modalContent
-        })
-      });
-
-      if (!response.ok) {
-        throw new Error('Signal transmission blocked.');
-      }
-      playSuccess();
-      setModalSuccessMsg('DEBRIEF LOG RECEIVED. DATABASE UPDATED.');
-      setTimeout(() => {
-        closeTestimonialModal();
-      }, 1500);
-    } catch {
-      setModalErrorMsg('UPLINK FAILURE. MESSAGE LOG DUMPED LOCALLY.');
-    } finally {
-      setModalSubmitting(false);
-    }
-  };
-
-  const closeTestimonialModal = () => {
-    playClick();
-    setIsModalOpen(false);
-    setBaseCountdown(3);
-  };
-
-  // --- PASSCODE / DIRECT DASHBOARD METHODS ---
-  const validatePasscode = async (code) => {
-    setSubmitting(true);
-    setErrorMsg('');
-    try {
-      const res = await fetch('/api/v1/admin/testimonials', {
-        headers: { 'X-Admin-Passcode': code }
-      });
-      if (res.ok) {
-        sessionStorage.setItem('adminPasscode', code);
-        setPhase('dashboard');
-        fetchDashboardData(code);
-      } else {
-        sessionStorage.removeItem('adminPasscode');
-        if (phase === 'auth') {
-          handleDenied();
-        }
-      }
-    } catch {
-      setErrorMsg("CONNECTION_FAILED: Server offline or proxy blocked.");
-    } finally {
-      setSubmitting(false);
-    }
-  };
-
-  const handleDenied = () => {
-    playAccessDenied();
-    setPhase('denied');
-    setTimeout(() => {
-      setStage(0);
-    }, 4000);
-  };
-
-  const handleSubmitAuth = (e) => {
-    e.preventDefault();
-    if (!passcode || submitting) return;
-    validatePasscode(passcode);
-  };
-
-  const fetchDashboardData = async (code = passcode) => {
-    setDashLoading(true);
-    const authHeaders = { 'X-Admin-Passcode': code || sessionStorage.getItem('adminPasscode') };
-    try {
-      const [messagesRes, testimonialsRes] = await Promise.all([
-        fetch('/api/v1/admin/messages', { headers: authHeaders }),
-        fetch('/api/v1/admin/testimonials', { headers: authHeaders })
-      ]);
-      
-      if (messagesRes.ok && testimonialsRes.ok) {
-        const msgs = await messagesRes.json();
-        const tests = await testimonialsRes.json();
-        setMessages(msgs);
-        setTestimonials(tests);
-      }
-    } catch (err) {
-      console.error("Dashboard fetch error:", err);
-    } finally {
-      setDashLoading(false);
-    }
-  };
-
-  const handleApprove = async (id) => {
-    playClick();
-    const code = passcode || sessionStorage.getItem('adminPasscode');
-    setActionStatus(`Approving testimonial ${id}...`);
-    try {
-      const res = await fetch(`/api/v1/testimonials/${id}/approve`, {
-        method: 'PUT',
-        headers: { 'X-Admin-Passcode': code }
-      });
-      if (res.ok) {
-        playSuccess();
-        setActionStatus(`Testimonial ${id} approved successfully.`);
-        fetchDashboardData();
-      } else {
-        setActionStatus(`Failed to approve testimonial.`);
-      }
-    } catch {
-      setActionStatus(`Uplink error during approval.`);
-    }
-    setTimeout(() => setActionStatus(''), 3000);
-  };
-
-  const handleDelete = async (id) => {
-    if (!window.confirm(`Force deletion of testimonial ${id}?`)) return;
-    playClick();
-    const code = passcode || sessionStorage.getItem('adminPasscode');
-    setActionStatus(`Purging testimonial ${id}...`);
-    try {
-      const res = await fetch(`/api/v1/testimonials/${id}`, {
-        method: 'DELETE',
-        headers: { 'X-Admin-Passcode': code }
-      });
-      if (res.ok) {
-        playTone(300, 0.2, 0.05, 'sawtooth');
-        setActionStatus(`Testimonial ${id} deleted.`);
-        fetchDashboardData();
-      } else {
-        setActionStatus(`Failed to delete testimonial.`);
-      }
-    } catch {
-      setActionStatus(`Uplink error during deletion.`);
-    }
-    setTimeout(() => setActionStatus(''), 3000);
-  };
-
-  const handleLogout = () => {
-    playClick();
-    sessionStorage.removeItem('adminPasscode');
-    setStage(0);
-  };
 
   return (
     <section className={`${styles.section} ${isFullscreen ? styles.fullscreenSection : ''}`}>
