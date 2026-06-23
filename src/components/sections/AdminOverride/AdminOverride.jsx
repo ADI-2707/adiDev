@@ -495,6 +495,68 @@ const AdminOverride = ({ activeStage, setStage, isFullscreen, accessMode }) => {
     return () => clearTimeout(timer);
   }, [baseCountdown]);
 
+  // Scoreboard loader on victory
+  useEffect(() => {
+    if (phase !== 'game_success') return;
+
+    let list = [];
+    try {
+      const saved = localStorage.getItem('detective_scoreboard');
+      if (saved) {
+        const parsed = JSON.parse(saved);
+        if (Array.isArray(parsed)) {
+          list = parsed;
+        }
+      }
+    } catch (e) {
+      console.error("Failed to read scoreboard from localStorage:", e);
+    }
+
+    if (list.length === 0) {
+      list = [
+        { operative: 'OPERATIVE_118', outcome: 'WON' },
+        { operative: 'OPERATIVE_982', outcome: 'LOST' },
+        { operative: 'OPERATIVE_405', outcome: 'WON' },
+        { operative: 'OPERATIVE_211', outcome: 'WON' },
+        { operative: 'OPERATIVE_734', outcome: 'LOST' },
+        { operative: 'OPERATIVE_509', outcome: 'WON' },
+        { operative: 'OPERATIVE_861', outcome: 'WON' },
+        { operative: 'OPERATIVE_190', outcome: 'LOST' },
+        { operative: 'OPERATIVE_623', outcome: 'WON' },
+        { operative: 'OPERATIVE_475', outcome: 'WON' }
+      ];
+    }
+
+    // Generate unique user operative ID
+    let currentOp = '';
+    let rand = 0;
+    let attempts = 0;
+    do {
+      rand = Math.floor(100 + Math.random() * 900);
+      currentOp = `OPERATIVE_${rand}`;
+      attempts++;
+    } while (list.some(item => item && item.operative === currentOp) && attempts < 100);
+
+    setCurrentOperative(currentOp);
+    setModalAuthor(currentOp);
+    setModalRole(`Assigned Sector: ${geoData?.city || 'NODE_SECTOR'}`);
+
+    const newList = [{ operative: currentOp, outcome: 'WON' }, ...list].slice(0, 10);
+    setScoreboard(newList);
+    try {
+      localStorage.setItem('detective_scoreboard', JSON.stringify(newList));
+    } catch (e) {
+      console.error("Failed to write scoreboard to localStorage:", e);
+    }
+
+    playSuccess();
+    
+    // Open the feedback testimonial modal
+    setTimeout(() => {
+      setIsModalOpen(true);
+    }, 2000);
+  }, [phase, geoData]);
+
   return (
     <section className={`${styles.section} ${isFullscreen ? styles.fullscreenSection : ''}`}>
       <div className={styles.backgroundMask} />
