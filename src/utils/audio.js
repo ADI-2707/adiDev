@@ -234,3 +234,71 @@ export const playAccessDenied = () => {
     void 0;
   }
 };
+
+export const playOverrideWarning = (duration = 1.5) => {
+  if (window.__soundMuted) return;
+  try {
+    const ctx = getAudioContext();
+    const osc = ctx.createOscillator();
+    const gainNode = ctx.createGain();
+
+    osc.type = 'sawtooth';
+    osc.frequency.setValueAtTime(220, ctx.currentTime);
+
+    // Retro rising-falling siren effect
+    for (let t = 0; t < duration; t += 0.25) {
+      osc.frequency.setValueAtTime(220, ctx.currentTime + t);
+      osc.frequency.linearRampToValueAtTime(440, ctx.currentTime + t + 0.12);
+      osc.frequency.linearRampToValueAtTime(220, ctx.currentTime + t + 0.25);
+    }
+
+    gainNode.gain.setValueAtTime(0.03, ctx.currentTime);
+    gainNode.gain.linearRampToValueAtTime(0.03, ctx.currentTime + duration - 0.2);
+    gainNode.gain.exponentialRampToValueAtTime(0.0001, ctx.currentTime + duration);
+
+    osc.connect(gainNode);
+    gainNode.connect(ctx.destination);
+
+    osc.start();
+    osc.stop(ctx.currentTime + duration);
+  } catch {
+    void 0;
+  }
+};
+
+export const playGlitchStatic = (duration = 2.0) => {
+  if (window.__soundMuted) return;
+  try {
+    const ctx = getAudioContext();
+    const bufferSize = ctx.sampleRate * duration;
+    const buffer = ctx.createBuffer(1, bufferSize, ctx.sampleRate);
+    const data = buffer.getChannelData(0);
+
+    for (let i = 0; i < bufferSize; i++) {
+      const white = Math.random() * 2 - 1;
+      const crackle = Math.random() > 0.985 ? (Math.random() * 2 - 1) * 3 : 0;
+      data[i] = (white * 0.12 + crackle * 0.2) * (1 - i / bufferSize);
+    }
+
+    const noise = ctx.createBufferSource();
+    noise.buffer = buffer;
+
+    const filter = ctx.createBiquadFilter();
+    filter.type = 'bandpass';
+    filter.frequency.setValueAtTime(900, ctx.currentTime);
+    filter.Q.setValueAtTime(0.6, ctx.currentTime);
+
+    const gainNode = ctx.createGain();
+    gainNode.gain.setValueAtTime(0.07, ctx.currentTime);
+    gainNode.gain.exponentialRampToValueAtTime(0.0001, ctx.currentTime + duration);
+
+    noise.connect(filter);
+    filter.connect(gainNode);
+    gainNode.connect(ctx.destination);
+
+    noise.start();
+  } catch {
+    void 0;
+  }
+};
+
