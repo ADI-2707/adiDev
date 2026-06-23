@@ -3,6 +3,8 @@ import styles from './AdminOverride.module.css';
 import { playClick, playTone, playSuccess, playScanSweep, playAccessDenied, playNotification } from '../../../utils/audio';
 import Typewriter from '../../ui/Typewriter';
 import { AnimatePresence } from 'framer-motion';
+import AegisGameCanvas from './AegisGameCanvas';
+import GameTerminalOverlay from './GameTerminalOverlay';
 
 
 const AdminOverride = ({ activeStage, setStage, isFullscreen, accessMode }) => {
@@ -22,6 +24,8 @@ const AdminOverride = ({ activeStage, setStage, isFullscreen, accessMode }) => {
   const [selectedClue, setSelectedClue] = useState(null);
   const [gameError, setGameError] = useState('');
   const [hintActive, setHintActive] = useState(false);
+  const [activeZoom, setActiveZoom] = useState(null); // null | 'terminal' | 'relay' | 'satellite'
+  const [completedPuzzles, setCompletedPuzzles] = useState({}); // { relay: true, terminal: true, satellite: true }
 
   // Scoreboard & current user details
   const [scoreboard, setScoreboard] = useState([]);
@@ -110,8 +114,31 @@ const AdminOverride = ({ activeStage, setStage, isFullscreen, accessMode }) => {
   const acceptMission = () => {
     playClick();
     setPhase('detective_game');
-    setGameStage(1);
-    setGameTimer(40);
+    setActiveZoom(null);
+    setCompletedPuzzles({});
+    setGameTimer(75);
+  };
+
+  const handleSelectProp = (propKey) => {
+    if (completedPuzzles[propKey]) return;
+    playTone(480, 0.08, 0.03);
+    setActiveZoom(propKey);
+  };
+
+  const handleBackToDesk = () => {
+    playClick();
+    setActiveZoom(null);
+  };
+
+  const handlePuzzleComplete = (puzzleKey) => {
+    const updated = { ...completedPuzzles, [puzzleKey]: true };
+    setCompletedPuzzles(updated);
+
+    if (updated.relay && updated.terminal && updated.satellite) {
+      setTimeout(() => {
+        setPhase('game_success');
+      }, 1000);
+    }
   };
 
   const handleGameAbort = () => {
@@ -650,49 +677,16 @@ const AdminOverride = ({ activeStage, setStage, isFullscreen, accessMode }) => {
       )}
 
       {phase === 'detective_game' && (
-        <div className={styles.gameContainer}>
-          <div className={styles.gamePanel}>
-            <div className={styles.gameHeader}>
-              <span>TACTICAL COMMAND PANEL // DECIPHER PUZZLE</span>
-              <span className={styles.stageIndicator}>CLUE {gameStage} OF 3</span>
-            </div>
-            <div className={styles.gameBody}>
-              <div className={styles.timerRow}>
-                <span className={styles.timerLabel}>REMAINING NODE DURATION:</span>
-                <span className={`${styles.timerValue} ${gameTimer <= 10 ? styles.timerWarning : ''}`}>
-                  {gameTimer}s
-                </span>
-              </div>
-
-              <p className={styles.gameQuestion}>{PUZZLES[gameStage].question}</p>
-
-              {gameError && <div className={styles.gameErrorText}>{gameError}</div>}
-
-              <div className={styles.optionsGrid}>
-                {PUZZLES[gameStage].options.map((opt) => (
-                  <button
-                    key={opt.value}
-                    onClick={() => handleSelectClue(opt.value)}
-                    className={styles.optionBtn}
-                  >
-                    {opt.label}
-                  </button>
-                ))}
-              </div>
-
-              <div className={styles.helpRow}>
-                {hintActive ? (
-                  <div className={styles.hintBox}>
-                    <strong>HINT:</strong> {PUZZLES[gameStage].hint}
-                  </div>
-                ) : (
-                  <button onClick={() => { playClick(); setHintActive(true); }} className={styles.hintBtn}>
-                    [ REQUEST INTEL HINT ]
-                  </button>
-                )}
-              </div>
-            </div>
-          </div>
+        <div className={styles.canvasGameWrapper}>
+          <AegisGameCanvas activeZoom={activeZoom} onSelectProp={handleSelectProp} />
+          
+          <GameTerminalOverlay
+            activeZoom={activeZoom}
+            onBack={handleBackToDesk}
+            onPuzzleComplete={handlePuzzleComplete}
+            completedPuzzles={completedPuzzles}
+            gameTimer={gameTimer}
+          />
         </div>
       )}
 
