@@ -58,9 +58,9 @@ graph TD
 
 ---
 
-## Console Security Clearances (Stages 0–9)
+## Console Security Clearances (Stages 0–10)
 
-The operator progresses sequentially through 10 security clearances synchronized with URL hash routes:
+The operator progresses sequentially through 11 security clearances synchronized with URL hash routes:
 
 1.  **Stage 0: Boot Sequence (`""`)**
     *   Initiates a command-line terminal emulator printing loading state diagnostics, system checks, and telemetry initialization.
@@ -79,9 +79,14 @@ The operator progresses sequentially through 10 security clearances synchronized
 8.  **Stage 7: Live Operations (`#operations`)**
     *   Pulls real-time telemetry from active developer resources featuring simulated radars and utility matrices.
 9.  **Stage 8: Field Debriefings (`#testimonials`)**
-    *   Uplinks with the FastAPI server to fetch and display the latest declassified testimonials from external operatives and allows submitting new field logs.
+    *   Uplinks with the FastAPI server to fetch and display approved declassified testimonials from external operatives and allows submitting new field logs.
 10. **Stage 9: Verdict Output (`#report`)**
     *   A mechanical thermal printer simulation rolls down the final audit verdict, printing and stamping "APPROVED" with dynamic spring mechanics. Provides the main exit CTAs: Downloading the resume, profiles, launching the email submission modal, and scheduling a meeting.
+11. **Stage 10: Admin Override & Holographic Decryption Game (`#override`)**
+    *   Features a biometric retinal scanner simulation (camera-based with interactive SVG fallback), system environment intrusion tracer log, and typewriter decrypted mission briefing. Operatives click the central floating holographic terminal screen inside a 3D R3F server console room to engage a Spider-Man 2-inspired 5x5 circuit board routing puzzle. Straight/curved wire cores must be rotated to establish a green energy pathway from START to END before the security timer runs out. An adaptive auditory sonar warning beacon accelerates synthesizer beeps as the countdown expires. Upon victory, displays a local operative scoreboard and opens a secure debrief feedback log upload form.
+
+### Secret Admin Bypass Flow
+At any stage prior to Stage 10, typing the secret passcode word `"override"` on the keyboard triggers a direct access gate bypass, transitioning immediately to the Stage 10 Admin verification screen where authorized administrators can input their clearance passcode to moderate pending testimonials and view the archived message transcripts.
 
 ---
 
@@ -94,8 +99,13 @@ All backend endpoints are prefixed with `/api/v1` and enforce strict validation.
 | **GET** | `/health` | None | JSON | Returns the server connection state and diagnostic message. |
 | **POST** | `/messages` | `MessageCreate` | `MessageResponse` | Saves contact messages in the DB and triggers a background email task to send the message details to the owner via SMTP. |
 | **GET** | `/resume/download` | None | File | Logs the requesting client's IP in the DB and serves the official resume PDF file (`public/resume.pdf`). |
-| **GET** | `/testimonials` | None | List[`TestimonialResponse`] | Retrieves the latest 5 declassified testimonials from the database. |
-| **POST** | `/testimonials` | `TestimonialCreate` | `TestimonialResponse` | Inserts a new testimonial log into the database. |
+| **GET** | `/testimonials` | None | List[`TestimonialResponse`] | Retrieves the latest 5 declassified approved testimonials from the database. |
+| **POST** | `/testimonials` | `TestimonialCreate` | `TestimonialResponse` | Inserts a new testimonial log into the database awaiting admin approval. |
+| **GET** | `/admin/detect-host` | None | JSON | Returns the current server/host OS username for operative logging metadata. |
+| **GET** | `/admin/messages` | None | List[`MessageResponse`] | Retrieves all saved contact messages (Admin Authorization header `X-Admin-Passcode` required). |
+| **GET** | `/admin/testimonials` | None | List[`TestimonialResponse`] | Retrieves all submitted testimonials including pending ones (Admin Authorization header `X-Admin-Passcode` required). |
+| **PUT** | `/testimonials/{id}/approve` | None | `TestimonialResponse` | Marks a pending testimonial as approved for public listing (Admin Authorization header `X-Admin-Passcode` required). |
+| **DELETE** | `/testimonials/{id}` | None | JSON | Deletes / purges a testimonial from the database (Admin Authorization header `X-Admin-Passcode` required). |
 
 ### Data Schemas
 
