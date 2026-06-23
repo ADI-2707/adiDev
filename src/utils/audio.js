@@ -126,3 +126,240 @@ export const playPrinter = () => {
     void 0;
   }
 };
+
+export const playCRTClick = () => {
+  if (window.__soundMuted) return;
+  try {
+    const ctx = getAudioContext();
+    const osc = ctx.createOscillator();
+    const gainNode = ctx.createGain();
+
+    osc.type = 'triangle';
+    osc.frequency.setValueAtTime(2000, ctx.currentTime);
+    osc.frequency.exponentialRampToValueAtTime(100, ctx.currentTime + 0.04);
+
+    gainNode.gain.setValueAtTime(0.015, ctx.currentTime);
+    gainNode.gain.exponentialRampToValueAtTime(0.0001, ctx.currentTime + 0.04);
+
+    osc.connect(gainNode);
+    gainNode.connect(ctx.destination);
+
+    osc.start();
+    osc.stop(ctx.currentTime + 0.04);
+  } catch {
+    void 0;
+  }
+};
+
+export const playNotification = () => {
+  if (window.__soundMuted) return;
+  try {
+    const ctx = getAudioContext();
+    const osc = ctx.createOscillator();
+    const gainNode = ctx.createGain();
+
+    osc.type = 'sine';
+    osc.frequency.setValueAtTime(1200, ctx.currentTime);
+
+    gainNode.gain.setValueAtTime(0.02, ctx.currentTime);
+    gainNode.gain.exponentialRampToValueAtTime(0.0001, ctx.currentTime + 0.15);
+
+    osc.connect(gainNode);
+    gainNode.connect(ctx.destination);
+
+    osc.start();
+    osc.stop(ctx.currentTime + 0.15);
+  } catch {
+    void 0;
+  }
+};
+
+export const playScanSweep = () => {
+  if (window.__soundMuted) return;
+  try {
+    const ctx = getAudioContext();
+    const osc = ctx.createOscillator();
+    const filter = ctx.createBiquadFilter();
+    const gainNode = ctx.createGain();
+
+    osc.type = 'sawtooth';
+    osc.frequency.setValueAtTime(80, ctx.currentTime);
+    
+    filter.type = 'peaking';
+    filter.frequency.setValueAtTime(200, ctx.currentTime);
+    filter.frequency.linearRampToValueAtTime(800, ctx.currentTime + 0.5);
+    filter.frequency.linearRampToValueAtTime(200, ctx.currentTime + 1.0);
+
+    gainNode.gain.setValueAtTime(0.01, ctx.currentTime);
+    gainNode.gain.exponentialRampToValueAtTime(0.0001, ctx.currentTime + 1.0);
+
+    osc.connect(filter);
+    filter.connect(gainNode);
+    gainNode.connect(ctx.destination);
+
+    osc.start();
+    osc.stop(ctx.currentTime + 1.0);
+  } catch {
+    void 0;
+  }
+};
+
+export const playAccessDenied = () => {
+  if (window.__soundMuted) return;
+  try {
+    const ctx = getAudioContext();
+    const osc1 = ctx.createOscillator();
+    const osc2 = ctx.createOscillator();
+    const gainNode = ctx.createGain();
+
+    osc1.type = 'sawtooth';
+    osc1.frequency.setValueAtTime(110, ctx.currentTime);
+    
+    osc2.type = 'square';
+    osc2.frequency.setValueAtTime(115, ctx.currentTime);
+
+    gainNode.gain.setValueAtTime(0.05, ctx.currentTime);
+    gainNode.gain.exponentialRampToValueAtTime(0.0001, ctx.currentTime + 0.6);
+
+    osc1.connect(gainNode);
+    osc2.connect(gainNode);
+    gainNode.connect(ctx.destination);
+
+    osc1.start();
+    osc2.start();
+    
+    osc1.stop(ctx.currentTime + 0.6);
+    osc2.stop(ctx.currentTime + 0.6);
+  } catch {
+    void 0;
+  }
+};
+
+export const playOverrideWarning = (duration = 1.5) => {
+  if (window.__soundMuted) return;
+  try {
+    const ctx = getAudioContext();
+    const osc = ctx.createOscillator();
+    const gainNode = ctx.createGain();
+
+    osc.type = 'sawtooth';
+    osc.frequency.setValueAtTime(220, ctx.currentTime);
+
+    // Retro rising-falling siren effect
+    for (let t = 0; t < duration; t += 0.25) {
+      osc.frequency.setValueAtTime(220, ctx.currentTime + t);
+      osc.frequency.linearRampToValueAtTime(440, ctx.currentTime + t + 0.12);
+      osc.frequency.linearRampToValueAtTime(220, ctx.currentTime + t + 0.25);
+    }
+
+    gainNode.gain.setValueAtTime(0.03, ctx.currentTime);
+    gainNode.gain.linearRampToValueAtTime(0.03, ctx.currentTime + duration - 0.2);
+    gainNode.gain.exponentialRampToValueAtTime(0.0001, ctx.currentTime + duration);
+
+    osc.connect(gainNode);
+    gainNode.connect(ctx.destination);
+
+    osc.start();
+    osc.stop(ctx.currentTime + duration);
+  } catch {
+    void 0;
+  }
+};
+
+export const playGlitchStatic = (duration = 2.0) => {
+  if (window.__soundMuted) return;
+  try {
+    const ctx = getAudioContext();
+    const bufferSize = ctx.sampleRate * duration;
+    const buffer = ctx.createBuffer(1, bufferSize, ctx.sampleRate);
+    const data = buffer.getChannelData(0);
+
+    for (let i = 0; i < bufferSize; i++) {
+      const white = Math.random() * 2 - 1;
+      const crackle = Math.random() > 0.985 ? (Math.random() * 2 - 1) * 3 : 0;
+      data[i] = (white * 0.12 + crackle * 0.2) * (1 - i / bufferSize);
+    }
+
+    const noise = ctx.createBufferSource();
+    noise.buffer = buffer;
+
+    const filter = ctx.createBiquadFilter();
+    filter.type = 'bandpass';
+    filter.frequency.setValueAtTime(900, ctx.currentTime);
+    filter.Q.setValueAtTime(0.6, ctx.currentTime);
+
+    const gainNode = ctx.createGain();
+    gainNode.gain.setValueAtTime(0.07, ctx.currentTime);
+    gainNode.gain.exponentialRampToValueAtTime(0.0001, ctx.currentTime + duration);
+
+    noise.connect(filter);
+    filter.connect(gainNode);
+    gainNode.connect(ctx.destination);
+
+    noise.start();
+  } catch {
+    void 0;
+  }
+};
+
+export const playHDMICrash = (duration = 2.0) => {
+  if (window.__soundMuted) return;
+  try {
+    const ctx = getAudioContext();
+    
+    // 1. Continuous 1000Hz Sine Test Tone with frequency glitches
+    const osc = ctx.createOscillator();
+    const oscGain = ctx.createGain();
+    osc.type = 'sine';
+    osc.frequency.setValueAtTime(1000, ctx.currentTime);
+    
+    for (let t = 0; t < duration; t += 0.1) {
+      if (Math.random() > 0.7) {
+        osc.frequency.setValueAtTime(1000 + (Math.random() * 60 - 30), ctx.currentTime + t);
+      }
+    }
+
+    oscGain.gain.setValueAtTime(0.05, ctx.currentTime);
+    oscGain.gain.exponentialRampToValueAtTime(0.0001, ctx.currentTime + duration);
+    
+    osc.connect(oscGain);
+    oscGain.connect(ctx.destination);
+    
+    // 2. White Noise & Glitch Crackles
+    const bufferSize = ctx.sampleRate * duration;
+    const buffer = ctx.createBuffer(1, bufferSize, ctx.sampleRate);
+    const data = buffer.getChannelData(0);
+
+    for (let i = 0; i < bufferSize; i++) {
+      const white = Math.random() * 2 - 1;
+      const crackle = Math.random() > 0.985 ? (Math.random() * 2 - 1) * 35 : 0;
+      data[i] = (white * 0.1 + crackle * 0.15) * (1 - i / bufferSize);
+    }
+
+    const noise = ctx.createBufferSource();
+    noise.buffer = buffer;
+
+    const filter = ctx.createBiquadFilter();
+    filter.type = 'bandpass';
+    filter.frequency.setValueAtTime(850, ctx.currentTime);
+    filter.Q.setValueAtTime(0.7, ctx.currentTime);
+
+    const noiseGain = ctx.createGain();
+    noiseGain.gain.setValueAtTime(0.08, ctx.currentTime);
+    noiseGain.gain.exponentialRampToValueAtTime(0.0001, ctx.currentTime + duration);
+
+    noise.connect(filter);
+    filter.connect(noiseGain);
+    noiseGain.connect(ctx.destination);
+
+    // Start both
+    osc.start();
+    noise.start();
+    
+    osc.stop(ctx.currentTime + duration);
+    noise.stop(ctx.currentTime + duration);
+  } catch {
+    void 0;
+  }
+};
+

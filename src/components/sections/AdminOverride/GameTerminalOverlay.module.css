@@ -1,0 +1,298 @@
+.overlayWrapper {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 10;
+  pointer-events: none;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  padding: 1.5rem;
+  box-sizing: border-box;
+}
+
+/* Top Hud Row */
+.topHud {
+  background: rgba(8, 12, 21, 0.9);
+  border: 1px solid rgba(110, 231, 255, 0.15);
+  padding: 0.8rem 1.2rem;
+  border-radius: 4px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  pointer-events: auto;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  color: var(--text-secondary);
+}
+
+.timerValue {
+  color: var(--status-success);
+  margin-left: 1.5rem;
+  font-weight: bold;
+}
+
+.timerWarning {
+  color: var(--status-critical) !important;
+  animation: blink 0.5s infinite alternate;
+}
+
+.objectiveProgress {
+  display: flex;
+  align-items: center;
+}
+
+.solvedGlow {
+  color: var(--status-success) !important;
+  text-shadow: 0 0 10px var(--status-success);
+  font-weight: bold;
+}
+
+/* Bottom Narrative dialogue bar */
+.bottomDialogue {
+  background: rgba(8, 12, 21, 0.95);
+  border-top: 2px solid var(--accent-blue);
+  padding: 1rem 1.5rem;
+  pointer-events: auto;
+  font-family: var(--font-mono);
+  font-size: 12px;
+  line-height: 1.5;
+  border-radius: 2px;
+}
+
+.consolePrompt {
+  color: var(--text-muted);
+  font-size: 10px;
+  margin-bottom: 0.3rem;
+  letter-spacing: 0.05em;
+}
+
+.consoleText {
+  color: var(--accent-cyan);
+}
+
+/* Spider-Man 2 Puzzle Panel */
+.puzzlePanel {
+  background: rgba(8, 12, 21, 0.98);
+  border: 1.5px solid var(--accent-cyan);
+  box-shadow: 0 0 35px rgba(110, 231, 255, 0.25);
+  border-radius: 6px;
+  width: 95%;
+  max-width: 420px;
+  margin: 0 auto;
+  pointer-events: auto;
+  overflow: hidden;
+  align-self: center;
+}
+
+.panelHeader {
+  background: rgba(255, 255, 255, 0.02);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  padding: 0.8rem 1rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  color: var(--text-muted);
+}
+
+.closeBtn {
+  background: transparent;
+  border: none;
+  color: var(--text-disabled);
+  font-family: var(--font-mono);
+  cursor: pointer;
+  transition: color 0.2s;
+}
+
+.closeBtn:hover {
+  color: var(--status-critical);
+}
+
+.panelBody {
+  padding: 1.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1.2rem;
+  align-items: center;
+}
+
+.hintText {
+  font-size: 10px;
+  color: var(--text-muted);
+  line-height: 1.4;
+  text-align: center;
+}
+
+.successLabel {
+  background: rgba(52, 211, 153, 0.1);
+  border: 1px solid var(--status-success);
+  color: var(--status-success);
+  font-family: var(--font-mono);
+  font-size: 11px;
+  padding: 0.5rem 1rem;
+  border-radius: 2px;
+  width: 100%;
+  text-align: center;
+  box-shadow: 0 0 10px rgba(52, 211, 153, 0.2);
+}
+
+/* 5x5 Circuit Grid Board styling */
+.circuitGridBoard {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  grid-template-rows: repeat(5, 1fr);
+  gap: 6px;
+  width: 100%;
+  max-width: 320px;
+  aspect-ratio: 1;
+  background: rgba(0, 0, 0, 0.5);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  padding: 8px;
+  border-radius: 6px;
+  box-sizing: border-box;
+}
+
+.emptyGridCell {
+  background: rgba(255, 255, 255, 0.01);
+  border: 1px dashed rgba(255, 255, 255, 0.02);
+  border-radius: 4px;
+}
+
+/* Start/End Node styling */
+.startNode, .endNode {
+  background: #091322;
+  border: 1px solid rgba(110, 231, 255, 0.2);
+  border-radius: 4px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  gap: 0.2rem;
+}
+
+.startNode {
+  border-color: var(--status-success);
+}
+
+.endNode {
+  border-color: var(--status-critical);
+}
+
+.startPulseBulb, .endPulseBulb {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+}
+
+.startPulseBulb {
+  background: var(--status-success);
+  box-shadow: 0 0 10px var(--status-success);
+  animation: pulse 1s infinite alternate;
+}
+
+.endPulseBulb {
+  background: var(--status-critical);
+  box-shadow: 0 0 10px var(--status-critical);
+}
+
+.nodeActive {
+  box-shadow: 0 0 15px rgba(52, 211, 153, 0.4);
+}
+
+.nodeActive .endPulseBulb {
+  background: var(--status-success);
+  box-shadow: 0 0 10px var(--status-success);
+}
+
+.nodeLabel {
+  font-family: var(--font-mono);
+  font-size: 8px;
+  color: var(--text-muted);
+}
+
+/* Rotating connectors */
+.connectorCell {
+  background: #111827;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 4px;
+  cursor: pointer;
+  position: relative;
+  transition: all 0.25s;
+}
+
+.connectorCell:hover {
+  background: rgba(110, 231, 255, 0.05);
+  border-color: var(--accent-cyan);
+}
+
+.connectorGraphicWrapper {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+.tileSvg {
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+}
+
+/* Backing copper trace lines */
+.tileWireBacking {
+  fill: none;
+  stroke: rgba(255, 255, 255, 0.08);
+  stroke-width: 8;
+  stroke-linecap: round;
+}
+
+/* Glowing active neon energy flow paths */
+.tileWireEnergy {
+  fill: none;
+  stroke: transparent;
+  stroke-width: 6;
+  stroke-linecap: round;
+  transition: stroke 0.3s;
+}
+
+.connectorActive .tileWireEnergy {
+  stroke: var(--status-success);
+  filter: drop-shadow(0 0 4px var(--status-success));
+  stroke-dasharray: 10, 15;
+  animation: pulseFlow 1.2s linear infinite;
+}
+
+.wirePinJoint {
+  position: absolute;
+  width: 6px;
+  height: 6px;
+  background: #475569;
+  border-radius: 50%;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.connectorActive .wirePinJoint {
+  background: var(--status-success);
+  box-shadow: 0 0 6px var(--status-success);
+}
+
+@keyframes pulseFlow {
+  from { stroke-dashoffset: 25; }
+  to { stroke-dashoffset: 0; }
+}
+
+@keyframes pulse {
+  0% { transform: scale(0.9); opacity: 0.6; }
+  100% { transform: scale(1.1); opacity: 1.0; }
+}
+
+@keyframes blink {
+  0% { opacity: 0.4; }
+  100% { opacity: 1; }
+}

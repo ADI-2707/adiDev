@@ -31,6 +31,7 @@ class TestimonialResponse(BaseModel):
     author: str
     role: str
     content: str
+    is_approved: bool
     created_at: datetime
 
     model_config = ConfigDict(from_attributes=True)

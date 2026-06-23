@@ -30,3 +30,7 @@ venv/
 __pycache__/
 *.pyc
 pyrefly.toml
+
+
+backend/test.db
+*.db

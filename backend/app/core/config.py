@@ -3,6 +3,7 @@ from pydantic_settings import BaseSettings, SettingsConfigDict
 class Settings(BaseSettings):
     PROJECT_NAME: str = "Portfolio Backend"
     DATABASE_URL: str
+    ADMIN_PASSCODE: str = ""
     
     SMTP_HOST: str = "smtp.gmail.com"
     SMTP_PORT: int = 587
