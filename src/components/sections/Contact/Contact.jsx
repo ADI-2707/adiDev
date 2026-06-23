@@ -3,7 +3,7 @@ import { useState, useEffect, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import styles from './Contact.module.css';
 import Typewriter from '../../ui/Typewriter';
-import { playPrinter, playSuccess, playTone, playCRTClick, playOverrideWarning, playGlitchStatic } from '../../../utils/audio';
+import { playPrinter, playSuccess, playTone, playCRTClick, playOverrideWarning, playGlitchStatic, playHDMICrash } from '../../../utils/audio';
 import ContactForm from './ContactForm';
 import SmallGlobe from '../../companion/SmallGlobe';
 
@@ -87,7 +87,7 @@ const Contact = ({ activeStage, setStage, setIsFullscreenOverride, triggerFullsc
     // Warning alarm phase for 1.5 seconds
     setTimeout(() => {
       setOverrideState('hdmi');
-      playGlitchStatic(2.0);
+      playHDMICrash(2.0);
 
       // HDMI error calibration screen for 2.0 seconds
       setTimeout(() => {

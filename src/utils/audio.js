@@ -302,3 +302,64 @@ export const playGlitchStatic = (duration = 2.0) => {
   }
 };
 
+export const playHDMICrash = (duration = 2.0) => {
+  if (window.__soundMuted) return;
+  try {
+    const ctx = getAudioContext();
+    
+    // 1. Continuous 1000Hz Sine Test Tone with frequency glitches
+    const osc = ctx.createOscillator();
+    const oscGain = ctx.createGain();
+    osc.type = 'sine';
+    osc.frequency.setValueAtTime(1000, ctx.currentTime);
+    
+    for (let t = 0; t < duration; t += 0.1) {
+      if (Math.random() > 0.7) {
+        osc.frequency.setValueAtTime(1000 + (Math.random() * 60 - 30), ctx.currentTime + t);
+      }
+    }
+
+    oscGain.gain.setValueAtTime(0.05, ctx.currentTime);
+    oscGain.gain.exponentialRampToValueAtTime(0.0001, ctx.currentTime + duration);
+    
+    osc.connect(oscGain);
+    oscGain.connect(ctx.destination);
+    
+    // 2. White Noise & Glitch Crackles
+    const bufferSize = ctx.sampleRate * duration;
+    const buffer = ctx.createBuffer(1, bufferSize, ctx.sampleRate);
+    const data = buffer.getChannelData(0);
+
+    for (let i = 0; i < bufferSize; i++) {
+      const white = Math.random() * 2 - 1;
+      const crackle = Math.random() > 0.985 ? (Math.random() * 2 - 1) * 35 : 0;
+      data[i] = (white * 0.1 + crackle * 0.15) * (1 - i / bufferSize);
+    }
+
+    const noise = ctx.createBufferSource();
+    noise.buffer = buffer;
+
+    const filter = ctx.createBiquadFilter();
+    filter.type = 'bandpass';
+    filter.frequency.setValueAtTime(850, ctx.currentTime);
+    filter.Q.setValueAtTime(0.7, ctx.currentTime);
+
+    const noiseGain = ctx.createGain();
+    noiseGain.gain.setValueAtTime(0.08, ctx.currentTime);
+    noiseGain.gain.exponentialRampToValueAtTime(0.0001, ctx.currentTime + duration);
+
+    noise.connect(filter);
+    filter.connect(noiseGain);
+    noiseGain.connect(ctx.destination);
+
+    // Start both
+    osc.start();
+    noise.start();
+    
+    osc.stop(ctx.currentTime + duration);
+    noise.stop(ctx.currentTime + duration);
+  } catch {
+    void 0;
+  }
+};
+
