@@ -47,6 +47,7 @@ const App = () => {
   const [maxUnlockedStage, setMaxUnlockedStage] = useState(1);
   const [soundMuted, setSoundMuted] = useState(false);
   const [isTransitioning, setIsTransitioning] = useState(false);
+  const [isFullscreenOverride, setIsFullscreenOverride] = useState(false);
 
 
   useEffect(() => {
@@ -73,6 +74,16 @@ const App = () => {
 
   const handleSetStage = (newStage) => {
     if (newStage === activeStage) return;
+
+    // Reset override settings when exiting override mode
+    if (newStage !== 10) {
+      setIsFullscreenOverride(false);
+      try {
+        if (document.exitFullscreen && document.fullscreenElement) {
+          document.exitFullscreen().catch(() => {});
+        }
+      } catch {}
+    }
 
     setIsTransitioning(true);
     playDoorSlide();
@@ -104,13 +115,15 @@ const App = () => {
       {activeStage === 0 && <div className="scanline-sweep" />}
 
       { }
-      <Navbar
-        activeStage={activeStage}
-        setStage={handleSetStage}
-        maxUnlockedStage={maxUnlockedStage}
-        soundMuted={soundMuted}
-        toggleMute={toggleMute}
-      />
+      {!isFullscreenOverride && (
+        <Navbar
+          activeStage={activeStage}
+          setStage={handleSetStage}
+          maxUnlockedStage={maxUnlockedStage}
+          soundMuted={soundMuted}
+          toggleMute={toggleMute}
+        />
+      )}
 
       <main style={{ flex: 1, display: 'flex', flexDirection: 'column' }}>
         <AnimatePresence mode="wait">
@@ -161,12 +174,20 @@ const App = () => {
           )}
           {activeStage === 9 && (
             <motion.div key="report" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} style={{ flex: 1, display: 'flex' }}>
-              <Contact activeStage={activeStage} setStage={handleSetStage} unlockOverride={() => setMaxUnlockedStage(10)} />
+              <Contact
+                activeStage={activeStage}
+                setStage={handleSetStage}
+                triggerFullscreenOverride={() => {
+                  setMaxUnlockedStage(10);
+                  setIsFullscreenOverride(true);
+                  handleSetStage(10);
+                }}
+              />
             </motion.div>
           )}
           {activeStage === 10 && (
             <motion.div key="override" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} style={{ flex: 1, display: 'flex' }}>
-              <AdminOverride activeStage={activeStage} setStage={handleSetStage} />
+              <AdminOverride activeStage={activeStage} setStage={handleSetStage} isFullscreen={isFullscreenOverride} />
             </motion.div>
           )}
         </AnimatePresence>
