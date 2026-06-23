@@ -16,7 +16,7 @@ const REPORT_ROWS = [
   'Overall Recommendation ... Highly Recommended'
 ];
 
-const Contact = ({ activeStage, setStage, triggerFullscreenOverride }) => {
+const Contact = ({ activeStage, setStage, setIsFullscreenOverride, triggerFullscreenOverride }) => {
   const [printState, setPrintState] = useState(0);
   const [isFormOpen, setIsFormOpen] = useState(false);
   const [overrideState, setOverrideState] = useState('idle'); // 'idle' | 'warning' | 'hdmi'
@@ -66,6 +66,10 @@ const Contact = ({ activeStage, setStage, triggerFullscreenOverride }) => {
 
   const triggerOverride = () => {
     if (overrideState !== 'idle') return;
+
+    if (setIsFullscreenOverride) {
+      setIsFullscreenOverride(true);
+    }
 
     try {
       if (document.documentElement.requestFullscreen) {

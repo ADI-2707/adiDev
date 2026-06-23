@@ -212,6 +212,7 @@ const App = () => {
               <Contact
                 activeStage={activeStage}
                 setStage={handleSetStage}
+                setIsFullscreenOverride={setIsFullscreenOverride}
                 triggerFullscreenOverride={() => {
                   setMaxUnlockedStage(10);
                   setAdminAccessMode('game');
