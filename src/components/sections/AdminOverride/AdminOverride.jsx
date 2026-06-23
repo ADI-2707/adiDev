@@ -24,8 +24,8 @@ const AdminOverride = ({ activeStage, setStage, isFullscreen, accessMode }) => {
   const [selectedClue, setSelectedClue] = useState(null);
   const [gameError, setGameError] = useState('');
   const [hintActive, setHintActive] = useState(false);
-  const [activeZoom, setActiveZoom] = useState(null); // null | 'terminal' | 'relay' | 'satellite'
-  const [completedPuzzles, setCompletedPuzzles] = useState({}); // { relay: true, terminal: true, satellite: true }
+  const [activeZoom, setActiveZoom] = useState(null); // null | 'terminal'
+  const [completedPuzzles, setCompletedPuzzles] = useState({}); // { terminal: true }
 
   // Scoreboard & current user details
   const [scoreboard, setScoreboard] = useState([]);
@@ -134,7 +134,7 @@ const AdminOverride = ({ activeStage, setStage, isFullscreen, accessMode }) => {
     const updated = { ...completedPuzzles, [puzzleKey]: true };
     setCompletedPuzzles(updated);
 
-    if (updated.relay && updated.terminal && updated.satellite) {
+    if (updated.terminal) {
       setTimeout(() => {
         setPhase('game_success');
       }, 1000);

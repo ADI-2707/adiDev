@@ -10,368 +10,271 @@ const GameTerminalOverlay = ({
   completedPuzzles,
   gameTimer
 }) => {
-  // --- PUZZLE 1: POWER RELAY (Left) ---
-  const [activeSocket, setActiveSocket] = useState(null); // 'A' | 'B' | 'C' | 'D'
-  const [connections, setConnections] = useState({}); // { A: 3, B: 1 }
-  const [wireSway, setWireSway] = useState(0);
+  // 5x5 Hacking Circuit Grid Node definitions
+  const [grid, setGrid] = useState([
+    [ { type: 'empty' }, { type: 'empty' }, { type: 'empty' }, { type: 'empty' }, { type: 'empty' } ],
+    [ { type: 'empty' }, { type: 'connector', shape: 'corner', rotation: 180 }, { type: 'connector', shape: 'line', rotation: 90 }, { type: 'connector', shape: 'corner', rotation: 270 }, { type: 'empty' } ],
+    [ { type: 'start' }, { type: 'connector', shape: 'corner', rotation: 0 }, { type: 'empty' }, { type: 'connector', shape: 'corner', rotation: 90 }, { type: 'end' } ],
+    [ { type: 'empty' }, { type: 'empty' }, { type: 'empty' }, { type: 'empty' }, { type: 'empty' } ],
+    [ { type: 'empty' }, { type: 'empty' }, { type: 'empty' }, { type: 'empty' }, { type: 'empty' } ]
+  ]);
 
-  // Bezier curve physical sway timer
-  useEffect(() => {
-    let frame;
-    const updateSway = () => {
-      setWireSway(Math.sin(Date.now() / 240) * 12);
-      frame = requestAnimationFrame(updateSway);
-    };
-    frame = requestAnimationFrame(updateSway);
-    return () => cancelAnimationFrame(frame);
-  }, []);
+  const [activePaths, setActivePaths] = useState([]); // Array of coordinate strings like "r,c"
+  const [circuitSolved, setCircuitSolved] = useState(false);
+  const [beepInterval, setBeepInterval] = useState(null);
 
-  const relayCoordinates = {
-    // Sockets pixel offsets relative to SVG container
-    left: { A: [40, 60], B: [40, 120], C: [40, 180], D: [40, 240] },
-    right: { 1: [320, 60], 2: [320, 120], 3: [320, 180], 4: [320, 240] }
+  // Direction definitions
+  const UP = [-1, 0, 'UP'];
+  const DOWN = [1, 0, 'DOWN'];
+  const LEFT = [0, -1, 'LEFT'];
+  const RIGHT = [0, 1, 'RIGHT'];
+
+  const getOppositeDir = (dirStr) => {
+    if (dirStr === 'UP') return 'DOWN';
+    if (dirStr === 'DOWN') return 'UP';
+    if (dirStr === 'LEFT') return 'RIGHT';
+    if (dirStr === 'RIGHT') return 'LEFT';
+    return null;
   };
 
-  const handleSocketClick = (side, key) => {
-    playClick();
-    if (side === 'left') {
-      setActiveSocket(key);
-    } else if (side === 'right' && activeSocket) {
-      // Connect active left socket to this right socket
-      const newConns = { ...connections, [activeSocket]: key };
-      setConnections(newConns);
-      setActiveSocket(null);
+  // Get active ports of a tile based on its shape and rotation
+  const getPorts = (cell) => {
+    if (cell.type === 'start') return ['RIGHT'];
+    if (cell.type === 'end') return ['LEFT'];
+    if (cell.type !== 'connector') return [];
 
-      // Verify connection rule
-      const correct = { A: 3, B: 1, C: 4, D: 2 };
-      const allDone = ['A', 'B', 'C', 'D'].every((k) => newConns[k] === correct[k]);
-      if (allDone) {
-        playSuccess();
-        onPuzzleComplete('relay');
-      } else {
-        playTone(320, 0.1, 0.03, 'sine');
+    const rot = (cell.rotation % 360 + 360) % 360;
+
+    if (cell.shape === 'line') {
+      // 0 or 180 degrees connects LEFT & RIGHT. 90 or 270 connects UP & DOWN.
+      if (rot === 0 || rot === 180) return ['LEFT', 'RIGHT'];
+      if (rot === 90 || rot === 270) return ['UP', 'DOWN'];
+    }
+
+    if (cell.shape === 'corner') {
+      if (rot === 0) return ['UP', 'RIGHT'];
+      if (rot === 90) return ['RIGHT', 'DOWN'];
+      if (rot === 180) return ['DOWN', 'LEFT'];
+      if (rot === 270) return ['LEFT', 'UP'];
+    }
+
+    return [];
+  };
+
+  // Traverse the grid to find the energized circuit nodes starting from (2, 0)
+  const calculateCircuitPath = (currentGrid) => {
+    const paths = ['2,0'];
+    let currR = 2;
+    let currC = 0;
+    let lastMoveDir = 'RIGHT'; // We move right out of the start socket
+    let solved = false;
+
+    // Safety counter to prevent infinite loops in cyclic paths
+    for (let steps = 0; steps < 25; steps++) {
+      const nextR = currR + (lastMoveDir === 'UP' ? -1 : lastMoveDir === 'DOWN' ? 1 : 0);
+      const nextC = currC + (lastMoveDir === 'LEFT' ? -1 : lastMoveDir === 'RIGHT' ? 1 : 0);
+
+      // Check bounds
+      if (nextR < 0 || nextR >= 5 || nextC < 0 || nextC >= 5) break;
+
+      const nextCell = currentGrid[nextR][nextC];
+      const incomingPort = getOppositeDir(lastMoveDir);
+      const nextPorts = getPorts(nextCell);
+
+      // Verify alignment: does the next tile connect to the incoming port?
+      if (!nextPorts.includes(incomingPort)) break;
+
+      paths.push(`${nextR},${nextC}`);
+
+      if (nextCell.type === 'end') {
+        solved = true;
+        break;
       }
+
+      // Find the exit port on the next connector
+      const exitPort = nextPorts.find((p) => p !== incomingPort);
+      if (!exitPort) break;
+
+      currR = nextR;
+      currC = nextC;
+      lastMoveDir = exitPort;
     }
+
+    return { paths, solved };
   };
 
-  const clearRelay = () => {
-    playTone(150, 0.15, 0.05, 'sawtooth');
-    setConnections({});
-    setActiveSocket(null);
-  };
-
-  // --- PUZZLE 2: CIPHER NODE (Center) ---
-  const [selectedHex, setSelectedHex] = useState(null);
-  const [cipherStatus, setCipherStatus] = useState('AWAITING_DECRYPTION');
-  
-  const hexNodes = [
-    { val: '2A', dec: 42, label: '0x2A' },
-    { val: 'E5', dec: 229, label: '0xE5' },
-    { val: '7F', dec: 127, label: '0x7F' },
-    { val: 'B2', dec: 178, label: '0xB2' },
-    { val: '3C', dec: 60, label: '0x3C' },
-    { val: 'F4', dec: 244, label: '0xF4' },
-    { val: 'A9', dec: 169, label: '0xA9' },
-    { val: 'D1', dec: 209, label: '0xD1' },
-    { val: '6E', dec: 110, label: '0x6E' }
-  ];
-
-  const handleHexClick = (node) => {
-    if (completedPuzzles.terminal) return;
+  // Rotate tile on click
+  const handleTileClick = (r, c) => {
+    if (circuitSolved || activeZoom !== 'terminal') return;
     playClick();
-    setSelectedHex(node.val);
 
-    // Target decimal: 127 -> Hex 0x7F
-    if (node.val === '7F') {
-      setCipherStatus('CIPHER_SOLVED // DECRYPTED');
-      playSuccess();
-      onPuzzleComplete('terminal');
-    } else {
-      setCipherStatus('DECRYPT_FAILURE // GATE_REJECTED');
-      playTone(180, 0.25, 0.05, 'triangle');
-      setTimeout(() => setCipherStatus('AWAITING_DECRYPTION'), 1500);
-    }
+    setGrid((prevGrid) => {
+      const newGrid = prevGrid.map((row, rIdx) =>
+        row.map((cell, cIdx) => {
+          if (rIdx === r && cIdx === c && cell.type === 'connector') {
+            return { ...cell, rotation: cell.rotation + 90 };
+          }
+          return cell;
+        })
+      );
+
+      // Recalculate path instantly
+      const { paths, solved } = calculateCircuitPath(newGrid);
+      setActivePaths(paths);
+
+      if (solved) {
+        setCircuitSolved(true);
+        playSuccess();
+        setTimeout(() => {
+          onPuzzleComplete('terminal');
+        }, 1200);
+      } else {
+        playTone(380, 0.08, 0.02, 'sine');
+      }
+
+      return newGrid;
+    });
   };
 
-  // --- PUZZLE 3: SATELLITE TUNER (Right) ---
-  const [freq, setFreq] = useState(0.8);
-  const [phase, setPhase] = useState(-1.5);
-  const [isTuned, setIsTuned] = useState(false);
-
-  // Handle tuning check
-  const handleTune = (type, val) => {
-    if (completedPuzzles.satellite) return;
-    playTone(300 + val * 100, 0.02, 0.015, 'sine');
-    if (type === 'freq') setFreq(val);
-    if (type === 'phase') setPhase(val);
-  };
-
+  // Recalculate paths when component mounts/activeZoom is set
   useEffect(() => {
-    if (completedPuzzles.satellite) {
-      setIsTuned(true);
+    const { paths, solved } = calculateCircuitPath(grid);
+    setActivePaths(paths);
+    setCircuitSolved(solved);
+  }, [grid]);
+
+  // Audio sonar beacon warning beep that accelerates as the countdown shrinks
+  useEffect(() => {
+    if (circuitSolved || activeZoom !== 'terminal') {
+      if (beepInterval) clearInterval(beepInterval);
       return;
     }
-    // Target: Freq = 1.5, Phase = 0.0 (Tolerances 0.1)
-    const freqMatch = Math.abs(freq - 1.5) < 0.1;
-    const phaseMatch = Math.abs(phase - 0.0) < 0.12;
 
-    if (freqMatch && phaseMatch) {
-      setIsTuned(true);
-      playSuccess();
-      onPuzzleComplete('satellite');
-    }
-  }, [freq, phase, completedPuzzles.satellite]);
+    const intervalMs = gameTimer > 15 ? 1200 : gameTimer > 8 ? 600 : 300;
+    const interval = setInterval(() => {
+      playTone(180, 0.05, 0.015, 'sine');
+    }, intervalMs);
 
-  // Generate SVG wave path coordinates
-  const getWavePath = (frequency, phaseOffset) => {
-    let points = [];
-    const width = 320;
-    const height = 150;
-    const centerY = height / 2;
-
-    for (let x = 0; x <= width; x += 4) {
-      const radians = (x / width) * Math.PI * 4 * frequency + phaseOffset;
-      const y = centerY + Math.sin(radians) * 45;
-      points.push(`${x},${y}`);
-    }
-    return `M ${points.join(' L ')}`;
-  };
+    return () => clearInterval(interval);
+  }, [gameTimer, circuitSolved, activeZoom]);
 
   return (
     <div className={styles.overlayWrapper}>
-      {/* HUD Top Status Row */}
+      {/* HUD Top Status Bar */}
       <div className={styles.topHud}>
         <div className={styles.telemetryText}>
-          <span>AEGIS_MAIN: ONLINE</span>
-          <span className={styles.timerValue}>TIMER_DURATION: {gameTimer}s</span>
+          <span>AEGIS_SYSTEM_GRID: INTRUDED</span>
+          <span className={`${styles.timerValue} ${gameTimer <= 12 ? styles.timerWarning : ''}`}>
+            SEC_TIMER: {gameTimer}s
+          </span>
         </div>
         <div className={styles.objectiveProgress}>
-          <span>SOLVED: {Object.keys(completedPuzzles).length} / 3</span>
-          <div className={styles.progressTrack}>
-            <div 
-              className={styles.progressBar} 
-              style={{ width: `${(Object.keys(completedPuzzles).length / 3) * 100}%` }}
-            />
-          </div>
+          <span className={circuitSolved ? styles.solvedGlow : ''}>
+            {circuitSolved ? 'MAINBOARD_CONNECTED' : 'CIRCUIT_BYPASS_ENGAGED'}
+          </span>
         </div>
       </div>
 
-      {/* Main interactive panel container */}
-      <AnimatePresence mode="wait">
-        {activeZoom === 'relay' && (
-          <motion.div
-            key="relay"
-            initial={{ opacity: 0, scale: 0.95 }}
-            animate={{ opacity: 1, scale: 1 }}
-            exit={{ opacity: 0, scale: 0.95 }}
-            className={styles.puzzlePanel}
-          >
-            <div className={styles.panelHeader}>
-              <span>JUNCTION RELAY CABLING MODULE</span>
-              <button onClick={onBack} className={styles.closeBtn}>[X]</button>
-            </div>
-            <div className={styles.panelBody}>
-              <p className={styles.hintText}>
-                ROUTE NODE CONNECTIONS IN THE SEQUENCE: A &rarr; 3, B &rarr; 1, C &rarr; 4, D &rarr; 2
-              </p>
-
-              <div className={styles.relayGrid}>
-                {/* Wires Connection Overlay SVG */}
-                <svg className={styles.wiresSvg}>
-                  {Object.entries(connections).map(([left, right]) => {
-                    const start = relayCoordinates.left[left];
-                    const end = relayCoordinates.right[right];
-                    const ctrlX = (start[0] + end[0]) / 2;
-                    const ctrlY = (start[1] + end[1]) / 2 + wireSway;
-                    return (
-                      <path
-                        key={left}
-                        d={`M ${start[0]} ${start[1]} Q ${ctrlX} ${ctrlY} ${end[0]} ${end[1]}`}
-                        className={styles.connectingWire}
-                      />
-                    );
-                  })}
-                </svg>
-
-                {/* Left Sockets Column */}
-                <div className={styles.socketsCol}>
-                  {Object.keys(relayCoordinates.left).map((k) => {
-                    const isSelected = activeSocket === k;
-                    const isConnected = !!connections[k];
-                    return (
-                      <button
-                        key={k}
-                        disabled={completedPuzzles.relay || isConnected}
-                        onClick={() => handleSocketClick('left', k)}
-                        className={`${styles.socketBtn} ${isSelected ? styles.socketActive : ''} ${isConnected ? styles.socketConnected : ''}`}
-                      >
-                        PORT_{k}
-                      </button>
-                    );
-                  })}
-                </div>
-
-                {/* Right Sockets Column */}
-                <div className={styles.socketsCol}>
-                  {Object.keys(relayCoordinates.right).map((k) => {
-                    const isConnected = Object.values(connections).includes(Number(k));
-                    return (
-                      <button
-                        key={k}
-                        disabled={completedPuzzles.relay || isConnected}
-                        onClick={() => handleSocketClick('right', Number(k))}
-                        className={`${styles.socketBtn} ${isConnected ? styles.socketConnected : ''}`}
-                      >
-                        NODE_{k}
-                      </button>
-                    );
-                  })}
-                </div>
-              </div>
-
-              {!completedPuzzles.relay && (
-                <button onClick={clearRelay} className={styles.resetBtn}>
-                  [ RESET CABLING PATHS ]
-                </button>
-              )}
-
-              {completedPuzzles.relay && (
-                <div className={styles.successLabel}>RELAY POWER INTEGRITY OVERRIDE: SECURED</div>
-              )}
-            </div>
-          </motion.div>
-        )}
-
+      {/* Main Spider-Man 2 style grid deck */}
+      <AnimatePresence>
         {activeZoom === 'terminal' && (
           <motion.div
-            key="terminal"
+            key="circuit"
             initial={{ opacity: 0, scale: 0.95 }}
             animate={{ opacity: 1, scale: 1 }}
             exit={{ opacity: 0, scale: 0.95 }}
             className={styles.puzzlePanel}
           >
             <div className={styles.panelHeader}>
-              <span>CIPHER MAIN CONSOLE DECRYPT</span>
-              <button onClick={onBack} className={styles.closeBtn}>[X]</button>
+              <span>SYSTEM CIRCUIT BOARD CONNECTIONS</span>
+              <button onClick={onBack} className={styles.closeBtn}>[DISCONNECT]</button>
             </div>
             <div className={styles.panelBody}>
               <p className={styles.hintText}>
-                INTRUSION SECURITY BYPASS: CHOOSE TARGET HEXADECIMAL OF DECIMAL VALUE 127
+                ROTATE CORES TO ROUTE THE POWER SIGNAL (GREEN CONDUIT) TO THE RED TERMINAL NODE.
               </p>
 
-              <div className={styles.cipherStatusRow}>{cipherStatus}</div>
+              {/* 5x5 Circuit Grid Layout */}
+              <div className={styles.circuitGridBoard}>
+                {grid.map((row, r) =>
+                  row.map((cell, c) => {
+                    const isCellActive = activePaths.includes(`${r},${c}`);
+                    
+                    if (cell.type === 'empty') {
+                      return <div key={`${r}-${c}`} className={styles.emptyGridCell} />;
+                    }
 
-              <div className={styles.hexGrid}>
-                {hexNodes.map((node) => {
-                  const isSelected = selectedHex === node.val;
-                  const isCorrect = node.val === '7F';
-                  return (
-                    <button
-                      key={node.val}
-                      disabled={completedPuzzles.terminal}
-                      onClick={() => handleHexClick(node)}
-                      className={`${styles.hexCard} ${isSelected ? (isCorrect ? styles.hexCorrect : styles.hexWrong) : ''}`}
-                    >
-                      <span className={styles.hexValue}>{node.label}</span>
-                      <span className={styles.hexMeta}>DEC_{node.dec}</span>
-                    </button>
-                  );
-                })}
+                    if (cell.type === 'start') {
+                      return (
+                        <div key={`${r}-${c}`} className={`${styles.startNode} ${isCellActive ? styles.nodeActive : ''}`}>
+                          <div className={styles.startPulseBulb} />
+                          <span className={styles.nodeLabel}>START</span>
+                        </div>
+                      );
+                    }
+
+                    if (cell.type === 'end') {
+                      return (
+                        <div key={`${r}-${c}`} className={`${styles.endNode} ${circuitSolved ? styles.nodeActive : ''}`}>
+                          <div className={styles.endPulseBulb} />
+                          <span className={styles.nodeLabel}>CORE</span>
+                        </div>
+                      );
+                    }
+
+                    // Rotating Connectors
+                    const rotationDegree = cell.rotation;
+                    return (
+                      <div
+                        key={`${r}-${c}`}
+                        onClick={() => handleTileClick(r, c)}
+                        className={`${styles.connectorCell} ${isCellActive ? styles.connectorActive : ''}`}
+                      >
+                        <div 
+                          className={styles.connectorGraphicWrapper}
+                          style={{ transform: `rotate(${rotationDegree}deg)` }}
+                        >
+                          {cell.shape === 'line' ? (
+                            <svg viewBox="0 0 100 100" className={styles.tileSvg}>
+                              <line x1="0" y1="50" x2="100" y2="50" className={styles.tileWireBacking} />
+                              <line x1="0" y1="50" x2="100" y2="50" className={styles.tileWireEnergy} />
+                            </svg>
+                          ) : (
+                            <svg viewBox="0 0 100 100" className={styles.tileSvg}>
+                              {/* Curved path: LEFT to UP */}
+                              <path d="M 0,50 A 50,50 0 0,1 50,0" className={styles.tileWireBacking} />
+                              <path d="M 0,50 A 50,50 0 0,1 50,0" className={styles.tileWireEnergy} />
+                            </svg>
+                          )}
+                          {/* Central node pin decoration */}
+                          <div className={styles.wirePinJoint} />
+                        </div>
+                      </div>
+                    );
+                  })
+                )}
               </div>
 
-              {completedPuzzles.terminal && (
-                <div className={styles.successLabel}>CIPHER GATEWAY KEY SIGNATURE: VERIFIED</div>
-              )}
-            </div>
-          </motion.div>
-        )}
-
-        {activeZoom === 'satellite' && (
-          <motion.div
-            key="satellite"
-            initial={{ opacity: 0, scale: 0.95 }}
-            animate={{ opacity: 1, scale: 1 }}
-            exit={{ opacity: 0, scale: 0.95 }}
-            className={styles.puzzlePanel}
-          >
-            <div className={styles.panelHeader}>
-              <span>SATELLITE FREQUENCY ALIGNMENT</span>
-              <button onClick={onBack} className={styles.closeBtn}>[X]</button>
-            </div>
-            <div className={styles.panelBody}>
-              <p className={styles.hintText}>
-                TUNE FREQUENCY TO 1.5 AND PHASE ANGLE TO 0.0 TO ALIGN SPECTRUMS
-              </p>
-
-              {/* Sine Wave Graphic Tuning Screen */}
-              <div className={styles.tuningScreen}>
-                <svg className={styles.waveSvgContainer}>
-                  {/* Reference Sine Wave (Static Red) */}
-                  <path d={getWavePath(1.5, 0.0)} className={styles.refWave} />
-                  {/* Dynamic Tuned Wave (Green) */}
-                  <path 
-                    d={getWavePath(freq, phase)} 
-                    className={`${styles.tunedWave} ${isTuned ? styles.alignedWave : ''}`} 
-                  />
-                </svg>
-              </div>
-
-              <div className={styles.controlsRow}>
-                <div className={styles.sliderGroup}>
-                  <label>CARRIER FREQUENCY: {parseFloat(freq).toFixed(2)}Hz (Target: 1.5)</label>
-                  <input
-                    type="range"
-                    min="0.5"
-                    max="2.5"
-                    step="0.05"
-                    value={freq}
-                    disabled={completedPuzzles.satellite}
-                    onChange={(e) => handleTune('freq', parseFloat(e.target.value))}
-                    className={styles.tunerSlider}
-                  />
-                </div>
-                
-                <div className={styles.sliderGroup}>
-                  <label>PHASE ANGLE Offset: {parseFloat(phase).toFixed(2)} rad (Target: 0.0)</label>
-                  <input
-                    type="range"
-                    min="-3.14"
-                    max="3.14"
-                    step="0.08"
-                    value={phase}
-                    disabled={completedPuzzles.satellite}
-                    onChange={(e) => handleTune('phase', parseFloat(e.target.value))}
-                    className={styles.tunerSlider}
-                  />
-                </div>
-              </div>
-
-              {isTuned && (
-                <div className={styles.successLabel}>SATELLITE WAVE SPECTRUM SYNC: COMPLETED</div>
+              {circuitSolved && (
+                <div className={styles.successLabel}>MAINFRAME LOCK OVERRIDE: VERIFIED SECURE</div>
               )}
             </div>
           </motion.div>
         )}
       </AnimatePresence>
 
-      {/* Narrative Dialogue Subtitles Console */}
+      {/* Bottom Subtitles Dialogue Console */}
       <div className={styles.bottomDialogue}>
-        <div className={styles.consolePrompt}>OPERATIVE_COMMAND // DIALOGUE:</div>
+        <div className={styles.consolePrompt}>OPERATIVE_COMMAND // LOGS:</div>
         <div className={styles.consoleText}>
           {activeZoom === null && (
-            <span>SELECT COGNITIVE PROTOCOLS FROM CORES (LEFT RELAY / CENTER CIPHER / RIGHT SATELLITE) TO COMMENCE BYPASS.</span>
+            <span>HOLOGRAPHIC CRT TERMINAL NODE SPOTTED. CLICK THE CENTRAL FLOATING HOLO-SCREEN TO ENGAGE SYSTEM BYPASS.</span>
           )}
-          {activeZoom === 'relay' && !completedPuzzles.relay && (
-            <span>PATCH TERMINALS TO BRIDGE THE BROKEN JUNCTION GRID CORE.</span>
+          {activeZoom === 'terminal' && !circuitSolved && (
+            <span>INTERCEPTED LOCK SIGNAL IDENTIFIED. ROTATE CIRCUIT MODULES TO COMPLETE DECRYPTION PATHWAYS.</span>
           )}
-          {activeZoom === 'terminal' && !completedPuzzles.terminal && (
-            <span>IDENTIFY THE HEXADECIMAL DECRYPTION OFFSET VALUE TO BYPASS INTRUSION DETECTORS.</span>
-          )}
-          {activeZoom === 'satellite' && !completedPuzzles.satellite && (
-            <span>MATCH SINE WAVE ALIGNMENTS TO HOOK SATELLITE COMMUNICATIONS GATE.</span>
-          )}
-          {activeZoom !== null && completedPuzzles[activeZoom] && (
-            <span>SECTOR SOLVED. CLICK CLOSE [X] IN THE PUZZLE PANEL TO RETURN TO CORE DESK VIEW.</span>
+          {activeZoom === 'terminal' && circuitSolved && (
+            <span>SECTOR CLEARED. LOCK PROTOCOL COMPROMISED. REBOOTING VAULT MATRIX BRIDGES.</span>
           )}
         </div>
       </div>
