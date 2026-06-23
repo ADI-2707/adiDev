@@ -98,7 +98,7 @@ const Navbar = ({ activeStage, setStage, maxUnlockedStage, soundMuted, toggleMut
       <nav className={styles.navBar}>
         <div className={styles.navContainer}>
           {STAGE_LABELS.map((stage) => {
-            if (stage.isSecret && maxUnlockedStage < 10) return null;
+            if (stage.isSecret && activeStage !== 10) return null;
 
             const isUnlocked = stage.id <= maxUnlockedStage;
             const isActive = activeStage === stage.id;
@@ -138,7 +138,7 @@ const Navbar = ({ activeStage, setStage, maxUnlockedStage, soundMuted, toggleMut
             className={styles.drawer}
           >
             {STAGE_LABELS.map((stage) => {
-              if (stage.isSecret && maxUnlockedStage < 10) return null;
+              if (stage.isSecret && activeStage !== 10) return null;
 
               const isUnlocked = stage.id <= maxUnlockedStage;
               const isActive = activeStage === stage.id;
