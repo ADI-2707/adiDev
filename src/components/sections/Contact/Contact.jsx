@@ -20,6 +20,7 @@ const Contact = ({ activeStage, setStage, triggerFullscreenOverride }) => {
   const [printState, setPrintState] = useState(0);
   const [isFormOpen, setIsFormOpen] = useState(false);
   const [overrideState, setOverrideState] = useState('idle'); // 'idle' | 'warning' | 'hdmi'
+  const [isGlobeHovered, setIsGlobeHovered] = useState(false);
 
   useEffect(() => {
     if (activeStage !== 9) return;
@@ -66,6 +67,16 @@ const Contact = ({ activeStage, setStage, triggerFullscreenOverride }) => {
   const triggerOverride = () => {
     if (overrideState !== 'idle') return;
 
+    try {
+      if (document.documentElement.requestFullscreen) {
+        document.documentElement.requestFullscreen().catch(() => {
+          console.log('HTML5 requestFullscreen blocked. Using standard overlay backup.');
+        });
+      }
+    } catch (err) {
+      console.log('Fullscreen request failed.', err);
+    }
+
     setOverrideState('warning');
     playOverrideWarning(1.5);
 
@@ -73,17 +84,6 @@ const Contact = ({ activeStage, setStage, triggerFullscreenOverride }) => {
     setTimeout(() => {
       setOverrideState('hdmi');
       playGlitchStatic(2.0);
-
-      // Attempt standard browser HTML5 fullscreen
-      try {
-        if (document.documentElement.requestFullscreen) {
-          document.documentElement.requestFullscreen().catch(() => {
-            console.log('HTML5 requestFullscreen blocked. Using standard overlay backup.');
-          });
-        }
-      } catch (err) {
-        console.log('Fullscreen request failed.', err);
-      }
 
       // HDMI error calibration screen for 2.0 seconds
       setTimeout(() => {
@@ -255,11 +255,32 @@ const Contact = ({ activeStage, setStage, triggerFullscreenOverride }) => {
                 </div>
 
                 {/* Glowing small 3D globe in absolute center */}
-                <div className={styles.centerGlobeWrapper} onMouseEnter={triggerOverride}>
+                <div
+                  className={`${styles.centerGlobeWrapper} ${isGlobeHovered ? styles.globeHovered : ''}`}
+                  onClick={triggerOverride}
+                  onMouseEnter={() => { setIsGlobeHovered(true); playTone(220, 0.1, 0.03, 'sine'); }}
+                  onMouseLeave={() => setIsGlobeHovered(false)}
+                >
                   <div className={styles.globeBlueGlow} />
                   <div className={styles.smallGlobeContainer}>
                     <SmallGlobe />
                   </div>
+
+                  {/* Lock-on target lines / rings */}
+                  <div className={styles.targetRings} />
+
+                  <AnimatePresence>
+                    {isGlobeHovered && overrideState === 'idle' && (
+                      <motion.div
+                        initial={{ opacity: 0, y: 5, x: '-50%' }}
+                        animate={{ opacity: 1, y: 0, x: '-50%' }}
+                        exit={{ opacity: 0, y: 5, x: '-50%' }}
+                        className={styles.globeTooltip}
+                      >
+                        [ CLICK TO ENGAGE OVERRIDE ]
+                      </motion.div>
+                    )}
+                  </AnimatePresence>
                 </div>
               </div>
 
