@@ -52,7 +52,7 @@ const GlobeMesh = ({ activeStage }) => {
         targetScale = 0.1;
         targetPos = [0, 0, 0];
       } else {
-        const isRightAligned = [1, 3, 5, 6, 8].includes(activeStage);
+        const isRightAligned = [1, 3, 5, 6, 8, 9].includes(activeStage);
         if (isRightAligned && isDesktop) {
           targetPos = [viewport.width * 0.42, 0, -2.5];
         } else {

@@ -39,9 +39,9 @@ const SmallGlobeMesh = () => {
   });
 
   return (
-    <group scale={[1.5, 1.5, 1.5]} position={[0, 0, 0]}>
+    <group scale={[1.1, 1.1, 1.1]} position={[0, 0, 0]}>
       <mesh ref={sphereRef}>
-        <sphereGeometry args={[1.0, 30, 30]} />
+        <sphereGeometry args={[1.0, 14, 14]} />
         <meshBasicMaterial
           color="#3A86FF"
           wireframe={true}

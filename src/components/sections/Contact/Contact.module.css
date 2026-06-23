@@ -4,10 +4,11 @@
   display: flex;
   align-items: center;
   padding-top: clamp(5rem, 10vw, 7rem);
-  padding-bottom: clamp(2rem, 5vw, 3rem);
+  padding-bottom: clamp(5rem, 10vw, 8rem);
   background-color: transparent;
   width: 100%;
-  overflow: hidden;
+  overflow-y: auto;
+  scroll-behavior: smooth;
 }
 
 @media (min-width: 480px) and (max-width: 1199px) {
@@ -49,6 +50,17 @@
   width: 100%;
   position: relative;
   z-index: 10;
+}
+
+@media (min-width: 1200px) {
+  .container {
+    align-items: flex-start;
+    padding-left: clamp(4rem, 8vw, 8rem);
+    width: 55%;
+    max-width: 750px;
+    margin-left: 0;
+    margin-right: auto;
+  }
 }
 
 
@@ -167,6 +179,7 @@
     opacity: 0;
     box-shadow: 0 0 0 rgba(52, 211, 153, 0);
   }
+
   100% {
     transform: scale(1) rotate(-12deg);
     opacity: 1;
@@ -272,30 +285,37 @@
     filter: brightness(1) contrast(1) saturate(1) hue-rotate(0deg);
     transform: translate(0, 0) skewX(0deg);
   }
+
   15% {
     filter: brightness(1.8) contrast(1.4) saturate(1.8) hue-rotate(45deg);
     transform: translate(-8px, 4px) skewX(3deg);
   }
+
   30% {
     filter: brightness(0.6) contrast(0.8) saturate(0.5) hue-rotate(-45deg);
     transform: translate(6px, -5px) skewX(-4deg);
   }
+
   45% {
     filter: brightness(2) contrast(1.6) saturate(2) hue-rotate(90deg);
     transform: translate(-10px, -2px) skew(5deg, 1deg);
   }
+
   60% {
     filter: brightness(0.8) contrast(0.9) saturate(0.8) hue-rotate(0deg);
     transform: translate(4px, 3px) skewX(-2deg);
   }
+
   75% {
     filter: brightness(1.5) contrast(1.2) saturate(1.3) hue-rotate(-90deg);
     transform: translate(-4px, -3px) skewX(2deg);
   }
+
   90% {
     filter: brightness(1.1) contrast(1.05) saturate(1.1);
     transform: translate(2px, 1px) skewX(-1deg);
   }
+
   100% {
     filter: brightness(1) contrast(1) saturate(1) hue-rotate(0deg);
     transform: translate(0, 0) skewX(0deg);
@@ -327,7 +347,6 @@
   text-shadow: 0 0 8px rgba(110, 231, 255, 0.4);
 }
 
-/* Spider Web Circular Layout */
 .webContainer {
   position: relative;
   width: 440px;
@@ -373,13 +392,23 @@
 }
 
 @keyframes revolve {
-  0% { transform: rotate(0deg); }
-  100% { transform: rotate(360deg); }
+  0% {
+    transform: rotate(0deg);
+  }
+
+  100% {
+    transform: rotate(360deg);
+  }
 }
 
 @keyframes counterRevolve {
-  0% { transform: rotate(0deg); }
-  100% { transform: rotate(-360deg); }
+  0% {
+    transform: rotate(0deg);
+  }
+
+  100% {
+    transform: rotate(-360deg);
+  }
 }
 
 .webSvg {
@@ -425,8 +454,15 @@
 }
 
 @keyframes glowPulse {
-  0% { transform: scale(0.92); opacity: 0.6; }
-  100% { transform: scale(1.08); opacity: 1.0; }
+  0% {
+    transform: scale(0.92);
+    opacity: 0.6;
+  }
+
+  100% {
+    transform: scale(1.08);
+    opacity: 1.0;
+  }
 }
 
 .smallGlobeContainer {
@@ -466,8 +502,13 @@
 }
 
 @keyframes bgPulse {
-  0% { background-color: rgba(60, 0, 0, 0.96); }
-  100% { background-color: rgba(140, 0, 0, 0.98); }
+  0% {
+    background-color: rgba(60, 0, 0, 0.96);
+  }
+
+  100% {
+    background-color: rgba(140, 0, 0, 0.98);
+  }
 }
 
 .overrideAlertBox {
@@ -483,8 +524,15 @@
 }
 
 @keyframes boxPop {
-  from { transform: scale(0.85); opacity: 0; }
-  to { transform: scale(1); opacity: 1; }
+  from {
+    transform: scale(0.85);
+    opacity: 0;
+  }
+
+  to {
+    transform: scale(1);
+    opacity: 1;
+  }
 }
 
 .warningIcon {
@@ -494,8 +542,15 @@
 }
 
 @keyframes alarmFlash {
-  0% { opacity: 0.3; transform: scale(0.95); }
-  100% { opacity: 1; transform: scale(1.08); }
+  0% {
+    opacity: 0.3;
+    transform: scale(0.95);
+  }
+
+  100% {
+    opacity: 1;
+    transform: scale(1.08);
+  }
 }
 
 .warningTitle {
@@ -537,18 +592,21 @@
 }
 
 @keyframes fillWarningBar {
-  from { width: 0%; }
-  to { width: 100%; }
+  from {
+    width: 0%;
+  }
+
+  to {
+    width: 100%;
+  }
 }
 
 .redScanlines {
   position: absolute;
   inset: 0;
   pointer-events: none;
-  background: linear-gradient(
-    rgba(255, 0, 0, 0) 50%, 
-    rgba(255, 0, 0, 0.12) 50%
-  );
+  background: linear-gradient(rgba(255, 0, 0, 0) 50%,
+      rgba(255, 0, 0, 0.12) 50%);
   background-size: 100% 4px;
   opacity: 0.35;
 }
@@ -594,20 +652,41 @@
   width: 100%;
 }
 
-.botColumn1 { flex: 5; height: 100%; }
-.botColumn2 { flex: 5; height: 100%; }
-.botColumn3 { flex: 5; height: 100%; }
-.botColumn4 { flex: 6; height: 100%; }
+.botColumn1 {
+  flex: 5;
+  height: 100%;
+}
+
+.botColumn2 {
+  flex: 5;
+  height: 100%;
+}
+
+.botColumn3 {
+  flex: 5;
+  height: 100%;
+}
+
+.botColumn4 {
+  flex: 6;
+  height: 100%;
+}
+
 .botColumnPluge {
   flex: 3;
   height: 100%;
   display: flex;
 }
+
 .botColumnPluge div {
   flex: 1;
   height: 100%;
 }
-.botColumn5 { flex: 6; height: 100%; }
+
+.botColumn5 {
+  flex: 6;
+  height: 100%;
+}
 
 .glitchNoiseOverlay {
   position: absolute;
@@ -620,25 +699,35 @@
 }
 
 @keyframes noiseFlicker {
-  0% { transform: translate(0, 0); }
-  25% { transform: translate(-1%, 1%); }
-  50% { transform: translate(1%, -1%); }
-  75% { transform: translate(-0.5%, -0.5%); }
-  100% { transform: translate(0.5%, 0.5%); }
+  0% {
+    transform: translate(0, 0);
+  }
+
+  25% {
+    transform: translate(-1%, 1%);
+  }
+
+  50% {
+    transform: translate(1%, -1%);
+  }
+
+  75% {
+    transform: translate(-0.5%, -0.5%);
+  }
+
+  100% {
+    transform: translate(0.5%, 0.5%);
+  }
 }
 
 .crtScanlines {
   position: absolute;
   inset: 0;
   pointer-events: none;
-  background: linear-gradient(
-    rgba(18, 16, 16, 0) 50%, 
-    rgba(0, 0, 0, 0.25) 50%
-  ), linear-gradient(
-    90deg, 
-    rgba(255, 0, 0, 0.06), 
-    rgba(0, 255, 0, 0.02), 
-    rgba(0, 0, 255, 0.06)
-  );
+  background: linear-gradient(rgba(18, 16, 16, 0) 50%,
+      rgba(0, 0, 0, 0.25) 50%), linear-gradient(90deg,
+      rgba(255, 0, 0, 0.06),
+      rgba(0, 255, 0, 0.02),
+      rgba(0, 0, 255, 0.06));
   background-size: 100% 4px, 6px 100%;
 }
