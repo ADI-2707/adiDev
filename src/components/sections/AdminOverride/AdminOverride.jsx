@@ -3,8 +3,8 @@ import styles from './AdminOverride.module.css';
 import { playClick, playTone, playSuccess, playScanSweep, playAccessDenied, playNotification } from '../../../utils/audio';
 import Typewriter from '../../ui/Typewriter';
 
-const AdminOverride = ({ activeStage, setStage, isFullscreen }) => {
-  const [phase, setPhase] = useState('scan'); // 'scan' | 'tracer' | 'briefing' | 'self_destruct' | 'detective_game' | 'game_over' | 'game_success'
+const AdminOverride = ({ activeStage, setStage, isFullscreen, accessMode }) => {
+  const [phase, setPhase] = useState('scan'); // 'scan' | 'tracer' | 'briefing' | 'self_destruct' | 'detective_game' | 'game_over' | 'game_success' | 'auth' | 'denied' | 'dashboard'
   const [geoData, setGeoData] = useState(null);
   const [hostUser, setHostUser] = useState('OPERATIVE_GUEST');
   const [visibleTraces, setVisibleTraces] = useState([]);
@@ -25,7 +25,7 @@ const AdminOverride = ({ activeStage, setStage, isFullscreen }) => {
   const [scoreboard, setScoreboard] = useState([]);
   const [currentOperative, setCurrentOperative] = useState('');
   
-  // Testimonial Pop-Up Modal
+  // Testimonial Pop-Up Modal (Game success flow)
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [modalAuthor, setModalAuthor] = useState('');
   const [modalRole, setModalRole] = useState('');
@@ -33,6 +33,18 @@ const AdminOverride = ({ activeStage, setStage, isFullscreen }) => {
   const [modalSubmitting, setModalSubmitting] = useState(false);
   const [modalSuccessMsg, setModalSuccessMsg] = useState('');
   const [modalErrorMsg, setModalErrorMsg] = useState('');
+
+  // Passcode verification states (Direct flow)
+  const [passcode, setPasscode] = useState('');
+  const [submitting, setSubmitting] = useState(false);
+  const [errorMsg, setErrorMsg] = useState('');
+  
+  // Admin dashboard states (Direct flow)
+  const [messages, setMessages] = useState([]);
+  const [testimonials, setTestimonials] = useState([]);
+  const [activeTab, setActiveTab] = useState('testimonials'); // 'testimonials' | 'messages'
+  const [dashLoading, setDashLoading] = useState(false);
+  const [actionStatus, setActionStatus] = useState('');
 
   // Returning to base state
   const [baseCountdown, setBaseCountdown] = useState(null);
@@ -77,6 +89,26 @@ const AdminOverride = ({ activeStage, setStage, isFullscreen }) => {
     }
   };
 
+  // Mount initialization: split between game flow and direct passcode entry flow
+  useEffect(() => {
+    if (activeStage === 10) {
+      if (accessMode === 'direct') {
+        setPhase('auth');
+      } else {
+        setPhase('scan');
+      }
+    }
+  }, [activeStage, accessMode]);
+
+  // Check if session storage already has valid passcode on mount
+  useEffect(() => {
+    const cachedCode = sessionStorage.getItem('adminPasscode');
+    if (cachedCode && activeStage === 10 && accessMode === 'direct') {
+      validatePasscode(cachedCode);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [activeStage, accessMode]);
+
   // Start webcam retinal scan simulation
   useEffect(() => {
     if (phase !== 'scan') return;
@@ -114,7 +146,7 @@ const AdminOverride = ({ activeStage, setStage, isFullscreen }) => {
 
   // Run geolocation lookup & fetch host user
   useEffect(() => {
-    if (phase !== 'tracer') return;
+    if (phase !== 'tracer' && phase !== 'auth') return;
 
     fetch('https://ipapi.co/json/')
       .then((res) => res.json())
@@ -244,7 +276,6 @@ const AdminOverride = ({ activeStage, setStage, isFullscreen }) => {
     if (saved) {
       list = JSON.parse(saved);
     } else {
-      // Load mock items
       list = [
         { operative: 'OPERATIVE_118', outcome: 'WON' },
         { operative: 'OPERATIVE_982', outcome: 'LOST' },
@@ -259,7 +290,6 @@ const AdminOverride = ({ activeStage, setStage, isFullscreen }) => {
       ];
     }
 
-    // Generate unique user operative ID
     let currentOp = '';
     let rand = 0;
     let attempts = 0;
@@ -279,7 +309,6 @@ const AdminOverride = ({ activeStage, setStage, isFullscreen }) => {
 
     playSuccess();
     
-    // Open the feedback testimonial modal
     setTimeout(() => {
       setIsModalOpen(true);
     }, 2000);
@@ -317,7 +346,6 @@ const AdminOverride = ({ activeStage, setStage, isFullscreen }) => {
     playAccessDenied();
     setPhase('game_over');
 
-    // Save lost attempt to scoreboard log
     const saved = localStorage.getItem('detective_scoreboard');
     let list = [];
     if (saved) {
@@ -345,7 +373,6 @@ const AdminOverride = ({ activeStage, setStage, isFullscreen }) => {
         setGameTimer(40);
       }
     } else {
-      // 10 second penalty for wrong answer
       setGameError('INCORRECT SECTOR OFFSET ACCESS REJECTED. 10 SEC PENALTY INCURRED.');
       setGameTimer(prev => Math.max(0, prev - 10));
       playTone(180, 0.25, 0.05, 'triangle');
@@ -391,6 +418,118 @@ const AdminOverride = ({ activeStage, setStage, isFullscreen }) => {
     playClick();
     setIsModalOpen(false);
     setBaseCountdown(3);
+  };
+
+  // --- PASSCODE / DIRECT DASHBOARD METHODS ---
+  const validatePasscode = async (code) => {
+    setSubmitting(true);
+    setErrorMsg('');
+    try {
+      const res = await fetch('/api/v1/admin/testimonials', {
+        headers: { 'X-Admin-Passcode': code }
+      });
+      if (res.ok) {
+        sessionStorage.setItem('adminPasscode', code);
+        setPhase('dashboard');
+        fetchDashboardData(code);
+      } else {
+        sessionStorage.removeItem('adminPasscode');
+        if (phase === 'auth') {
+          handleDenied();
+        }
+      }
+    } catch {
+      setErrorMsg("CONNECTION_FAILED: Server offline or proxy blocked.");
+    } finally {
+      setSubmitting(false);
+    }
+  };
+
+  const handleDenied = () => {
+    playAccessDenied();
+    setPhase('denied');
+    setTimeout(() => {
+      setStage(0);
+    }, 4000);
+  };
+
+  const handleSubmitAuth = (e) => {
+    e.preventDefault();
+    if (!passcode || submitting) return;
+    validatePasscode(passcode);
+  };
+
+  const fetchDashboardData = async (code = passcode) => {
+    setDashLoading(true);
+    const authHeaders = { 'X-Admin-Passcode': code || sessionStorage.getItem('adminPasscode') };
+    try {
+      const [messagesRes, testimonialsRes] = await Promise.all([
+        fetch('/api/v1/admin/messages', { headers: authHeaders }),
+        fetch('/api/v1/admin/testimonials', { headers: authHeaders })
+      ]);
+      
+      if (messagesRes.ok && testimonialsRes.ok) {
+        const msgs = await messagesRes.json();
+        const tests = await testimonialsRes.json();
+        setMessages(msgs);
+        setTestimonials(tests);
+      }
+    } catch (err) {
+      console.error("Dashboard fetch error:", err);
+    } finally {
+      setDashLoading(false);
+    }
+  };
+
+  const handleApprove = async (id) => {
+    playClick();
+    const code = passcode || sessionStorage.getItem('adminPasscode');
+    setActionStatus(`Approving testimonial ${id}...`);
+    try {
+      const res = await fetch(`/api/v1/testimonials/${id}/approve`, {
+        method: 'PUT',
+        headers: { 'X-Admin-Passcode': code }
+      });
+      if (res.ok) {
+        playSuccess();
+        setActionStatus(`Testimonial ${id} approved successfully.`);
+        fetchDashboardData();
+      } else {
+        setActionStatus(`Failed to approve testimonial.`);
+      }
+    } catch {
+      setActionStatus(`Uplink error during approval.`);
+    }
+    setTimeout(() => setActionStatus(''), 3000);
+  };
+
+  const handleDelete = async (id) => {
+    if (!window.confirm(`Force deletion of testimonial ${id}?`)) return;
+    playClick();
+    const code = passcode || sessionStorage.getItem('adminPasscode');
+    setActionStatus(`Purging testimonial ${id}...`);
+    try {
+      const res = await fetch(`/api/v1/testimonials/${id}`, {
+        method: 'DELETE',
+        headers: { 'X-Admin-Passcode': code }
+      });
+      if (res.ok) {
+        playTone(300, 0.2, 0.05, 'sawtooth');
+        setActionStatus(`Testimonial ${id} deleted.`);
+        fetchDashboardData();
+      } else {
+        setActionStatus(`Failed to delete testimonial.`);
+      }
+    } catch {
+      setActionStatus(`Uplink error during deletion.`);
+    }
+    setTimeout(() => setActionStatus(''), 3000);
+  };
+
+  const handleLogout = () => {
+    playClick();
+    sessionStorage.removeItem('adminPasscode');
+    setStage(0);
   };
 
   return (
@@ -548,7 +687,6 @@ const AdminOverride = ({ activeStage, setStage, isFullscreen }) => {
               <Typewriter text="You've officially cracked your first case. Congratulations Agent!" speed={25} showCursor={false} />
             </h2>
             
-            {/* SVG Saluting Detective */}
             <div className={styles.salutingAgent}>
               <svg viewBox="0 0 100 100" className={styles.agentSvg}>
                 <path d="M20 90 L80 90 L75 60 L65 40 L35 40 L25 60 Z" fill="#1e293b" stroke="var(--accent-cyan)" strokeWidth="2" />
@@ -565,7 +703,6 @@ const AdminOverride = ({ activeStage, setStage, isFullscreen }) => {
               </svg>
             </div>
 
-            {/* Scoreboard table */}
             <div className={styles.scoreboardWrapper}>
               <h3 className={styles.scoreboardTitle}>AGENTS CENTRAL DEBRIEF BOARD (LAST 10 ATTEMPTS)</h3>
               <table className={styles.scoreboardTable}>
@@ -597,7 +734,159 @@ const AdminOverride = ({ activeStage, setStage, isFullscreen }) => {
         </div>
       )}
 
-      {/* Testimonial Form Modal Pop-up */}
+      {/* --- DIRECT PASSCODE / AUTH FLOW PHASES --- */}
+      {phase === 'auth' && (
+        <div className={styles.authContainer}>
+          <div className={styles.authBox}>
+            <div className={styles.authHeader}>SYSTEM OVERRIDE CLEARED // SIGNATURE MATCH</div>
+            <div className={styles.authBody}>
+              <p className={styles.authLabel}>ENTER TWO-FACTOR SECURITY OVERRIDE PASSCODE:</p>
+              
+              <form onSubmit={handleSubmitAuth} className={styles.authForm}>
+                <input
+                  type="password"
+                  value={passcode}
+                  onChange={(e) => setPasscode(e.target.value)}
+                  placeholder="********"
+                  autoFocus
+                  required
+                  className={styles.authInput}
+                  disabled={submitting}
+                />
+                
+                {errorMsg && <div className={styles.errorText}>{errorMsg}</div>}
+                
+                <button type="submit" disabled={submitting} className={styles.authSubmit}>
+                  {submitting ? 'VALIDATING SECURITY...' : '[ DECRYPT_OVERRIDE_GATE ]'}
+                </button>
+              </form>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {phase === 'denied' && (
+        <div className={styles.deniedContainer}>
+          <div className={styles.deniedBox}>
+            <h1 className={styles.deniedAlert}>⚠️ ACCESS DENIED ⚠️</h1>
+            <p className={styles.deniedSubText}>AUTHENTICATION FAILURE. ACCESS REJECTED.</p>
+            <div className={styles.alarmStaticGrid}>
+              <span>OVERRIDE_LOG_PURGED</span>
+              <span>SEC_BREACH_LOGGED</span>
+              <span>KICKBACK_TERMINATED</span>
+            </div>
+            <p className={styles.timerText}>SYSTEM REBOOTING IN 3 SECONDS...</p>
+          </div>
+        </div>
+      )}
+
+      {phase === 'dashboard' && (
+        <div className={styles.dashboardContainer}>
+          <div className={styles.dashPanel}>
+            <div className={styles.dashHeader}>
+              <div className={styles.dashBrand}>
+                <span>AGIS_COMMAND_CENTER // OPERATIONS</span>
+                <span className={styles.clearanceBadge}>LEVEL_10_CLEARANCE</span>
+              </div>
+              <div className={styles.dashActions}>
+                <button onClick={() => fetchDashboardData()} className={styles.dashBtn}>[REFRESH_LOGS]</button>
+                <button onClick={handleLogout} className={`${styles.dashBtn} ${styles.logoutBtn}`}>[DISCONNECT_TERMINAL]</button>
+              </div>
+            </div>
+
+            <div className={styles.tabBar}>
+              <button 
+                onClick={() => { playClick(); setActiveTab('testimonials'); }}
+                className={`${styles.tabBtn} ${activeTab === 'testimonials' ? styles.tabActive : ''}`}
+              >
+                TESTIMONIALS MODERATION ({testimonials.length})
+              </button>
+              <button 
+                onClick={() => { playClick(); setActiveTab('messages'); }}
+                className={`${styles.tabBtn} ${activeTab === 'messages' ? styles.tabActive : ''}`}
+              >
+                CONTACT MESSAGE ARCHIVE ({messages.length})
+              </button>
+            </div>
+
+            {actionStatus && <div className={styles.statusBar}>{actionStatus}</div>}
+
+            <div className={styles.dashBody}>
+              {dashLoading ? (
+                <div className={styles.dashLoading}>
+                  <div className={styles.spinner} />
+                  <span>SYNCING DIRECTORY DATABASE LOGS...</span>
+                </div>
+              ) : activeTab === 'testimonials' ? (
+                <div className={styles.testimonialsList}>
+                  {testimonials.length === 0 ? (
+                    <div className={styles.emptyMsg}>NO TESTIMONIALS LOGS RECORDED.</div>
+                  ) : (
+                    testimonials.map((t) => (
+                      <div key={t.id} className={styles.testCard}>
+                        <div className={styles.cardHeader}>
+                          <span className={styles.cardId}>OP_LOG_{t.id}</span>
+                          <span className={t.is_approved ? styles.approvedBadge : styles.pendingBadge}>
+                            {t.is_approved ? 'APPROVED' : 'AWAITING_MODERATION'}
+                          </span>
+                        </div>
+                        <p className={styles.cardContent}>"{t.content}"</p>
+                        <div className={styles.cardMeta}>
+                          <div className={styles.metaDetails}>
+                            <span className={styles.metaAuthor}>{t.author}</span>
+                            <span className={styles.metaRole}>{t.role}</span>
+                          </div>
+                          <div className={styles.cardButtons}>
+                            {!t.is_approved && (
+                              <button onClick={() => handleApprove(t.id)} className={styles.approveBtn}>
+                                [APPROVE]
+                              </button>
+                            )}
+                            <button onClick={() => handleDelete(t.id)} className={styles.deleteBtn}>
+                              [PURGE]
+                            </button>
+                          </div>
+                        </div>
+                      </div>
+                    ))
+                  )}
+                </div>
+              ) : (
+                <div className={styles.messagesTableContainer}>
+                  {messages.length === 0 ? (
+                    <div className={styles.emptyMsg}>NO CONTACT MESSAGES SUBMITTED YET.</div>
+                  ) : (
+                    <table className={styles.messagesTable}>
+                      <thead>
+                        <tr>
+                          <th>ID</th>
+                          <th>OPERATIVE</th>
+                          <th>EMAIL</th>
+                          <th>MESSAGE CONTENT</th>
+                          <th>DATE RECORDED</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {messages.map((m) => (
+                          <tr key={m.id}>
+                            <td>{m.id}</td>
+                            <td className={styles.boldText}>{m.name}</td>
+                            <td>{m.email}</td>
+                            <td className={styles.messageContentCol}>{m.content}</td>
+                            <td>{m.created_at ? new Date(m.created_at).toLocaleString() : 'N/A'}</td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  )}
+                </div>
+              )}
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Testimonial Form Modal Pop-up (Game flow) */}
       <AnimatePresence>
         {isModalOpen && (
           <div className={styles.modalOverlay}>
