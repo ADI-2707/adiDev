@@ -6,25 +6,19 @@ import styles from './AegisGameCanvas.module.css';
 // Parallax camera rig tracking mouse pointer
 const CameraRig = ({ activeZoom }) => {
   const { camera } = useThree();
-  const targetPos = useRef(new THREE.Vector3(0, 0, 3));
+  const targetPos = useRef(new THREE.Vector3(0, 0, 2.5));
   const targetRot = useRef(new THREE.Euler(0, 0, 0));
 
   useFrame((state) => {
     if (activeZoom === 'terminal') {
-      targetPos.current.set(0, -0.1, 0.3);
+      targetPos.current.set(0, -0.05, 0.4);
       targetRot.current.set(0, 0, 0);
-    } else if (activeZoom === 'relay') {
-      targetPos.current.set(-1.1, 0.1, 0.5);
-      targetRot.current.set(0, Math.PI / 6, 0);
-    } else if (activeZoom === 'satellite') {
-      targetPos.current.set(1.1, 0.1, 0.5);
-      targetRot.current.set(0, -Math.PI / 6, 0);
     } else {
       // Normal Lookaround
-      const px = state.pointer.x * 0.45;
-      const py = state.pointer.y * 0.35;
-      targetPos.current.set(px * 0.3, py * 0.2, 2.5);
-      targetRot.current.set(py * 0.2, -px * 0.25, 0);
+      const px = state.pointer.x * 0.4;
+      const py = state.pointer.y * 0.3;
+      targetPos.current.set(px * 0.25, py * 0.15, 2.3);
+      targetRot.current.set(py * 0.15, -px * 0.2, 0);
     }
 
     camera.position.lerp(targetPos.current, 0.08);
@@ -39,155 +33,218 @@ const CameraRig = ({ activeZoom }) => {
 
 // Blinking indicator bulb on server racks
 const BlinkingLight = ({ position, baseColor = '#10b981', blinkSpeed = 0.5 }) => {
-  const lightRef = useRef();
   const [isOn, setIsOn] = useState(true);
 
   useEffect(() => {
     const interval = setInterval(() => {
       setIsOn((prev) => !prev);
-    }, 1000 * blinkSpeed + Math.random() * 200);
+    }, 1000 * blinkSpeed + Math.random() * 150);
     return () => clearInterval(interval);
   }, [blinkSpeed]);
 
   return (
-    <mesh position={position} ref={lightRef}>
-      <sphereGeometry args={[0.025, 8, 8]} />
+    <mesh position={position}>
+      <sphereGeometry args={[0.02, 8, 8]} />
       <meshBasicMaterial color={isOn ? baseColor : '#1e293b'} />
     </mesh>
+  );
+};
+
+// Spinning Server Fan Blades Component
+const ServerFan = ({ position }) => {
+  const bladesRef = useRef();
+
+  useFrame((state, delta) => {
+    if (bladesRef.current) {
+      bladesRef.current.rotation.z -= delta * 15; // spin blades
+    }
+  });
+
+  return (
+    <group position={position}>
+      {/* Fan Case Bezel */}
+      <mesh>
+        <torusGeometry args={[0.22, 0.015, 8, 32]} />
+        <meshStandardMaterial color="#475569" roughness={0.5} />
+      </mesh>
+      
+      {/* Rotating Blades */}
+      <group ref={bladesRef}>
+        {Array.from({ length: 6 }).map((_, i) => {
+          const angle = (i * Math.PI) / 3;
+          return (
+            <mesh key={i} rotation={[0, 0, angle]}>
+              <boxGeometry args={[0.04, 0.4, 0.005]} />
+              <meshStandardMaterial color="#334155" roughness={0.6} />
+            </mesh>
+          );
+        })}
+        {/* Central Hub */}
+        <mesh>
+          <sphereGeometry args={[0.04, 8, 8]} />
+          <meshStandardMaterial color="#64748b" />
+        </mesh>
+      </group>
+    </group>
   );
 };
 
 // Low-poly 3D room mesh models
 const ServerRoom = ({ activeZoom, onSelectProp }) => {
   const deskRef = useRef();
-  const mainScreenRef = useRef();
+  const screenGroupRef = useRef();
+
+  // Floating effect for the main hologram screen
+  useFrame((state) => {
+    if (screenGroupRef.current && activeZoom !== 'terminal') {
+      const t = state.clock.getElapsedTime();
+      screenGroupRef.current.position.y = -0.05 + Math.sin(t * 1.5) * 0.03;
+    } else if (screenGroupRef.current) {
+      screenGroupRef.current.position.y = -0.05;
+    }
+  });
 
   return (
     <group>
-      {/* 1. Hacking Desk */}
-      <mesh ref={deskRef} position={[0, -1.0, -0.6]}>
-        <boxGeometry args={[4.5, 0.15, 1.8]} />
-        <meshStandardMaterial color="#0f172a" roughness={0.7} metalness={0.5} />
-      </mesh>
+      {/* 1. Cyber Hacking Desk with Neon Conduits */}
+      <group position={[0, -0.9, -0.6]}>
+        {/* Desk top */}
+        <mesh ref={deskRef}>
+          <boxGeometry args={[4.2, 0.1, 1.6]} />
+          <meshStandardMaterial color="#0b0f19" roughness={0.8} metalness={0.8} />
+        </mesh>
 
-      {/* 2. Main Terminal Monitor */}
+        {/* Left/Right desk legs */}
+        <mesh position={[-1.9, -0.4, 0]}>
+          <boxGeometry args={[0.1, 0.8, 1.2]} />
+          <meshStandardMaterial color="#1e293b" />
+        </mesh>
+        <mesh position={[1.9, -0.4, 0]}>
+          <boxGeometry args={[0.1, 0.8, 1.2]} />
+          <meshStandardMaterial color="#1e293b" />
+        </mesh>
+
+        {/* Emissive Neon conduits running along the desk */}
+        <mesh position={[0, 0.052, -0.6]} rotation={[0, Math.PI / 2, 0]}>
+          <cylinderGeometry args={[0.015, 0.015, 3.8]} />
+          <meshStandardMaterial color="#06b6d4" emissive="#06b6d4" emissiveIntensity={1.2} />
+        </mesh>
+        <mesh position={[0, 0.052, 0.5]} rotation={[0, Math.PI / 2, 0]}>
+          <cylinderGeometry args={[0.012, 0.012, 3.8]} />
+          <meshStandardMaterial color="#3a86ff" emissive="#3a86ff" emissiveIntensity={1.0} />
+        </mesh>
+
+        {/* Decorative Keypad controller blocks */}
+        <mesh position={[-1.1, 0.06, 0.1]} rotation={[0, 0.1, 0]}>
+          <boxGeometry args={[0.3, 0.02, 0.25]} />
+          <meshStandardMaterial color="#334155" />
+        </mesh>
+        <mesh position={[1.1, 0.06, 0.1]} rotation={[0, -0.1, 0]}>
+          <boxGeometry args={[0.3, 0.02, 0.25]} />
+          <meshStandardMaterial color="#334155" />
+        </mesh>
+      </group>
+
+      {/* 2. Floating Holographic Terminal Screen */}
       <group
-        position={[0, -0.1, -1.0]}
+        ref={screenGroupRef}
+        position={[0, -0.05, -0.9]}
         onClick={(e) => {
           e.stopPropagation();
           onSelectProp('terminal');
         }}
       >
-        {/* Chassis */}
+        {/* Hologram Frame/Border */}
         <mesh>
-          <boxGeometry args={[1.5, 1.0, 0.18]} />
-          <meshStandardMaterial color="#1e293b" roughness={0.4} />
+          <boxGeometry args={[1.56, 1.16, 0.03]} />
+          <meshStandardMaterial color="#1e293b" roughness={0.5} metalness={0.7} />
         </mesh>
-        {/* Glowing Screen face */}
-        <mesh position={[0, 0, 0.1]}>
-          <planeGeometry args={[1.38, 0.88]} />
+        {/* Glowing glass terminal screen */}
+        <mesh position={[0, 0, 0.02]}>
+          <planeGeometry args={[1.48, 1.08]} />
           <meshStandardMaterial
-            color="#06b6d4"
+            color="#091b33"
             emissive="#0891b2"
-            emissiveIntensity={activeZoom === 'terminal' ? 1.8 : 0.8}
+            emissiveIntensity={activeZoom === 'terminal' ? 1.5 : 0.6}
+            transparent={true}
+            opacity={0.88}
             roughness={0.1}
           />
         </mesh>
-        {/* Decorative Grid Lines */}
-        <gridHelper args={[1.3, 10, '#22d3ee', '#0891b2']} rotation={[Math.PI / 2, 0, 0]} position={[0, 0, 0.11]} />
+        {/* Tech Corner brackets */}
+        <mesh position={[-0.74, 0.54, 0.03]}>
+          <boxGeometry args={[0.06, 0.06, 0.02]} />
+          <meshBasicMaterial color="#06b6d4" />
+        </mesh>
+        <mesh position={[0.74, 0.54, 0.03]}>
+          <boxGeometry args={[0.06, 0.06, 0.02]} />
+          <meshBasicMaterial color="#06b6d4" />
+        </mesh>
+        <mesh position={[-0.74, -0.54, 0.03]}>
+          <boxGeometry args={[0.06, 0.06, 0.02]} />
+          <meshBasicMaterial color="#06b6d4" />
+        </mesh>
+        <mesh position={[0.74, -0.54, 0.03]}>
+          <boxGeometry args={[0.06, 0.06, 0.02]} />
+          <meshBasicMaterial color="#06b6d4" />
+        </mesh>
+
+        {/* Small lock icon or target cursor helper */}
+        {activeZoom !== 'terminal' && (
+          <mesh position={[0, 0, 0.03]}>
+            <ringGeometry args={[0.1, 0.12, 16]} />
+            <meshBasicMaterial color="#06b6d4" transparent={true} opacity={0.6} />
+          </mesh>
+        )}
       </group>
 
-      {/* 3. Left Power Relay Panel */}
-      <group
-        position={[-1.6, 0.05, -0.8]}
-        rotation={[0, Math.PI / 6, 0]}
-        onClick={(e) => {
-          e.stopPropagation();
-          onSelectProp('relay');
-        }}
-      >
-        {/* Chassis */}
+      {/* 3. Detailed Background Server Towers with Spinning Fans */}
+      {/* Server Tower Left */}
+      <group position={[-2.2, 0.4, -2.0]}>
         <mesh>
-          <boxGeometry args={[1.1, 0.9, 0.15]} />
-          <meshStandardMaterial color="#1e293b" roughness={0.4} />
+          <boxGeometry args={[0.9, 2.6, 0.9]} />
+          <meshStandardMaterial color="#080c14" roughness={0.8} />
         </mesh>
-        {/* Glowing Screen */}
-        <mesh position={[0, 0, 0.08]}>
-          <planeGeometry args={[1.0, 0.8]} />
-          <meshStandardMaterial
-            color="#f59e0b"
-            emissive="#d97706"
-            emissiveIntensity={activeZoom === 'relay' ? 1.8 : 0.8}
-            roughness={0.1}
-          />
+        {/* Server Door outline panels */}
+        <mesh position={[0, 0, 0.455]}>
+          <boxGeometry args={[0.7, 2.4, 0.02]} />
+          <meshStandardMaterial color="#111827" roughness={0.7} />
         </mesh>
-        {/* Decorative circuit lines */}
-        <gridHelper args={[0.9, 6, '#fbbf24', '#d97706']} rotation={[Math.PI / 2, 0, 0]} position={[0, 0, 0.09]} />
+        {/* Spinning Fans */}
+        <ServerFan position={[0, 0.7, 0.47]} />
+        <ServerFan position={[0, -0.7, 0.47]} />
+        {/* Server status LEDs */}
+        <BlinkingLight position={[0.25, 0.1, 0.47]} baseColor="#ef4444" blinkSpeed={0.8} />
+        <BlinkingLight position={[0.25, 0.0, 0.47]} baseColor="#10b981" blinkSpeed={0.4} />
+        <BlinkingLight position={[0.25, -0.1, 0.47]} baseColor="#3b82f6" blinkSpeed={1.0} />
       </group>
 
-      {/* 4. Right Satellite Dial Monitor */}
-      <group
-        position={[1.6, 0.05, -0.8]}
-        rotation={[0, -Math.PI / 6, 0]}
-        onClick={(e) => {
-          e.stopPropagation();
-          onSelectProp('satellite');
-        }}
-      >
-        {/* Chassis */}
+      {/* Server Tower Right */}
+      <group position={[2.2, 0.4, -2.0]}>
         <mesh>
-          <boxGeometry args={[1.1, 0.9, 0.15]} />
-          <meshStandardMaterial color="#1e293b" roughness={0.4} />
+          <boxGeometry args={[0.9, 2.6, 0.9]} />
+          <meshStandardMaterial color="#080c14" roughness={0.8} />
         </mesh>
-        {/* Glowing Screen */}
-        <mesh position={[0, 0, 0.08]}>
-          <planeGeometry args={[1.0, 0.8]} />
-          <meshStandardMaterial
-            color="#10b981"
-            emissive="#059669"
-            emissiveIntensity={activeZoom === 'satellite' ? 1.8 : 0.8}
-            roughness={0.1}
-          />
+        <mesh position={[0, 0, 0.455]}>
+          <boxGeometry args={[0.7, 2.4, 0.02]} />
+          <meshStandardMaterial color="#111827" roughness={0.7} />
         </mesh>
-        {/* Decorative aligned grids */}
-        <gridHelper args={[0.9, 8, '#34d399', '#059669']} rotation={[Math.PI / 2, 0, 0]} position={[0, 0, 0.09]} />
+        <ServerFan position={[0, 0.7, 0.47]} />
+        <ServerFan position={[0, -0.7, 0.47]} />
+        <BlinkingLight position={[-0.25, 0.1, 0.47]} baseColor="#10b981" blinkSpeed={0.6} />
+        <BlinkingLight position={[-0.25, 0.0, 0.47]} baseColor="#ef4444" blinkSpeed={0.9} />
+        <BlinkingLight position={[-0.25, -0.1, 0.47]} baseColor="#3b82f6" blinkSpeed={0.8} />
       </group>
 
-      {/* 5. Background Server Racks */}
-      <group position={[-2.4, 0.5, -2.2]}>
-        <mesh>
-          <boxGeometry args={[1.0, 3.0, 1.0]} />
-          <meshStandardMaterial color="#0b0f19" roughness={0.8} />
-        </mesh>
-        {/* Server Racks LED arrays */}
-        <BlinkingLight position={[0.2, 1.2, 0.51]} baseColor="#ef4444" blinkSpeed={0.8} />
-        <BlinkingLight position={[0.2, 1.0, 0.51]} baseColor="#10b981" blinkSpeed={0.4} />
-        <BlinkingLight position={[0.2, 0.8, 0.51]} baseColor="#10b981" blinkSpeed={0.5} />
-        <BlinkingLight position={[0.2, 0.6, 0.51]} baseColor="#3b82f6" blinkSpeed={1.2} />
-
-        <BlinkingLight position={[0.2, 0.0, 0.51]} baseColor="#ef4444" blinkSpeed={0.9} />
-        <BlinkingLight position={[0.2, -0.2, 0.51]} baseColor="#10b981" blinkSpeed={0.3} />
-        <BlinkingLight position={[0.2, -0.4, 0.51]} baseColor="#10b981" blinkSpeed={0.6} />
-      </group>
-
-      <group position={[2.4, 0.5, -2.2]}>
-        <mesh>
-          <boxGeometry args={[1.0, 3.0, 1.0]} />
-          <meshStandardMaterial color="#0b0f19" roughness={0.8} />
-        </mesh>
-        <BlinkingLight position={[-0.2, 1.1, 0.51]} baseColor="#ef4444" blinkSpeed={0.7} />
-        <BlinkingLight position={[-0.2, 0.9, 0.51]} baseColor="#10b981" blinkSpeed={0.5} />
-        <BlinkingLight position={[-0.2, 0.7, 0.51]} baseColor="#3b82f6" blinkSpeed={1.0} />
-
-        <BlinkingLight position={[-0.2, 0.1, 0.51]} baseColor="#10b981" blinkSpeed={0.4} />
-        <BlinkingLight position={[-0.2, -0.1, 0.51]} baseColor="#10b981" blinkSpeed={0.5} />
-        <BlinkingLight position={[-0.2, -0.3, 0.51]} baseColor="#ef4444" blinkSpeed={1.1} />
-      </group>
-
-      {/* 6. Desk accessories (small keyboard blocks) */}
-      <mesh position={[0, -0.92, -0.4]} rotation={[-0.1, 0, 0]}>
-        <boxGeometry args={[0.8, 0.02, 0.35]} />
-        <meshStandardMaterial color="#1e293b" />
+      {/* 4. Hanging conduits / fiber cables in background */}
+      {/* Left-to-center curved cables */}
+      <mesh position={[-1.1, 1.2, -1.5]} rotation={[0, 0.1, -0.1]}>
+        <cylinderGeometry args={[0.008, 0.008, 2.2]} />
+        <meshStandardMaterial color="#1e293b" roughness={0.9} />
+      </mesh>
+      <mesh position={[1.1, 1.2, -1.5]} rotation={[0, -0.1, 0.1]}>
+        <cylinderGeometry args={[0.008, 0.008, 2.2]} />
+        <meshStandardMaterial color="#1e293b" roughness={0.9} />
       </mesh>
     </group>
   );
@@ -199,33 +256,37 @@ const AegisGameCanvas = ({ activeZoom, onSelectProp }) => {
       <Canvas
         gl={{ antialias: true, alpha: false }}
         camera={{ position: [0, 0, 2.5], fov: 60 }}
-        style={{ width: '100%', height: '100%', background: '#020408' }}
+        style={{ width: '100%', height: '100%', background: '#020407' }}
       >
         {/* Dynamic Studio/Mainframe lighting setup */}
-        <ambientLight intensity={0.15} color="#1d4ed8" />
+        <ambientLight intensity={0.12} color="#1d4ed8" />
         
         {/* Spotlights projecting glow and shadows */}
         <spotLight
-          position={[0, 3, 2]}
-          angle={Math.PI / 3}
-          penumbra={0.8}
-          intensity={1.2}
+          position={[0, 3, 2.5]}
+          angle={Math.PI / 3.5}
+          penumbra={0.9}
+          intensity={1.5}
           color="#38bdf8"
           castShadow
         />
+        
+        {/* Left Server glowing reflection spotlight */}
         <spotLight
-          position={[-2.5, 2, -1.0]}
+          position={[-2.0, 2.0, -1.0]}
           angle={Math.PI / 4}
-          penumbra={0.5}
-          intensity={0.8}
-          color="#fbbf24"
+          penumbra={0.7}
+          intensity={1.0}
+          color="#06b6d4"
         />
+        
+        {/* Right Server glowing reflection spotlight */}
         <spotLight
-          position={[2.5, 2, -1.0]}
+          position={[2.0, 2.0, -1.0]}
           angle={Math.PI / 4}
-          penumbra={0.5}
-          intensity={0.8}
-          color="#34d399"
+          penumbra={0.7}
+          intensity={1.0}
+          color="#3b82f6"
         />
 
         <Suspense fallback={null}>
