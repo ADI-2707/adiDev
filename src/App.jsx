@@ -48,6 +48,41 @@ const App = () => {
   const [soundMuted, setSoundMuted] = useState(false);
   const [isTransitioning, setIsTransitioning] = useState(false);
   const [isFullscreenOverride, setIsFullscreenOverride] = useState(false);
+  const [adminAccessMode, setAdminAccessMode] = useState('game'); // 'game' | 'direct'
+
+  useEffect(() => {
+    let buffer = '';
+    let lastKeyTime = Date.now();
+
+    const handleKeyDown = (e) => {
+      if (activeStage >= 10) return;
+
+      const key = e.key.toLowerCase();
+      if (key.length !== 1 || key < 'a' || key > 'z') return;
+
+      const now = Date.now();
+      if (now - lastKeyTime > 1000) {
+        buffer = '';
+      }
+
+      buffer += key;
+      lastKeyTime = now;
+
+      if (buffer.length > 8) {
+        buffer = buffer.slice(-8);
+      }
+
+      if (buffer === 'override') {
+        buffer = '';
+        setAdminAccessMode('direct');
+        setIsFullscreenOverride(false);
+        handleSetStage(10);
+      }
+    };
+
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [activeStage]);
 
 
   useEffect(() => {
@@ -179,6 +214,7 @@ const App = () => {
                 setStage={handleSetStage}
                 triggerFullscreenOverride={() => {
                   setMaxUnlockedStage(10);
+                  setAdminAccessMode('game');
                   setIsFullscreenOverride(true);
                   handleSetStage(10);
                 }}
@@ -187,7 +223,12 @@ const App = () => {
           )}
           {activeStage === 10 && (
             <motion.div key="override" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} style={{ flex: 1, display: 'flex' }}>
-              <AdminOverride activeStage={activeStage} setStage={handleSetStage} isFullscreen={isFullscreenOverride} />
+              <AdminOverride
+                activeStage={activeStage}
+                setStage={handleSetStage}
+                isFullscreen={isFullscreenOverride}
+                accessMode={adminAccessMode}
+              />
             </motion.div>
           )}
         </AnimatePresence>
